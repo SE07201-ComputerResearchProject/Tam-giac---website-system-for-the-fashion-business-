@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Items Page</title>
+        <link rel="stylesheet" href="style.css"/>
+        <!--==Fav icon==========================-->
+        <link rel="shortcut icon" href="images/fav-icon.png"/>
+        <!--==FontAwesome-for-Icons=============-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+        <!--==poppins-font======================-->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <nav class="navigation">
+            <!--====logo====-->
+            <a href="e-com.html" class="logo">
+                <img src="images/logo.jpg" />
+            </a>
+            <!--===search===-->
+            <form class="search-box">
+                <input type="text" placeholder="Search Attire Here" required/>
+                <button>
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </form>
+            <!--btns---------->
+            <div class="nav-btns">
+                <!--user-->
+                <a href="#" class="nav-user">
+                    <i class="fa-solid fa-user"></i>
+                </a>
+                <!--cart-->
+                <a href="#" class="nav-cart">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </a>
+            </div>
+
+
+        </nav><!--nav-end---->
+
+       
+        <!--==item-page===========-->
+        <section id="items-details">
+
+            <!--**img********-->
+            <div class="d-items-img">
+                <img src="images/photo800.jpeg" />
+            </div>
+
+            <!--***text********-->
+            <div class="d-items-text">
+                <!--category-->
+                <span class="category">Pants </span>
+
+                <!---titile-->
+                <strong>Cassablanca Pants</strong>
+                <!--rating-->
+                <span class="rating">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star-half-stroke"></i>
+                    <span>200 Reviews</span>
+                    
+                
+                </span>
+                <!--price-->
+                <span class="price">$90 <del>$120</del></span>
+                <!--quantity------>
+                <div class="quantity">
+                    <span>Quantity</span>
+                    <input type="number" min="1" value="1"/>
+                </div>
+                <!--add-to-cart-->
+                <a href="#" class="add-cart-btn">Add To Cart</a>
+            </div>
+        </section>
+
+
+            <!--Parntner=========-->
+            <section id="partner">
+
+                <!--heading--->
+                <div class="partner-heading">
+                    <h3>Our Sponsors</h3>
+                </div>
+
+
+                <!-------container===================-->
+                <div class="logo-container">
+                    <img src="images/n1.png" >
+                    <img src="images/n2.jpeg" >
+                    <img src="images/n3.png" >
+                    
+
+                </div>
+            
+
+            </section>
+
+            <!---footer=======================-->
+            <footer>
+                <div class="footer-container">
+                    
+                    
+                    <!--company-box*********-->
+                    <div class="footer-company-box">
+                        <!--logo-->
+                        <a href="#" classs="footer-logo">
+                            <h2>SG CLOTHING</h2>
+                        </a>
+                        <!--details---->
+                        <p>The Best Place You Can Shop Always.</p>
+                        <!--social-->
+                        <div class="footer-social">
+                            <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                            <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                        </div>
+                    </div>
+
+                    
+                    <!--**link-box**********-->
+                    <div class="footer-link-box">
+                        <strong>Main Link's</strong>
+                        <ul>
+                            <li><a href="#"></a>About Us</li>
+                            <li><a href="#"></a>Privacy Policy</li>
+                            <li><a href="#"></a>Disclaimer</li>
+                            <li><a href="#"></a>Terms and Conditions</li>
+                        </ul>
+                    </div>
+
+                    <!--**link-box**********-->
+                    <div class="footer-link-box">
+                        <strong>Main Link's</strong>
+                        <ul>
+                            <li><a href="#"></a>About Us</li>
+                            <li><a href="#"></a>Privacy Policy</li>
+                            <li><a href="#"></a>Disclaimer</li>
+                            <li><a href="#"></a>Terms and Conditions</li>
+                        </ul>
+                    </div>
+
+                    <!--**link-box**********-->
+                    <div class="footer-link-box">
+                        <strong>Main Link's</strong>
+                        <ul>
+                            <li><a href="#"></a>About Us</li>
+                            <li><a href="#"></a>Privacy Policy</li>
+                            <li><a href="#"></a>Disclaimer</li>
+                            <li><a href="#"></a>Terms and Conditions</li>
+                        </ul>
+                    </div>
+
+
+
+                </div>
+
+                <!--bottom******-->
+                <div class="footer-bottom">
+                    <span class="footer-owner">Made By Samuel</span>
+                    <span class="copyright">© Copyright 2024 - Samuel</span>
+                </div>
+            </footer>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <!--==Jquery================-->
+            <script src="jquery-3.7.1.js"></script>
+
+            <!--=Script===============-->
+            <script>
+                /*--==filter-link-active==========*/
+                var selector = '.new-arrivals-heading li';
+
+                $(selector).on('click',function(){
+                    $(selector).removeClass('active')
+                    $(this).addClass('active')
+
+                });
+
+                /*---***box-filter----**/
+                $(document).ready(function(){
+                    $('.new-arrivals-heading li').click(function(){
+                        const value = $(this).attr('data-filter');
+                        if(value == 'all'){
+                            $('.new-arrivals-box').show('1000');
+                        }
+                        else{
+                            $('.new-arrivals-box').not('.'+value).hide('1000');
+                            $('.new-arrivals-box').filter('.'+value).show('1000');
+                        } 
+                    });
+                });
+                   
+                    
+
+                    
+                
+            </script>
+        
+
+
+
+        </body>
+    
+
+
+
+
+
+
+</html>

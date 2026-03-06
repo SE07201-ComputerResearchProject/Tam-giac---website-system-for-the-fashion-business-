@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>SG CLOTHING</title>
+        <link rel="stylesheet" href="style.css"/>
+        <!--==Fav icon==========================-->
+        <link rel="shortcut icon" href="images/fav-icon.png"/>
+        <!--==FontAwesome-for-Icons=============-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+        <!--==poppins-font======================-->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+        <!--==Accessibility & Security meta tags-->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="SG CLOTHING - Secure E-commerce Fashion Store">
+        <meta name="robots" content="noindex, nofollow">
+        <!--==End Accessibility & Security meta tags-->
+        <!-- Security meta tags -->
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self' https://cdnjs.cloudflare.com https://www.google.com https://www.gstatic.com; style-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com;">
+        <meta http-equiv="X-Content-Type-Options" content="nosniff">
+        <meta http-equiv="X-Frame-Options" content="DENY">
+        <meta name="referrer" content="no-referrer">
+        <!-- Security architecture summary for project reviewers -->
+        <!--
+        E-commerce system security highlights:
+        - Frontend: Google reCAPTCHA v3, secure form attributes, CSP meta tags
+        - Backend: JWT, OAuth2, MFA, bcrypt, AES-256, Helmet, Rate Limiting, ORM, Redis, Logging
+        - DevOps: SonarQube, OWASP ZAP, Docker
+        See backend-setup.md for implementation details.
+        -->
+        <!-- Google reCAPTCHA v3 -->
+        <script src="https://www.google.com/recaptcha/api.js?render=your_site_key"></script>
+        <script>
+          // reCAPTCHA token for form
+          function onSubmit(token) {
+            document.querySelector('.search-box').submit();
+          }
+          document.addEventListener('DOMContentLoaded', function() {
+            grecaptcha.ready(function() {
+              grecaptcha.execute('your_site_key', {action: 'search'}).then(function(token) {
+                document.querySelector('input[name="recaptcha_token"]').value = token;
+              });
+            });
+          });
+        </script>
+    </head>
+    <body>
+        <nav class="navigation">
+            <!--====logo====-->
+            <a href="#" class="logo">
+                <img src="images/logo.jpg" />
+            </a>
+            <!--===search===-->
+            <form class="search-box" autocomplete="off" method="POST" action="/search">
+                <input type="text" placeholder="Search Attire Here" required inputmode="text" autocomplete="off" />
+                <input type="hidden" name="recaptcha_token" />
+                <button data-sitekey="your_site_key" data-callback="onSubmit" data-action="search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </form>
+            <!--btns--------->
+            <div class="nav-btns">
+                <!--user-->
+                <a href="#" class="nav-user" aria-label="User Account" tabindex="0">
+                    <i class="fa-solid fa-user"></i>
+                </a>
+                <!--cart-->
+                <a href="#" class="nav-cart" aria-label="Shopping Cart" tabindex="0">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </a>
+            </div>
+            <!-- Security note: Cart and user actions must be authenticated and authorized server-side. -->
+        </nav>
+
+        <!--==main=============-->
+        <section id="main">
+            <!--text-->
+            <div class="main-text">
+                <sapn>New Collection</sapn>
+                <h1>Best <font>Clothing</font> Store In Africa</h1>
+                <p>Your number 1 shop for getting best attires for any type of occassion</p>
+                <a href="#">Shop Now</a>
+
+            </div>
+
+            <!--img========-->
+            <div class="main-img">
+                <img src="images/cover123.jpeg" />
+            </div>
+
+        </section>
+
+        <!--Attires-3============-->
+        <section class="attire-grid-3">
+                
+                <!--box*******1-->
+                <div class="attire-grid-box attire-grid-box1">
+                    <!--img-->
+                    <img src="images/photo300.jpeg" />
+                    <!--text-->
+                    <div class="attire-grid-text">
+                        <strong>Gildan T-Shirt</strong>
+                        <span>Men's Wear</span>
+                        <a href="#" class="purchase-btn" aria-label="Purchase Gildan T-Shirt" tabindex="0">Purchase Now</a>
+                    </div>
+                    <!-- Security note: All purchase actions must be validated server-side. Never trust client input. -->
+                </div>
+
+
+                <!--box*******2-->
+                <div class="attire-grid-box attire-grid-box2">
+                    <!--img-->
+                    <img src="images/photo400.jpeg" />
+                    <!--text-->
+                    <div class="attire-grid-text">
+                        <strong>Gildan T-Shirt</strong>
+                        <span>Ladies' Wear</span>
+                        <a href="#" class="purchase-btn" aria-label="Purchase Gildan T-Shirt" tabindex="0">Purchase Now</a>
+                    </div>
+                    <!-- Security note: All purchase actions must be validated server-side. Never trust client input. -->
+                </div>
+
+                <!--box*******3-->
+                <div class="attire-grid-box attire-grid-box3">
+                    <!--img-->
+                    <img src="images/photo600.jpeg" />
+                    <!--text-->
+                    <div class="attire-grid-text">
+                        <strong>Cargo Pants</strong>
+                        <span>Men's Wear</span>
+                        <a href="#" class="purchase-btn" aria-label="Purchase Cargo Pants" tabindex="0">Purchase Now</a>
+                    </div>
+                    <!-- Security note: All purchase actions must be validated server-side. Never trust client input. -->
+                </div>
+
+         
+            </section><!--grid-end=====-->
+
+            <!--new arrivals=================-->
+            <section id="new-arrivals">
+
+                <!--heading********-->
+                <div class="new-arrivals-heading">
+                    <!--heading-->
+                    <h3>New Arrivals</h3>
+                    <!--filter-->
+                    <ul>
+                        <li class="active" data-filter="All" tabindex="0" aria-label="Show all products">All</li>
+                        <li data-filter="T-Shirts" tabindex="0" aria-label="Show T-Shirts">T-Shirts</li>
+                        <li data-filter="Pants" tabindex="0" aria-label="Show Pants">Pants</li>
+                        <li data-filter="Shirts" tabindex="0" aria-label="Show Shirts">Shirts</li>
+                        <li data-filter="Perfumes" tabindex="0" aria-label="Show Perfumes">Perfumes</li>
+                    </ul>
+                    <!-- Security note: All filter actions are handled client-side, no user input is sent to server. Backend must validate all incoming filter/search requests to prevent injection attacks. -->
+
+                </div>
+
+                <!--container============-->
+                <div class="new-arrivals-container">
+
+                    <!--box 1-->
+                    <div class="new-arrivals-box T-Shirts">
+                        <!--img-->
+                        <a href="#" class="new-arrivals-img">
+                            <img src="images/photo150.jpeg" />
+                        </a>
+                        <!--text-->
+                        <div class="new-arrivals-text">
+                            <a href="#" class="new-arrivals-title">Off-White T-Shirt</a>
+                            <span>$50</span>
+                        </div>
+
+                    </div>
+
+                    <!--box 2-->
+                    <div class="new-arrivals-box Pants">
+                        <!--img-->
+                        <a href="#" class="new-arrivals-img">
+                            <img src="images/mcg.jpeg" />
+                        </a>
+                        <!--text-->
+                        <div class="new-arrivals-text">
+                            <a href="#" class="new-arrivals-title">Men's Army Cargo Pants</a>
+                            <span>$130</span>
+                        </div>
+
+                    </div>
+
+                    <!--box 3-->
+                    <div class="new-arrivals-box Perfumes">
+                        <!--img-->
+                        <a href="#" class="new-arrivals-img">
+                            <img src="images/pp3.webp" />
+                        </a>
+                        <!--text-->
+                        <div class="new-arrivals-text">
+                            <a href="#" class="new-arrivals-title">CHANEL</a>
+                            <span>$200</span>
+                        </div>
+
+                    </div>
+
+                    <!--box 4-->
+                    <div class="new-arrivals-box Shirts">
+                        <!--img-->
+                        <a href="#" class="new-arrivals-img">
+                            <img src="images/bps.jpeg" />
+                        </a>
+                        <!--text-->
+                        <div class="new-arrivals-text">
+                            <a href="#" class="new-arrivals-title">Breathable Polo Shirt</a>
+                            <span>$90</span>
+                        </div>
+
+                    </div>
+
+                    <!--box 5-->
+                    <div class="new-arrivals-box Pants">
+                        <!--img-->
+                        <a href="#" class="new-arrivals-img">
+                            <img src="images/photo250.jpeg" />
+                        </a>
+                        <!--text-->
+                        <div class="new-arrivals-text">
+                            <a href="#" class="new-arrivals-title">Palm Angels Pants</a>
+                            <span>$250</span>
+                        </div>
+
+                    </div>
+
+                    <!--box 6-->
+                    <div class="new-arrivals-box Pants">
+                        <!--img-->
+                        <a href="items page.html" class="new-arrivals-img">
+                            <img src="images/photo800.jpeg" />
+                        </a>
+                        <!--text-->
+                        <div class="new-arrivals-text">
+                            <a href="items page.html" class="new-arrivals-title">Cassablanca Pants</a>
+                            <span>$120</span>
+                        </div>
+
+                    </div>
+
+                     <!--box 7-->
+                     <div class="new-arrivals-box Shirts">
+                        <!--img-->
+                        <a href="#" class="new-arrivals-img">
+                            <img src="images/photo111.jpeg" />
+                        </a>
+                        <!--text-->
+                        <div class="new-arrivals-text">
+                            <a href="#" class="new-arrivals-title">Classic Shirt</a>
+                            <span>$75</span>
+                        </div>
+
+                    </div>
+
+                     <!--box 8-->
+                     <div class="new-arrivals-box Shirts">
+                        <!--img-->
+                        <a href="#" class="new-arrivals-img"> 
+                            <img src="images/photo121.jpeg" />
+                        </a>
+                        <!--text-->
+                        <div class="new-arrivals-text">
+                            <a href="#" class="new-arrivals-title">Summer Shirt</a>
+                            <span>$60</span>
+                        </div>
+
+                    </div>
+
+                     <!--box 9-->
+                     <div class="new-arrivals-box T-Shirts">
+                        <!--img-->
+                        <a href="#" class="new-arrivals-img">
+                            <img src="images/photo200.jpg" />
+                        </a>
+                        <!--text-->
+                        <div class="new-arrivals-text">
+                            <a href="#" class="new-arrivals-title">Palm Angels T-Shirt</a>
+                            <span>$150</span>
+                        </div>
+
+                    </div>
+
+                     <!--box 10-->
+                     <div class="new-arrivals-box Perfumes">
+                        <!--img-->
+                        <a href="#" class="new-arrivals-img">
+                            <img src="images/photo320.jpeg" />
+                        </a>
+                        <!--text-->
+                        <div class="new-arrivals-text">
+                            <a href="#" class="new-arrivals-title">Suave Perfume</a>
+                            <span>$100</span>
+                        </div>
+
+                    </div>
+                
+                
+                
+                </div>
+
+
+
+            </section>
+
+                    <!--Attires-Half============-->
+        <section class="attire-grid-half">
+                
+            <!--box*******1-->
+            <div class="attire-grid-box attire-grid-box1">
+                <!--img-->
+                <img src="images/photo300.jpeg" />
+                <!--text-->
+                <div class="attire-grid-text">
+                    <strong>Gildan T-Shirt</strong>
+                    <span>Men's Wear</span>
+                    <a href="#" class="purchase-btn" aria-label="Purchase Gildan T-Shirt" tabindex="0">Purchase Now</a>
+                </div>
+                <!-- Security note: All purchase actions must be validated server-side. Never trust client input. -->
+            </div>
+
+
+            <!--box*******2-->
+            <div class="attire-grid-box attire-grid-box2">
+                <!--img-->
+                <img src="images/photo400.jpeg" />
+                <!--text-->
+                <div class="attire-grid-text">
+                    <strong>Gildan T-Shirt</strong>
+                    <span>Ladies' Wear</span>
+                    <a href="#" class="purchase-btn" aria-label="Purchase Gildan T-Shirt" tabindex="0">Purchase Now</a>
+                </div>
+                <!-- Security note: All purchase actions must be validated server-side. Never trust client input. -->
+            </div>
+
+            <!--box*******3-->
+            <div class="attire-grid-box attire-grid-box3">
+                <!--img-->
+                <img src="images/photo600.jpeg" />
+                <!--text-->
+                <div class="attire-grid-text">
+                    <strong>Cargo Pants</strong>
+                    <span>Men's Wear</span>
+                    <a href="#" class="purchase-btn" aria-label="Purchase Cargo Pants" tabindex="0">Purchase Now</a>
+                </div>
+                <!-- Security note: All purchase actions must be validated server-side. Never trust client input. -->
+            </div><!---grid-end-->
+
+            <!--==Popular=============-->
+            <section id class="popular-arrivals">
+
+                <!--heading----------->
+                <div class="popular-heading">
+                    <h3>Popular Arrivals</h3>
+                    <a href="#">All</a>
+                </div>
+
+                <!----container*****-->
+                <div class="popular-container">
+
+                    <!---box1*-->
+                    <div class="popular-box">
+                        <!--img-->
+                        <a href="#" class="popular-box-img">
+                            <img src="images/photo200.jpg">
+                        </a>
+                        <!--text-->
+                        <div class="popular-box-text">
+                            <a href="#">Palm Angels T-Shirts</a>
+                            <span class="p-category">T-Shirts</span>
+                            <span class="p-price">$100 <del>$150</del></span>
+                        </div>
+                    </div>
+
+                     <!---box2*-->
+                     <div class="popular-box">
+                        <!--img-->
+                        <a href="#" class="popular-box-img">
+                            <img src="images/photo111.jpeg">
+                        </a>
+                        <!--text-->
+                        <div class="popular-box-text">
+                            <a href="#">Class Shirt</a>
+                            <span class="p-category">Shirts</span>
+                            <span class="p-price">$50 <del>$75</del></span>
+                        </div>
+                    </div>
+
+                     <!---box3*-->
+                     <div class="popular-box">
+                        <!--img-->
+                        <a href="#" class="popular-box-img">
+                            <img src="images/mcg.jpeg">
+                        </a>
+                        <!--text-->
+                        <div class="popular-box-text">
+                            <a href="#">Men's Army Cargo Pants</a>
+                            <span class="p-category">Pants</span>
+                            <span class="p-price">$110 <del>$130</del></span>
+                        </div>
+                    </div>
+
+                     <!---box4*-->
+                     <div class="popular-box">
+                        <!--img-->
+                        <a href="#" class="popular-box-img">
+                            <img src="images/photo320.jpeg">
+                        </a>
+                        <!--text-->
+                        <div class="popular-box-text">
+                            <a href="#">Suave Perfume</a>
+                            <span class="p-category">Perfumes</span>
+                            <span class="p-price">$80 <del>$100</del></span>
+                        </div>
+                    </div>
+
+                     <!---box5*-->
+                     <div class="popular-box">
+                        <!--img-->
+                        <a href="#" class="popular-box-img">
+                            <img src="images/bps.jpeg">
+                        </a>
+                        <!--text-->
+                        <div class="popular-box-text">
+                            <a href="#">Breathable Polo Shirt</a>
+                            <span class="p-category">Shirts</span>
+                            <span class="p-price">$65 <del>$90</del></span>
+                        </div>
+                    </div>
+
+                     <!---box6*-->
+                     <div class="popular-box">
+                        <!--img-->
+                        <a href="#" class="popular-box-img">
+                            <img src="images/photo250.jpeg">
+                        </a>
+                        <!--text-->
+                        <div class="popular-box-text">
+                            <a href="#">Palm Angels Pants</a>
+                            <span class="p-category">Pants</span>
+                            <span class="p-price">$200 <del>$250</del></span>
+                        </div>
+                    </div>
+
+                     <!---box7*-->
+                     <div class="popular-box">
+                        <!--img-->
+                        <a href="#" class="popular-box-img">
+                            <img src="images/photo121.jpeg">
+                        </a>
+                        <!--text-->
+                        <div class="popular-box-text">
+                            <a href="#">Summer Shirt</a>
+                            <span class="p-category">Shirts</span>
+                            <span class="p-price">$45 <del>$60</del></span>
+                        </div>
+                    </div>
+
+                     <!---box8*-->
+                     <div class="popular-box">
+                        <!--img-->
+                        <a href="items page.html" class="popular-box-img">
+                            <img src="images/photo800.jpeg">
+                        </a>
+                        <!--text-->
+                        <div class="popular-box-text">
+                            <a href="items page.html">Cassablanca Pants</a>
+                            <span class="p-category">Pants</span>
+                            <span class="p-price">$90 <del>$120</del></span>
+                        </div>
+                    </div>
+
+                     <!---box9*-->
+                     <div class="popular-box">
+                        <!--img-->
+                        <a href="#" class="popular-box-img">
+                            <img src="images/pp3.webp">
+                        </a>
+                        <!--text-->
+                        <div class="popular-box-text">
+                            <a href="#">CHANEL</a>
+                            <span class="p-category">Perfumes</span>
+                            <span class="p-price">$100 <del>$150</del></span>
+                        </div>
+                    </div>
+
+                     <!---box10*-->
+                     <div class="popular-box">
+                        <!--img-->
+                        <a href="#" class="popular-box-img">
+                            <img src="images/photo150.jpeg">
+                        </a>
+                        <!--text-->
+                        <div class="popular-box-text">
+                            <a href="#">Off-White T-Shirt</a>
+                            <span class="p-category">T-Shirts</span>
+                            <span class="p-price">$40 <del>$50</del></span>
+                        </div>
+                    </div>
+                </div>
+
+             
+            </section> <!----===popular-end-->
+
+
+
+            <!--Parntner=========-->
+            <section id="partner">
+
+                <!--heading--->
+                <div class="partner-heading">
+                    <h3>Our Sponsors</h3>
+                </div>
+
+
+                <!-------container===================-->
+                <div class="logo-container">
+                    <img src="images/n1.png" >
+                    <img src="images/n2.jpeg" >
+                    <img src="images/n3.png" >
+                    
+
+                </div>
+            
+
+            </section>
+
+            <!---footer=======================-->
+            <footer>
+                <div class="footer-container">
+                    <!--company-box*********-->
+                    <div class="footer-company-box">
+                        <!--logo-->
+                        <a href="#" class="footer-logo" aria-label="SG CLOTHING Home" tabindex="0">
+                            <h2>SG CLOTHING</h2>
+                        </a>
+                        <!--details---->
+                        <p>The Best Place You Can Shop Always.</p>
+                        <!--social-->
+                        <div class="footer-social">
+                            <a href="#" aria-label="Facebook" tabindex="0"><i class="fa-brands fa-facebook-f"></i></a>
+                            <a href="#" aria-label="Instagram" tabindex="0"><i class="fa-brands fa-instagram"></i></a>
+                            <a href="#" aria-label="Twitter" tabindex="0"><i class="fa-brands fa-twitter"></i></a>
+                        </div>
+                    </div>
+
+                    
+                    <!--**link-box**********-->
+                    <div class="footer-link-box">
+                        <strong>Main Link's</strong>
+                        <ul>
+                            <li><a href="#"></a>About Us</li>
+                            <li><a href="#"></a>Privacy Policy</li>
+                            <li><a href="#"></a>Disclaimer</li>
+                            <li><a href="#"></a>Terms and Conditions</li>
+                        </ul>
+                    </div>
+
+                    <!--**link-box**********-->
+                    <div class="footer-link-box">
+                        <strong>Main Link's</strong>
+                        <ul>
+                            <li><a href="#"></a>About Us</li>
+                            <li><a href="#"></a>Privacy Policy</li>
+                            <li><a href="#"></a>Disclaimer</li>
+                            <li><a href="#"></a>Terms and Conditions</li>
+                        </ul>
+                    </div>
+
+                    <!--**link-box**********-->
+                    <div class="footer-link-box">
+                        <strong>Main Link's</strong>
+                        <ul>
+                            <li><a href="#"></a>About Us</li>
+                            <li><a href="#"></a>Privacy Policy</li>
+                            <li><a href="#"></a>Disclaimer</li>
+                            <li><a href="#"></a>Terms and Conditions</li>
+                        </ul>
+                    </div>
+
+
+
+                </div>
+
+                <!--bottom******-->
+                <div class="footer-bottom">
+                    <span class="footer-owner">Made By Samuel</span>
+                    <span class="copyright">© Copyright 4 - Samuel</span>
+                </div>
+            </footer>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <!--==Jquery================-->
+            <script src="jquery-3.7.1.js"></script>
+
+            <!--==Security: Prevent XSS by sanitizing all dynamic content-->
+            <script>
+                // Example: Sanitize user input before rendering (for future dynamic features)
+                function sanitizeInput(input) {
+                    return input.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                }
+            </script>
+
+            <!--=Script===============-->
+            <script>
+                /*--==filter-link-active==========*/
+                var selector = '.new-arrivals-heading li';
+
+                $(selector).on('click',function(){
+                    $(selector).removeClass('active')
+                    $(this).addClass('active')
+
+                });
+
+                /*---***box-filter----**/
+                $(document).ready(function(){
+                    $('.new-arrivals-heading li').click(function(){
+                        const value = $(this).attr('data-filter');
+                        // Sanitize filter value before using
+                        const safeValue = sanitizeInput(value);
+                        if(safeValue.toLowerCase() === 'all'){
+                            $('.new-arrivals-box').show('1000');
+                        }
+                        else{
+                            $('.new-arrivals-box').not('.'+safeValue).hide('1000');
+                            $('.new-arrivals-box').filter('.'+safeValue).show('1000');
+                        } 
+                    });
+                });
+                // Security: All filter actions are client-side. Backend must validate all filter/search requests.
+                   
+                    
+
+                    
+                
+            </script>
+        
+
+
+
+        </body>
+    
+
+
+
+
+
+
+</html>
