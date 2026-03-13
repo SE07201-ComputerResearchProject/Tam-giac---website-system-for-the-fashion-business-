@@ -1,0 +1,16 @@
+Các kỹ thuật CyberSecurity sẽ cài đặt trong lúc phát triển:
+1.	MFA 
+2.	JWT (nếu dùng APIs) 
+3.	Tích hợp cổng thanh toán (nếu là website bán hàng, có thanh toán) 
+4.	Hash mật khẩu 
+5.	Ghi log hệ thống 
+6.	Phòng chống SQL Injection. 
+
+Công nghệ Sẽ sử dụng:
+1.	Frontend: ReactJS 
+2.	Backend: NodeJS (ExpressJS) 
+3.	Database: SQLSever 
+4.	Authentication: OAuth2 (Google Login), 
+5.	Encryption: Bcrypt/Argon2 (Password)
+6.	Protection: Google ReCAPTCHA v3
+7.	DevOps/Pentest: Docker
