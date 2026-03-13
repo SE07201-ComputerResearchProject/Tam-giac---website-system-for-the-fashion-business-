@@ -1,4 +1,4 @@
-# 🛍️ Khaki Secure E‑Commerce Website
+# 🛍️ Secure E‑Commerce Website
 
 A **secure modern e‑commerce web application** built from the **Khaki
 front‑end template** and extended with a **NodeJS + SQL Server backend**
