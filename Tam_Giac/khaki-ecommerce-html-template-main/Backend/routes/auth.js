@@ -10,26 +10,35 @@ const recaptchaMiddleware = require('../middleware/recaptcha');
 
 const router = express.Router();
 
-// Google OAuth setup (trong .env: GOOGLE_CLIENT_ID...)
-passport.use(new (require('passport-google-oauth20').Strategy)({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: process.env.GOOGLE_CALLBACK_URL
-}, async (accessToken, refreshToken, profile, done) => {
-  try {
-    let user = await User.findOne({ where: { googleId: profile.id } });
-    if (!user) {
-      user = await User.create({
-        googleId: profile.id,
-        email: profile.emails[0].value,
-        fullName: profile.displayName
-      });
+const googleOAuthEnabled =
+  Boolean(process.env.GOOGLE_CLIENT_ID) &&
+  Boolean(process.env.GOOGLE_CLIENT_SECRET) &&
+  Boolean(process.env.GOOGLE_CALLBACK_URL);
+
+// Google OAuth setup (chỉ bật khi đủ biến môi trường)
+if (googleOAuthEnabled) {
+  passport.use(new (require('passport-google-oauth20').Strategy)({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_CALLBACK_URL
+  }, async (accessToken, refreshToken, profile, done) => {
+    try {
+      let user = await User.findOne({ where: { googleId: profile.id } });
+      if (!user) {
+        user = await User.create({
+          googleId: profile.id,
+          email: profile.emails?.[0]?.value,
+          fullName: profile.displayName
+        });
+      }
+      done(null, user);
+    } catch (error) {
+      done(error);
     }
-    done(null, user);
-  } catch (error) {
-    done(error);
-  }
-}));
+  }));
+} else {
+  logger.warn('Google OAuth chưa cấu hình (thiếu GOOGLE_CLIENT_ID/SECRET/CALLBACK_URL)');
+}
 
 // ReCAPTCHA protect register/login
 router.post('/register', recaptchaMiddleware.verifyCaptcha, [
@@ -87,8 +96,14 @@ router.post('/mfa/verify', authMiddleware.authenticateToken, mfaMiddleware.verif
 });
 
 // Google OAuth routes
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-router.get('/google/callback', passport.authenticate('google'), (req, res) => {
+router.get('/google', (req, res, next) => {
+  if (!googleOAuthEnabled) return res.status(501).json({ error: 'Google OAuth chưa được cấu hình' });
+  return passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
+});
+router.get('/google/callback', (req, res, next) => {
+  if (!googleOAuthEnabled) return res.status(501).json({ error: 'Google OAuth chưa được cấu hình' });
+  return passport.authenticate('google')(req, res, next);
+}, (req, res) => {
   const token = jwt.sign({ id: req.user.id, email: req.user.email }, process.env.JWT_SECRET);
   res.redirect(`http://localhost:3001/auth/callback?token=${token}`); // Frontend React
 });

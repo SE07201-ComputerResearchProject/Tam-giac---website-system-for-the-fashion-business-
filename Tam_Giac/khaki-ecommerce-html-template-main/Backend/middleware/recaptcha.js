@@ -1,7 +1,7 @@
 const recaptcha = require('recaptcha2');
 const logger = require('../utils/logger');
 
-const verifyRecaptcha = recaptcha({
+const verifyRecaptcha = new recaptcha({
   siteKey: process.env.RECAPTCHA_SITE_KEY,
   secretKey: process.env.RECAPTCHA_SECRET_KEY
 });

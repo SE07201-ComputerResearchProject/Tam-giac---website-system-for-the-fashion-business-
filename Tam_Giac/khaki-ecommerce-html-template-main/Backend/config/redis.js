@@ -1,6 +1,13 @@
 const redis = require('redis');
 require('dotenv').config();
 
+const redisEnabled = (process.env.REDIS_ENABLED || 'false').toLowerCase() === 'true';
+
+if (!redisEnabled) {
+  module.exports = null;
+  return;
+}
+
 const redisClient = redis.createClient({
   url: process.env.REDIS_URL || 'redis://localhost:6379',
   socket: {
@@ -9,7 +16,5 @@ const redisClient = redis.createClient({
 });
 
 redisClient.on('error', (err) => console.error('Redis Client Error', err));
-
-redisClient.connect();
 
 module.exports = redisClient;

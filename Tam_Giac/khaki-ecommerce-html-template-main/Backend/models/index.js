@@ -19,7 +19,20 @@ fs
     );
   })
   .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+    const exported = require(path.join(__dirname, file));
+
+    // Support both Sequelize-CLI style model factories and direct model exports.
+    // - Factory style: module.exports = (sequelize, DataTypes) => { ...; return Model; }
+    // - Direct style (this codebase): module.exports = sequelize.define(...)
+    const model =
+      typeof exported === 'function' && exported.length >= 2
+        ? exported(sequelize, Sequelize.DataTypes)
+        : exported;
+
+    if (!model || !model.name) {
+      throw new Error(`Invalid model export in ${file}`);
+    }
+
     modelFiles[model.name] = model;
   });
 

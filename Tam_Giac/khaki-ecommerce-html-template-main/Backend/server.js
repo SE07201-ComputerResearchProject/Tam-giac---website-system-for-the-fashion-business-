@@ -6,7 +6,7 @@ const rateLimit = require('express-rate-limit');
 const winston = require('winston');
 const path = require('path');
 
-const connectDB = require('./config/database');
+const { connectDB, sequelize, getSqlPool } = require('./config/database');
 const redisClient = require('./config/redis');
 
 const authRoutes = require('./routes/auth');
@@ -59,6 +59,22 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
+// DB health check (xác thực kết nối DB nhanh)
+app.get('/health/db', async (req, res) => {
+  try {
+    const pool = getSqlPool();
+    if (pool) {
+      await pool.request().query('SELECT 1 AS ok');
+    } else {
+      await sequelize.query('SELECT 1 AS ok');
+    }
+    res.status(200).json({ db: 'OK', timestamp: new Date().toISOString() });
+  } catch (error) {
+    logger.error('DB health check failed', { message: error?.message });
+    res.status(500).json({ db: 'FAIL', error: 'DB connection failed' });
+  }
+});
+
 // Routes API (JWT protected trừ auth)
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
@@ -84,8 +100,14 @@ const PORT = process.env.PORT || 3000;
 const startServer = async () => {
   try {
     await connectDB();
-    await redisClient.connect();
-    logger.info('DB và Redis kết nối thành công');
+    if (redisClient) {
+      if (!redisClient.isOpen) {
+        await redisClient.connect();
+      }
+      logger.info('DB và Redis kết nối thành công');
+    } else {
+      logger.info('DB kết nối thành công (Redis đang tắt)');
+    }
     
     app.listen(PORT, () => {
       logger.info(`Server chạy tại http://localhost:${PORT}`);
