@@ -1,236 +1,81 @@
-# 🛍️ Secure E‑Commerce Website
-
-A **secure modern e‑commerce web application** built from the **Khaki
-front‑end template** and extended with a **NodeJS + SQL Server backend**
-while integrating modern **Cybersecurity protections**.
-
-------------------------------------------------------------------------
-
-# 🚀 Project Overview
-
-This project demonstrates how to build a **secure online shopping
-platform** using modern web technologies and best cybersecurity
-practices.
-
-Users can:
-
--   Browse products
--   Manage a shopping cart
--   Place orders
--   Complete online payments
--   Login securely using Google OAuth
--   Access their order history
-
-The system also demonstrates **real‑world web security implementations**
-such as MFA, password hashing, logging, and SQL injection prevention.
-
-------------------------------------------------------------------------
-
-# 🧱 Tech Stack
-
-## Frontend
-
--   ReactJS
--   HTML / CSS / JavaScript
--   Responsive UI (Khaki Template)
-
-## Backend
-
--   NodeJS
--   ExpressJS
--   RESTful API Architecture
-
-## Database
-
--   Microsoft SQL Server
-
-## Authentication
-
--   JWT Authentication
--   OAuth2 Google Login
-
-## Encryption
-
--   bcrypt / Argon2 (Password Hashing)
-
-## Security Protection
-
--   Google reCAPTCHA v3
--   SQL Injection Prevention
--   Multi‑Factor Authentication (MFA)
--   Secure Logging
-
-## DevOps
-
--   Docker containerization
-
-------------------------------------------------------------------------
-
-# ✨ Core Features
-
-## 👤 User Features
-
--   User registration
--   Secure login system
--   Google OAuth login
--   Browse product catalog
--   Shopping cart system
--   Checkout & payment
--   Order tracking
--   Profile management
-
-## 🛠️ Admin Features
-
--   Product management
--   Category management
--   Inventory management
--   Order management
--   System monitoring
-
-------------------------------------------------------------------------
-
-# 🔐 Cybersecurity Implementation
-
-  Security Feature           Purpose
-  -------------------------- -------------------------------------
-  MFA                        Adds second layer of login security
-  JWT                        Secure API authentication
-  Password Hashing           Protect user passwords
-  Payment Security           Secure transaction integration
-  System Logging             Detect suspicious activities
-  SQL Injection Protection   Prevent database attacks
-  reCAPTCHA v3               Prevent bot traffic and spam
-
-------------------------------------------------------------------------
-
-# 🗄️ Database Design (Core Tables)
-
-## Users
-
--   id (PK)
--   email
--   password_hash
--   google_id
--   role
--   mfa_enabled
--   created_at
-
-## Products
-
--   id (PK)
--   name
--   description
--   price
--   stock
--   category_id
--   created_at
-
-## Categories
-
--   id (PK)
--   name
--   description
-
-## Carts
-
--   id (PK)
--   user_id
--   created_at
-
-## Cart Items
-
--   id (PK)
--   cart_id
--   product_id
--   quantity
-
-## Orders
-
--   id (PK)
--   user_id
--   total_price
--   status
--   payment_id
--   created_at
-
-## Order Items
-
--   id (PK)
--   order_id
--   product_id
--   price
--   quantity
-
-## Payments
-
--   id (PK)
--   order_id
--   provider
--   payment_status
--   transaction_id
--   created_at
-
-## System Logs
-
--   id (PK)
--   user_id
--   action
--   ip_address
--   created_at
-
-## MFA Tokens
-
--   id (PK)
--   user_id
--   secret
--   verified
-
-------------------------------------------------------------------------
-
-# 🏗️ System Architecture
-
-    ReactJS Frontend
-            │
-            ▼
-    NodeJS (Express API)
-            │
-    Authentication Layer
-    (JWT + OAuth2)
-            │
-    Security Layer
-    (MFA, reCAPTCHA, Logging)
-            │
-            ▼
-    SQL Server Database
-
-------------------------------------------------------------------------
-
-# 🐳 Deployment
-
-The application will be containerized using **Docker** to support:
-
--   Easy deployment
--   Isolated development environments
--   Security testing & penetration testing
-
-------------------------------------------------------------------------
-
-# 🎯 Project Goal
-
-Build a **secure, scalable, and modern e‑commerce platform** that
-demonstrates:
-
--   Real‑world backend architecture
--   Secure authentication
--   Cybersecurity best practices
--   Modern full‑stack development
-
-------------------------------------------------------------------------
-
-# 📚 Educational Value
-
-This project is designed for:
-
--   Web Development learning
--   Cybersecurity research
--   Secure software engineering practice
+<h2><span style="font-size: medium;">Khaki - HTML E-commerce Online Shop</span></h2>
+<table class="post-table">
+<thead>
+<tr>
+<th>Technology</th>
+<th>Layout</th>
+<th>Framework(s)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HTML, CSS, Javascript/JQuery</td>
+<td>Non-Responsive | Multi Page Template</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<table class="post-table">
+<thead>
+<tr>
+<th>Columns</th>
+<th>Color(s)</th>
+<th>Browser(s)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mixed Columns</td>
+<td>Green, Yellow</td>
+<td>Chrome, Firefox, MS Edge, etc.</td>
+</tr>
+</tbody>
+</table>
+<p style="text-align: left;">This is an online shop website template it is a multipurpose non-responsive website template that can cover the basic online shop requirement.</p>
+<p style="text-align: left;">The website template is built on HTML5 CSS3 and Javascript / JQuery.</p>
+<p style="text-align: left;">It has used external plugins library like jquery UI, fancybox for viewing product images on a detail page, and bxslider to slide products on the home page.</p>
+<p style="text-align: left;">Also, it has used free stock images, icons, and google Roboto font.</p>
+<p style="text-align: left;">Beautiful flat style HTML5 website template with clean code to edit easily well-commented sections.</p>
+<p><strong>Credit &amp; Miscellaneous Info</strong></p>
+<ul>
+ 	<li>Fancybox third-party plugin files are documented and credited in their own file folders.</li>
+ 	<li>BX Slider is used as a link source.</li>
+</ul>
+<p><strong>Files Included in the downloadable zip:</strong></p>
+<ul>
+ 	<li>HTML file</li>
+ 	<li>CSS styling file(s)</li>
+ 	<li>JavaScript file(s)</li>
+ 	<li>Free Stock images PNG, JPG</li>
+ 	<li>FONTS files (Roboto font)</li>
+ 	<li>FancyBox file(s)</li>
+</ul>
+<p><strong>Page layout includes:</strong></p>
+<ul>
+ 	<li>BX Slider to display product in the hero section</li>
+ 	<li>FancyBox for displaying single products images</li>
+ 	<li>Contact Form, Checkout Form, Account Form etc.</li>
+</ul>
+<p style="text-align: left;"><b>Khaki Online Shop HTML5 Website Template Pages Included</b></p>
+<ul>
+ 	<li>index page</li>
+ 	<li>shop page</li>
+ 	<li>about us page</li>
+ 	<li>contact page</li>
+ 	<li>term and condition page</li>
+ 	<li>refund page</li>
+ 	<li>cart page</li>
+ 	<li>checkout page</li>
+ 	<li>product details page</li>
+ 	<li>account page</li>
+ 	<li>orders page</li>
+ 	<li>change password page</li>
+</ul>
+<p style="text-align: left;"><b>Admin Folder Included as well</b></p>
+<ul style="text-align: left;">
+ 	<li>index page</li>
+ 	<li>category page</li>
+ 	<li>order page</li>
+ 	<li>product page</li>
+ 	<li>stock page</li>
+</ul>
