@@ -9,7 +9,7 @@ module.exports = {
       const { user } = req;
       const secret = speakeasy.generateSecret({
         name: `Tam-Giac (${user.email})`,
-        issuer: 'TamGiac Ecommerce'
+        issuer: 'Tam Giac'
       });
 
       // Lưu secret vào DB (sẽ update user.mfaSecret)

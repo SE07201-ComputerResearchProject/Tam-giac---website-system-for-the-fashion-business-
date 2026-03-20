@@ -37,10 +37,22 @@ if (process.env.NODE_ENV !== 'production') {
 
 // App Express
 const app = express();
+const localOriginPattern = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
 
 // Security Middleware (chống tấn công)
 app.use(helmet()); // Headers bảo mật
-app.use(cors({ origin: 'http://localhost:3001', credentials: true })); // Frontend React
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || localOriginPattern.test(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error('CORS blocked for this origin'));
+    },
+    credentials: true
+  })
+); // Frontend local dev
 
 // Rate limiting (chống DDoS brute-force)
 const limiter = rateLimit({

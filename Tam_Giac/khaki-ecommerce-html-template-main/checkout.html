@@ -7,7 +7,7 @@
 		<meta name="author" content="Kamran Mubarik">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<!-- Title -->
- 		<title>E-Commerce Online Shop</title>
+ 		<title>Tam Giac</title>
  		<!-- Style Sheet -->
 		<link rel="stylesheet" type="text/css" href="css/style.css" />
 		<!-- Javascript -->	
@@ -28,6 +28,8 @@
   				});
   			});
   		</script>
+		<link rel="stylesheet" type="text/css" href="css/mouse-effects.css?v=20260320a" />
+		<script defer src="js/mouse-effects.js?v=20260320a"></script>
  	</head>
 <body>
 
@@ -38,8 +40,8 @@
 					<a href="index.html">
 						<img src="img/icons/online_shopping.png">
 						<div class="logo-text">
-							<p class="big-logo">Ecommerce</p>
-							<p class="small-logo">online shop</p>
+							<p class="big-logo">Tam Giac</p>
+							<p class="small-logo">thoi trang Viet</p>
 						</div>
 					</a>
 				</div> <!-- logo -->
@@ -93,16 +95,16 @@
 									<tr>
 										<td><img src="img/product/img1.jpg"></td>
 										<td>product name</td>
-										<td class="center">1200</td>
+										<td class="center">1.200.000 đ</td>
 										<td class="center">2</td>
-										<td class="center">2400</td>
+										<td class="center">2.400.000 đ</td>
 									</tr>
 									<tr>
 										<td><img src="img/product/img2.jpg"></td>
 										<td>product name</td>
-										<td class="center">1500</td>
+										<td class="center">1.500.000 đ</td>
 										<td class="center">2</td>
-										<td class="center">3000</td>
+										<td class="center">3.000.000 đ</td>
 									</tr>
 								</tbody>
 							</table>
@@ -170,14 +172,14 @@
 								<label>Country</label>
 								<select id="country" name="country">
 									<option>---Select a Country---</option>
-									<option>Pakistan</option>
+									<option>Viet Nam</option>
 								</select>
 							</div>
 							<div class="form-group">
 								<label>City</label>
 								<select id="cityy" name="cityy">
 									<option>---Select a City---</option>
-									<option>Karachi</option>
+									<option>TP. Ho Chi Minh</option>
 								</select>
 							</div>
 						</div>
@@ -217,18 +219,18 @@
 					<div class="checkout-total">
 						<h3>Order Summary</h3>
 						<ul>
-							<li>Cart Amount: <span>1200</span></li>
-							<li>Delivery Charges: <span>100</span></li>
-							<li>Less: Discount @ 10%: <span>-13</span></li>
+							<li>Cart Amount: <span>1.200.000 đ</span></li>
+							<li>Delivery Charges: <span>100.000 đ</span></li>
+							<li>Less: Discount @ 10%: <span>-13.000 đ</span></li>
 							<hr>
-							<li>Total Amount: <span>1287</span></li>
+							<li>Total Amount: <span>1.287.000 đ</span></li>
 							<hr>
-							<li><input type="radio" name="payment"> Cash on Delivery</li>
-							<li><input type="radio" id="easypaisa" name="payment" value="easypaisa"> Easypaisa Account</li>
+							<li><input type="radio" name="payment"> Thanh toan khi nhan hang</li>
+							<li><input type="radio" id="easypaisa" name="payment" value="easypaisa"> VNPay / Chuyen khoan QR</li>
 							<li>
-								<textarea id="easypaisaText" rows="5" disabled="disable">Please deposit the payment in our easypaisa account# 030X-XXXXXXX after confirm payment kindly send us payment slip and order transaction id on above number.</textarea>
+								<textarea id="easypaisaText" rows="5" disabled="disable">Vui long hoan tat thanh toan qua VNPay hoac QR, sau do gui ma giao dich de Tam Giac xac nhan don hang.</textarea>
 							</li>
-							<li><input type="radio" name="payment"> Bank Transferred</li>
+							<li><input type="radio" name="payment"> Chuyen khoan ngan hang</li>
 							<hr>
 							<li><input type="submit" name="order" value="Place Order"></li>
 						</ul>

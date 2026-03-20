@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập / Đăng ký - Tam Giac</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="js/jquery.min.js"></script>
+
+    <script type="module" src="js/auth.js" defer></script>
+    <script type="module" src="js/auth-script.js" defer></script>
+    <link rel="stylesheet" href="css/mouse-effects.css?v=20260320a">
+    <script defer src="js/mouse-effects.js?v=20260320a"></script>
+</head>
+
+<body>
+    <header><!-- Minimal header --></header>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="logo">
+                <img src="img/icons/online_shopping.png" alt="TamGiac">
+                <h1>Tam Giac</h1>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="showTab('login')">Đăng nhập</button>
+                <button class="tab-btn" onclick="showTab('register')">Đăng ký</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form active">
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required>
+                    <span class="input-icon">📧</span>
+                </div>
+                <div class="input-group">
+                    <label>Mật khẩu</label>
+                    <input type="password" id="loginPassword" required>
+                    <span class="input-icon">🔒</span>
+                </div>
+                <button type="submit" class="btn-primary">Đăng nhập</button>
+                <div id="loginError" class="error-msg"></div>
+                <div id="loginLoader" class="loader">Đang đăng nhập...</div>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="auth-form">
+                <div class="input-group">
+                    <label>Họ tên đầy đủ</label>
+                    <input type="text" id="fullName" required>
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" required>
+                </div>
+                <div class="input-group">
+                    <label>Mật khẩu (≥8 ký tự: A-Z, 0-9, @!#)</label>
+                    <input type="password" id="regPassword" required>
+                    <div class="password-strength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                        <small id="strengthText">Nhập mật khẩu...</small>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Xác nhận mật khẩu</label>
+                    <input type="password" id="confirmPassword" required>
+                </div>
+                <button type="submit" class="btn-primary">Tạo tài khoản</button>
+                <div id="registerError" class="error-msg"></div>
+                <div id="registerLoader" class="loader">Đang tạo tài khoản...</div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Tab toggle
+        function showTab(tabName) {
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabName + 'Form').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Password strength
+        document.getElementById('regPassword').addEventListener('input', function() {
+            const pass = this.value;
+            const strength = checkPasswordStrength(pass);
+            const fill = document.getElementById('strengthFill');
+            const text = document.getElementById('strengthText');
+            
+            fill.style.width = strength.score * 25 + '%';
+            fill.className = 'strength-fill ' + strength.color;
+            text.textContent = strength.message;
+        });
+
+        function checkPasswordStrength(pass) {
+            let score = 0;
+            let message = '';
+            let color = 'weak';
+            
+            if (pass.length >= 8) score++;
+            if (/[a-z]/.test(pass)) score++;
+            if (/[A-Z]/.test(pass)) score++;
+            if (/\d/.test(pass)) score++;
+            if (/[@$!%*?&]/.test(pass)) score++;
+
+            switch(score) {
+                case 5: color = 'strong'; message = 'Mạnh'; break;
+                case 4: color = 'good'; message = 'Tốt'; break;
+                case 3: color = 'medium'; message = 'Trung bình'; break;
+                default: color = 'weak'; message = 'Yếu - cần ≥8 ký tự, chữ hoa/thường, số, ký tự đặc biệt';
+            }
+            
+            return { score, color, message };
+        }
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        
+        .auth-container { width: 100%; max-width: 420px; padding: 20px; }
+        .auth-card { background: white; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; }
+        
+        .logo { text-align: center; padding: 40px 20px 30px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); }
+        .logo img { width: 60px; height: 60px; }
+        .logo h1 { color: #333; margin-top: 10px; font-weight: 300; }
+        
+        .tab-buttons { display: flex; background: #f8f9fa; }
+        .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-size: 16px; cursor: pointer; transition: all 0.3s; font-weight: 500; }
+        .tab-btn.active { background: white; color: #667eea; border-bottom: 3px solid #667eea; }
+        
+        .auth-form { padding: 40px 30px; display: none; }
+        .auth-form.active { display: block; animation: fadeIn 0.3s; }
+        
+        .input-group { margin-bottom: 25px; position: relative; }
+        .input-group label { display: block; margin-bottom: 8px; color: #555; font-weight: 500; font-size: 14px; }
+        .input-group input { width: 100%; padding: 15px 20px 15px 50px; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 16px; transition: all 0.3s; background: #f8f9fa; }
+        .input-group input:focus { outline: none; border-color: #667eea; background: white; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+        .input-icon { position: absolute; left: 18px; top: 42px; font-size: 20px; color: #999; }
+        
+        .password-strength { margin-top: 5px; }
+        .strength-bar { height: 4px; background: #e1e5e9; border-radius: 2px; overflow: hidden; }
+        .strength-fill { height: 100%; transition: all 0.3s; }
+        .strength-fill.weak { background: #ff4757; }
+        .strength-fill.medium { background: #ffa502; }
+        .strength-fill.good { background: #2ed573; }
+        .strength-fill.strong { background: #1e90ff; }
+        
+        .btn-primary { width: 100%; padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 500; cursor: pointer; transition: all 0.3s; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3); }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+        
+        .error-msg { color: #ff4757; margin-top: 15px; padding: 12px; background: #ffe6e6; border-radius: 8px; font-size: 14px; display: none; }
+        .loader { text-align: center; color: #667eea; margin-top: 15px; font-style: italic; display: none; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 480px) { .auth-card { margin: 20px; } .auth-form { padding: 30px 20px; } }
+    </style>
+</body>
+</html>
+

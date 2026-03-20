@@ -1,0 +1,72 @@
+@media (hover: hover) and (pointer: fine) {
+  body.tm-cursor-enabled {
+    --tm-cursor-glow-x: -160px;
+    --tm-cursor-glow-y: -160px;
+    --tm-cursor-dot-x: -160px;
+    --tm-cursor-dot-y: -160px;
+  }
+
+  .tm-cursor-glow,
+  .tm-cursor-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+    will-change: transform, opacity, width, height, box-shadow, background-color;
+  }
+
+  .tm-cursor-glow {
+    width: 180px;
+    height: 180px;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(166, 121, 55, 0.18) 0%, rgba(166, 121, 55, 0.1) 34%, rgba(166, 121, 55, 0) 72%);
+    filter: blur(7px);
+    transform: translate3d(calc(var(--tm-cursor-glow-x) - 50%), calc(var(--tm-cursor-glow-y) - 50%), 0);
+    transition: opacity 180ms ease, width 220ms ease, height 220ms ease, background 220ms ease;
+  }
+
+  .tm-cursor-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(116, 83, 34, 0.48);
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: 0 0 0 5px rgba(166, 121, 55, 0.12), 0 10px 24px rgba(41, 27, 9, 0.08);
+    transform: translate3d(calc(var(--tm-cursor-dot-x) - 50%), calc(var(--tm-cursor-dot-y) - 50%), 0);
+    transition: opacity 140ms ease, width 180ms ease, height 180ms ease, background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+  }
+
+  body.tm-cursor-visible .tm-cursor-glow,
+  body.tm-cursor-visible .tm-cursor-dot {
+    opacity: 1;
+  }
+
+  body.tm-cursor-hover .tm-cursor-glow {
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(circle, rgba(166, 121, 55, 0.24) 0%, rgba(166, 121, 55, 0.12) 34%, rgba(166, 121, 55, 0) 72%);
+  }
+
+  body.tm-cursor-hover .tm-cursor-dot {
+    width: 16px;
+    height: 16px;
+    border-color: rgba(116, 83, 34, 0.68);
+    background: rgba(255, 247, 238, 0.92);
+    box-shadow: 0 0 0 10px rgba(166, 121, 55, 0.18), 0 12px 28px rgba(41, 27, 9, 0.14);
+  }
+
+  body.tm-cursor-press .tm-cursor-dot {
+    width: 10px;
+    height: 10px;
+    box-shadow: 0 0 0 6px rgba(166, 121, 55, 0.22), 0 8px 18px rgba(41, 27, 9, 0.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tm-cursor-glow,
+  .tm-cursor-dot {
+    display: none !important;
+  }
+}

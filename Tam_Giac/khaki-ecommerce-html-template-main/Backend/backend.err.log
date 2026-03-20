@@ -1,0 +1,23 @@
+(node:23340) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+node:events:486
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3000
+    at Server.setupListenHandle [as _listen2] (node:net:1948:16)
+    at listenInCluster (node:net:2005:12)
+    at Server.listen (node:net:2110:7)
+    at app.listen (C:\Users\buih1\OneDrive\Máy tính\LAST Chance\khaki-ecommerce-html-template-main\Tam-giac---website-system-for-the-fashion-business-\Tam_Giac\khaki-ecommerce-html-template-main\Backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\buih1\OneDrive\Máy tính\LAST Chance\khaki-ecommerce-html-template-main\Tam-giac---website-system-for-the-fashion-business-\Tam_Giac\khaki-ecommerce-html-template-main\Backend\server.js:112:9)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1984:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+
+Node.js v24.14.0

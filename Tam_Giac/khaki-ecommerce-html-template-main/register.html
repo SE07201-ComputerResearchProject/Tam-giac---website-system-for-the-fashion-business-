@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dang ky | Tam Giac</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/auth-modern.css?v=20260320c">
+  <script type="module" src="js/register.js?v=20260320c" defer></script>
+  <link rel="stylesheet" href="css/mouse-effects.css?v=20260320a">
+  <script defer src="js/mouse-effects.js?v=20260320a"></script>
+</head>
+<body class="auth-page">
+  <div class="auth-shell">
+    <section class="auth-hero auth-hero-register">
+      <div>
+        <div class="auth-badge">Tam Giac Membership</div>
+        <div class="hero-copy">
+          <p class="hero-kicker">Start your account / first secure step</p>
+          <h1 class="hero-title">Tao tai khoan moi va bat dau hanh trinh mua sam.</h1>
+          <p class="hero-subtitle">
+            Giao dien dang ky duoc lam moi theo huong sach, sang va chuyen nghiep hon, phu hop de mo rong sang MFA, doi mat khau va profile sau nay.
+          </p>
+        </div>
+      </div>
+
+      <div class="hero-preview">
+        <article class="preview-card preview-card-primary">
+          <div>
+            <span class="preview-label">Mo tai khoan that dep ngay tu dau</span>
+            <strong>Ban dang tao nen buoc cham dau tien cho he thong auth cua Tam Giac.</strong>
+          </div>
+          <p>
+            Sau khi dang ky thanh cong, nguoi dung se duoc dua sang dang nhap de tiep tuc dung he thong mot cach mach lac.
+          </p>
+        </article>
+
+        <div class="preview-stack">
+          <article class="mini-card">
+            <span class="mini-index">01</span>
+            <strong>Day du va ro rang</strong>
+            <p>Form ngan gon nhung van giu yeu cau mat khau manh.</p>
+          </article>
+          <article class="mini-card">
+            <span class="mini-index">02</span>
+            <strong>San sang mo rong</strong>
+            <p>Cau truc nay de noi them MFA va profile sau dang ky.</p>
+          </article>
+        </div>
+      </div>
+
+      <div class="hero-metrics">
+        <div class="metric">
+          <strong>Strong Password</strong>
+          <span>Do manh mat khau hien ngay tren form.</span>
+        </div>
+        <div class="metric">
+          <strong>Clean Flow</strong>
+          <span>Dang ky xong la chuyen sang dang nhap.</span>
+        </div>
+        <div class="metric">
+          <strong>MFA Next</strong>
+          <span>De mo rong sang bao mat da lop sau do.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="auth-card">
+      <div class="auth-top">
+        <a class="back-link" href="index.html">Ve trang chu</a>
+        <span class="auth-chip">Dang ky</span>
+      </div>
+
+      <h2 class="auth-title">Tao tai khoan Tam Giac</h2>
+      <p class="auth-hint">
+        Dien thong tin co ban de khoi tao tai khoan. Form nay duoc giu de doc, de nhin va khong gay roi khi nhap lieu.
+      </p>
+
+      <form id="registerForm" class="auth-form" novalidate>
+        <div class="field">
+          <label for="fullName">Ho va ten</label>
+          <input type="text" id="fullName" name="fullName" autocomplete="name" placeholder="Nguyen Van A" required>
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" autocomplete="email" placeholder="you@example.com" required>
+        </div>
+
+        <div class="field with-button">
+          <label for="password">Mat khau</label>
+          <input type="password" id="password" name="password" autocomplete="new-password" placeholder="Tao mat khau manh" required>
+          <button type="button" class="toggle-password" data-target="password">Hien</button>
+          <div class="strength">
+            <div class="strength-track">
+              <div id="strengthFill" class="strength-fill"></div>
+            </div>
+            <div id="strengthText" class="strength-text">Mat khau can toi thieu 8 ky tu.</div>
+          </div>
+        </div>
+
+        <div class="field with-button">
+          <label for="confirmPassword">Xac nhan mat khau</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" placeholder="Nhap lai mat khau" required>
+          <button type="button" class="toggle-password" data-target="confirmPassword">Hien</button>
+        </div>
+
+        <ul class="password-rules">
+          <li>Toi thieu 8 ky tu</li>
+          <li>Co chu hoa, chu thuong, so va ky tu dac biet (@$!%*?&)</li>
+        </ul>
+
+        <div id="registerStatus" class="status" aria-live="polite"></div>
+
+        <div class="form-actions">
+          <button id="registerBtn" type="submit" class="btn-auth">Tao tai khoan</button>
+        </div>
+      </form>
+
+      <div class="auth-footer">
+        <p>
+          Da co tai khoan?
+          <a href="login.html">Dang nhap</a>
+        </p>
+        <a class="secondary-link" href="login.html">Quay lai man hinh dang nhap</a>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
