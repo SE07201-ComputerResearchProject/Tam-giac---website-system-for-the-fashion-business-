@@ -40,6 +40,24 @@ const getLocalProfileFromToken = () => {
 const isAuthServerUnavailable = (error) =>
   (error?.error || '').includes('Khong ket noi duoc may chu auth');
 
+export const navigateWithLoader = (url, delay = 140) => {
+  if (!url) {
+    return;
+  }
+
+  const go = () => {
+    window.location.href = url;
+  };
+
+  if (window.TamGiacLoader?.show) {
+    window.TamGiacLoader.show();
+    window.setTimeout(go, delay);
+    return;
+  }
+
+  go();
+};
+
 export const login = async (email, password) => {
   try {
     const data = await apiCall('/auth/login', {
@@ -104,11 +122,12 @@ export const register = async (email, password, fullName) => {
 
 export const logout = () => {
   localStorage.removeItem(TOKEN_KEY);
-  window.location.href = 'index.html';
+  navigateWithLoader('index.html');
 };
 
 export const getToken = () => localStorage.getItem(TOKEN_KEY);
 export const isLoggedIn = () => !!getToken();
+export { apiCall };
 
 export const loadProfile = async () => {
   const localProfile = getLocalProfileFromToken();

@@ -1,4 +1,4 @@
-import { isLoggedIn, register } from './auth.js?v=20260320b';
+import { isLoggedIn, navigateWithLoader, register } from './auth.js?v=20260320b';
 
 const form = document.getElementById('registerForm');
 const statusBox = document.getElementById('registerStatus');
@@ -8,7 +8,7 @@ const strengthFill = document.getElementById('strengthFill');
 const strengthText = document.getElementById('strengthText');
 
 if (isLoggedIn()) {
-  window.location.href = 'index.html';
+  navigateWithLoader('index.html', 0);
 }
 
 const PASSWORD_RULE =
@@ -106,7 +106,7 @@ form.addEventListener('submit', async (event) => {
     sessionStorage.setItem('auth_notice', 'register_success');
     showStatus('Dang ky thanh cong. Dang chuyen sang trang dang nhap...', 'success');
     setTimeout(() => {
-      window.location.href = 'login.html';
+      navigateWithLoader('login.html', 120);
     }, 900);
   } catch (error) {
     showStatus(error?.error || 'Khong ket noi duoc may chu.', 'error');

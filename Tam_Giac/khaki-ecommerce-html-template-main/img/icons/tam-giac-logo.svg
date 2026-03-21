@@ -1,0 +1,44 @@
+<svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="halo" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(80 74) rotate(90) scale(74)">
+      <stop offset="0" stop-color="#E8FBFF" stop-opacity="0.95"/>
+      <stop offset="0.45" stop-color="#B7F2FF" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#B7F2FF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="shell" x1="30" y1="22" x2="124" y2="130" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F2FCFF"/>
+      <stop offset="0.18" stop-color="#9CEBFF"/>
+      <stop offset="0.62" stop-color="#2E90C9"/>
+      <stop offset="1" stop-color="#123E67"/>
+    </linearGradient>
+    <linearGradient id="core" x1="52" y1="42" x2="112" y2="110" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#123A5A"/>
+      <stop offset="0.55" stop-color="#11577B"/>
+      <stop offset="1" stop-color="#38BDE7"/>
+    </linearGradient>
+    <linearGradient id="wave" x1="50" y1="86" x2="110" y2="104" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#D9FAFF"/>
+      <stop offset="1" stop-color="#8BE7FF"/>
+    </linearGradient>
+    <linearGradient id="stroke" x1="28" y1="20" x2="126" y2="132" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F5FDFF"/>
+      <stop offset="1" stop-color="#77DFFF"/>
+    </linearGradient>
+    <filter id="shadow" x="10" y="12" width="140" height="128" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#0D3353" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+
+  <circle cx="80" cy="80" r="74" fill="url(#halo)"/>
+
+  <g filter="url(#shadow)">
+    <path d="M80 18L140 124H20L80 18Z" fill="url(#shell)"/>
+    <path d="M80 34L123 110H37L80 34Z" fill="url(#core)" opacity="0.96"/>
+    <path d="M80 54L101 91H59L80 54Z" fill="#EFFFFF" opacity="0.95"/>
+    <path d="M49 94C61 86 99 86 111 94C102 103 91 108 80 108C69 108 58 103 49 94Z" fill="url(#wave)" opacity="0.96"/>
+    <path d="M80 18L140 124H20L80 18Z" stroke="url(#stroke)" stroke-width="4"/>
+  </g>
+
+  <circle cx="58" cy="50" r="4" fill="#F2FCFF" opacity="0.7"/>
+  <circle cx="108" cy="72" r="3.5" fill="#D8FAFF" opacity="0.72"/>
+</svg>

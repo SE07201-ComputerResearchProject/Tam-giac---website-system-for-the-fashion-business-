@@ -1,0 +1,97 @@
+.page-loader-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 18px;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top, rgba(126, 233, 255, 0.14), transparent 34%),
+    linear-gradient(180deg, rgba(6, 28, 44, 0.92), rgba(11, 43, 64, 0.94));
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 220ms ease, visibility 220ms ease;
+  z-index: 30000;
+}
+
+.page-loader-overlay.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.page-loader-label {
+  color: rgba(236, 252, 255, 0.9);
+  font-family: "Be Vietnam Pro", Roboto, Arial, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.flipping {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  animation: flipping-oqft25sm 2s infinite linear;
+}
+
+.flipping::before,
+.flipping::after {
+  content: "";
+  flex: 1;
+  clip-path: polygon(100% 0, 100% 100%, 0 50%);
+  animation:
+    flipping-700s1nsm 1s infinite linear alternate,
+    flipping-i74pfssm 2s infinite linear -0.5s;
+}
+
+.flipping::after {
+  --s: -1, -1;
+}
+
+@keyframes flipping-oqft25sm {
+  0%,
+  49.99% {
+    transform: scaleX(1) rotate(0deg);
+  }
+
+  50%,
+  100% {
+    transform: scaleX(-1) rotate(-90deg);
+  }
+}
+
+@keyframes flipping-700s1nsm {
+  0%,
+  5% {
+    transform: scale(var(--s, 1)) translate(0px) perspective(120px) rotateY(0deg);
+  }
+
+  33% {
+    transform: scale(var(--s, 1)) translate(-8px) perspective(120px) rotateX(0deg);
+  }
+
+  66% {
+    transform: scale(var(--s, 1)) translate(-8px) perspective(120px) rotateX(-180deg);
+  }
+
+  95%,
+  100% {
+    transform: scale(var(--s, 1)) translate(0px) perspective(120px) rotateX(-180deg);
+  }
+}
+
+@keyframes flipping-i74pfssm {
+  0%,
+  49.99% {
+    background: rgba(116, 228, 255, 0.92);
+  }
+
+  50%,
+  100% {
+    background: #0f6ea2;
+  }
+}

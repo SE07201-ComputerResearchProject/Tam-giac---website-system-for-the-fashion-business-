@@ -1,5 +1,5 @@
 // Account page - Load dynamic profile
-import { loadProfile, apiCall, isLoggedIn } from './auth.js';
+import { loadProfile, apiCall, isLoggedIn, navigateWithLoader } from './auth.js';
 import { initHeaderAuth } from './header-auth.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const updateBtn = document.getElementById('update');
 
   if (!isLoggedIn()) {
-    window.location.href = 'login.html';
+    navigateWithLoader('login.html', 0);
     return;
   }
 
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('mobile').value = profile.phone || '';
   } catch (error) {
     console.error('Load profile error:', error);
-    window.location.href = 'login.html';
+    navigateWithLoader('login.html', 0);
   }
 
   // Update profile

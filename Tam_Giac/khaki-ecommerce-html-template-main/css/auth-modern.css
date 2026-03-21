@@ -1,22 +1,22 @@
 :root {
-  --bg-main: #f5ede2;
-  --bg-panel: rgba(255, 251, 246, 0.88);
-  --card-bg: rgba(255, 255, 255, 0.94);
-  --surface-soft: rgba(255, 248, 239, 0.78);
-  --text-main: #22180f;
-  --text-soft: #665848;
-  --line: rgba(126, 102, 68, 0.18);
-  --line-strong: rgba(126, 102, 68, 0.32);
-  --brand: #8b6633;
-  --brand-deep: #6a4d25;
-  --accent: #d27b49;
-  --accent-soft: rgba(210, 123, 73, 0.16);
-  --green: #1d7f5a;
-  --green-soft: rgba(29, 127, 90, 0.12);
-  --danger: #be4c42;
-  --danger-soft: rgba(190, 76, 66, 0.12);
-  --shadow-main: 0 28px 70px rgba(42, 29, 15, 0.16);
-  --shadow-card: 0 18px 45px rgba(51, 34, 17, 0.1);
+  --bg-main: #e7f7ff;
+  --bg-panel: rgba(239, 250, 255, 0.88);
+  --card-bg: rgba(249, 254, 255, 0.94);
+  --surface-soft: rgba(233, 248, 255, 0.8);
+  --text-main: #112739;
+  --text-soft: #5a7789;
+  --line: rgba(81, 177, 216, 0.18);
+  --line-strong: rgba(49, 146, 188, 0.34);
+  --brand: #2bb1d7;
+  --brand-deep: #0f587e;
+  --accent: #75e4ff;
+  --accent-soft: rgba(117, 228, 255, 0.18);
+  --green: #1299b9;
+  --green-soft: rgba(18, 153, 185, 0.12);
+  --danger: #c95558;
+  --danger-soft: rgba(201, 85, 88, 0.12);
+  --shadow-main: 0 28px 70px rgba(5, 35, 53, 0.16);
+  --shadow-card: 0 18px 45px rgba(7, 40, 60, 0.1);
   --radius-xl: 30px;
   --radius-lg: 22px;
   --radius-md: 16px;
@@ -37,10 +37,10 @@ body.auth-page {
   font-family: "Be Vietnam Pro", sans-serif;
   color: var(--text-main);
   background:
-    radial-gradient(circle at 12% 16%, rgba(210, 123, 73, 0.18), transparent 26%),
-    radial-gradient(circle at 88% 10%, rgba(29, 127, 90, 0.14), transparent 28%),
-    radial-gradient(circle at 82% 84%, rgba(139, 102, 51, 0.16), transparent 24%),
-    linear-gradient(135deg, #f8f1e8 0%, #f1e4d3 54%, #f6efe6 100%);
+    radial-gradient(circle at 12% 16%, rgba(117, 228, 255, 0.24), transparent 26%),
+    radial-gradient(circle at 88% 10%, rgba(43, 177, 215, 0.16), transparent 28%),
+    radial-gradient(circle at 82% 84%, rgba(135, 240, 255, 0.18), transparent 24%),
+    linear-gradient(135deg, #0b2232 0%, #143b56 54%, #0a1c2a 100%);
 }
 
 body.auth-page::before,
@@ -58,8 +58,10 @@ body.auth-page::before {
   height: 240px;
   top: 90px;
   right: 90px;
-  border-radius: 50%;
-  border: 1px solid rgba(139, 102, 51, 0.16);
+  border-radius: 28px;
+  border: 1px solid rgba(117, 228, 255, 0.18);
+  background: linear-gradient(180deg, rgba(117, 228, 255, 0.18), rgba(117, 228, 255, 0));
+  clip-path: polygon(50% 0, 0 100%, 100% 100%);
 }
 
 body.auth-page::after {
@@ -67,9 +69,9 @@ body.auth-page::after {
   height: 180px;
   bottom: 70px;
   left: 70px;
-  border-radius: 32px;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(139, 102, 51, 0.08));
-  transform: rotate(18deg);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(117, 228, 255, 0.24), rgba(117, 228, 255, 0));
+  transform: none;
 }
 
 .auth-shell {
@@ -714,4 +716,131 @@ body.auth-page::after {
   .btn-auth {
     min-height: 56px;
   }
+}
+
+.auth-hero {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0)),
+    linear-gradient(135deg, rgba(230, 248, 255, 0.94), rgba(211, 240, 252, 0.9));
+}
+
+.auth-hero::before {
+  background: radial-gradient(circle, rgba(117, 228, 255, 0.32), rgba(117, 228, 255, 0));
+}
+
+.auth-hero::after {
+  width: 250px;
+  height: 220px;
+  bottom: -70px;
+  left: -20px;
+  border-radius: 0;
+  background: linear-gradient(180deg, rgba(43, 177, 215, 0.2), rgba(43, 177, 215, 0));
+  clip-path: polygon(50% 0, 0 100%, 100% 100%);
+  transform: rotate(-8deg);
+}
+
+.auth-badge,
+.auth-chip,
+.mini-index {
+  background: rgba(15, 88, 126, 0.09);
+  color: var(--brand-deep);
+}
+
+.auth-badge {
+  border-color: rgba(43, 177, 215, 0.16);
+}
+
+.auth-badge::before {
+  width: 12px;
+  height: 11px;
+  border-radius: 0;
+  clip-path: polygon(50% 0, 0 100%, 100% 100%);
+  background: linear-gradient(180deg, #eefcff, #4fd8ff 70%, #1380a9 100%);
+  box-shadow: 0 0 0 6px rgba(117, 228, 255, 0.12);
+}
+
+.preview-card,
+.mini-card,
+.metric {
+  border-color: rgba(81, 177, 216, 0.16);
+}
+
+.preview-card {
+  position: relative;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.94), rgba(227, 247, 255, 0.9));
+}
+
+.preview-card-primary {
+  background:
+    linear-gradient(140deg, rgba(246, 253, 255, 0.96), rgba(216, 246, 255, 0.92)),
+    #fff;
+}
+
+.preview-card::after {
+  content: "";
+  position: absolute;
+  right: 20px;
+  bottom: 16px;
+  width: 84px;
+  height: 74px;
+  background: linear-gradient(180deg, rgba(117, 228, 255, 0.18), rgba(117, 228, 255, 0));
+  clip-path: polygon(50% 0, 0 100%, 100% 100%);
+  opacity: 0.9;
+}
+
+.mini-card {
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.metric {
+  background: rgba(247, 252, 255, 0.72);
+}
+
+.auth-card::before {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0)),
+    linear-gradient(135deg, rgba(242, 252, 255, 0.86), rgba(255, 255, 255, 0.92));
+}
+
+.auth-chip {
+  background: rgba(43, 177, 215, 0.12);
+}
+
+.field label {
+  color: #21465f;
+}
+
+.field input {
+  background: rgba(251, 255, 255, 0.96);
+}
+
+.field input:focus {
+  box-shadow: 0 0 0 4px rgba(43, 177, 215, 0.14);
+}
+
+.toggle-password {
+  border-color: rgba(43, 177, 215, 0.18);
+  color: var(--brand-deep);
+}
+
+.btn-auth {
+  background: linear-gradient(135deg, #0f5c80 0%, #2ab1d7 56%, #7de4ff 100%);
+  color: #effdff;
+  box-shadow: 0 18px 34px rgba(15, 92, 128, 0.22);
+}
+
+.btn-auth:hover {
+  box-shadow: 0 22px 38px rgba(15, 92, 128, 0.28);
+}
+
+.status.info {
+  background: rgba(43, 177, 215, 0.1);
+  border-color: rgba(43, 177, 215, 0.16);
+  color: #0f587e;
+}
+
+.password-rules {
+  border-color: rgba(43, 177, 215, 0.12);
+  background: rgba(238, 250, 255, 0.74);
 }

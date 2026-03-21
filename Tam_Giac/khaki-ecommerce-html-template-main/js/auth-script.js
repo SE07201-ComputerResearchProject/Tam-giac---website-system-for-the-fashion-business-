@@ -1,5 +1,5 @@
 // auth-script.js - Xử lý login/register auth.html
-import { login, register, logout } from './auth.js';
+import { login, navigateWithLoader, register } from './auth.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // Login form
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Success toast
         showMessage('Đăng nhập thành công!', 'success');
         setTimeout(() => {
-          window.location.href = 'index.html';
+          navigateWithLoader('index.html', 120);
         }, 1500);
       } else {
         errorDiv.textContent = result.error;

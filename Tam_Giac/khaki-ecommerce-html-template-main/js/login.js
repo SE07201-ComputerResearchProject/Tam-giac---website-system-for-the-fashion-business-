@@ -1,11 +1,11 @@
-import { isLoggedIn, login } from './auth.js?v=20260320b';
+import { isLoggedIn, login, navigateWithLoader } from './auth.js?v=20260320b';
 
 const form = document.getElementById('loginForm');
 const statusBox = document.getElementById('loginStatus');
 const submitBtn = document.getElementById('loginBtn');
 
 if (isLoggedIn()) {
-  window.location.href = 'index.html';
+  navigateWithLoader('index.html', 0);
 }
 
 const showStatus = (message, type = 'error') => {
@@ -71,7 +71,7 @@ form.addEventListener('submit', async (event) => {
 
     showStatus('Dang nhap thanh cong. Dang chuyen ve trang chu...', 'success');
     setTimeout(() => {
-      window.location.href = 'index.html';
+      navigateWithLoader('index.html', 120);
     }, 900);
   } catch (error) {
     showStatus(error?.error || 'Khong ket noi duoc may chu.', 'error');
