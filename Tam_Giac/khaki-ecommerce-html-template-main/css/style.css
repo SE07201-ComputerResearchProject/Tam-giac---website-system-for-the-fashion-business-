@@ -1194,7 +1194,7 @@ header .dropdown-menu{
 	position: absolute;
 	top: calc(100% + 14px);
 	right: 0;
-	display: none;
+	display: block;
 	border: 1px solid var(--waterLine);
 	border-radius: 22px;
 	padding: 16px;
@@ -1202,11 +1202,20 @@ header .dropdown-menu{
 	backdrop-filter: blur(18px);
 	box-shadow: var(--shadowSoft);
 	z-index: 520;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(8px);
+	transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0.18s;
 }
 
 header .dropdown:hover .dropdown-menu,
-header .user-menu:hover .dropdown-menu{
-	display: block;
+header .dropdown:focus-within .dropdown-menu,
+header .user-menu:hover .dropdown-menu,
+header .user-menu:focus-within .dropdown-menu{
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
+	transition-delay: 0s;
 }
 
 header .dropdown-menu ul,
@@ -1462,6 +1471,8 @@ footer .payment-mode img{
 header .shop-icon > .dropdown{
 	position: relative;
 	z-index: 30;
+	padding-bottom: 14px;
+	margin-bottom: -14px;
 }
 
 header .shop-icon > .dropdown:hover{
