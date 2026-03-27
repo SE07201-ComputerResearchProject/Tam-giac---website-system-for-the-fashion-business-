@@ -130,6 +130,16 @@
     ensureOverlay();
     document.addEventListener("click", onLinkClick, true);
     document.addEventListener("submit", onFormSubmit, false);
+    // Safety: if window.load never fires (3rd-party scripts hang), hide loader after timeout
+    window.setTimeout(function () {
+      try {
+        if (overlay && overlay.classList && overlay.classList.contains('is-visible')) {
+          setVisible(false);
+        }
+      } catch (e) {
+        // swallow errors
+      }
+    }, 3000);
   });
 
   window.addEventListener("load", hideLoader);
