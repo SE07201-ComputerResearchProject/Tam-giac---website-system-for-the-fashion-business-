@@ -22,7 +22,8 @@ module.exports = {
       return next();
     }
 
-    const { recaptchaValue } = req.body;
+    // Support either `recaptchaValue` or `recaptchaToken` from different clients
+    const recaptchaValue = req.body.recaptchaValue || req.body.recaptchaToken || null;
 
     if (!recaptchaValue) {
       return res.status(400).json({ error: 'ReCAPTCHA bat buoc' });

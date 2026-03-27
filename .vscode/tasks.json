@@ -1,0 +1,15 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start static server (detached)",
+      "type": "shell",
+      "command": "cmd /c start \"static-server\" node \"${workspaceFolder}\\Tam_Giac\\khaki-ecommerce-html-template-main\\dev-static-server.js\"",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}

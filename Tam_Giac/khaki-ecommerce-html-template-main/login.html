@@ -15,6 +15,7 @@
   <script defer src="js/page-loader.js?v=20260321a"></script>
   <script defer src="js/button-burst.js?v=20260321a"></script>
   <script defer src="js/mouse-effects.js?v=20260320a"></script>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body class="auth-page">
   <div class="auth-shell">
@@ -101,6 +102,10 @@
         </div>
 
         <div id="loginStatus" class="status" aria-live="polite"></div>
+
+        <div class="field">
+          <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
+        </div>
 
         <div class="form-actions">
           <button id="loginBtn" type="submit" class="btn-auth">Dang nhap</button>

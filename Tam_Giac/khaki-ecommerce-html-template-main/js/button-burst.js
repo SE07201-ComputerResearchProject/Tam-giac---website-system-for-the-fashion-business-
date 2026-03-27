@@ -27,7 +27,7 @@
 
     window.__tamGiacBurstLoading = true;
     var script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js";
+    script.src = "js/gsap.min.js";
     script.defer = true;
     script.onload = function () {
       var queue = window.__tamGiacBurstQueue || [];

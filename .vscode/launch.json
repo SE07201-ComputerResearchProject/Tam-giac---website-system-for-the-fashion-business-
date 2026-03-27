@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Edge (Static)",
+      "type": "pwa-msedge",
+      "request": "launch",
+      "url": "http://127.0.0.1:3001",
+      "preLaunchTask": "Start static server (detached)",
+      "runtimeExecutable": "msedge",
+      "webRoot": "${workspaceFolder}/Tam_Giac/khaki-ecommerce-html-template-main"
+    }
+  ]
+}

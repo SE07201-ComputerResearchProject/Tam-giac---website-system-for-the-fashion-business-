@@ -58,11 +58,14 @@ export const navigateWithLoader = (url, delay = 140) => {
   go();
 };
 
-export const login = async (email, password) => {
+export const login = async (email, password, recaptchaToken) => {
   try {
+    const body = { email, password };
+    if (recaptchaToken) body.recaptchaToken = recaptchaToken;
+
     const data = await apiCall('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify(body)
     });
     localStorage.setItem(TOKEN_KEY, data.token);
     return { success: true, ...data };
@@ -83,11 +86,14 @@ export const login = async (email, password) => {
   }
 };
 
-export const register = async (email, password, fullName) => {
+export const register = async (email, password, fullName, recaptchaToken) => {
   try {
+    const body = { email, password, fullName };
+    if (recaptchaToken) body.recaptchaToken = recaptchaToken;
+
     const data = await apiCall('/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ email, password, fullName })
+      body: JSON.stringify(body)
     });
     return { success: true, ...data };
   } catch (error) {

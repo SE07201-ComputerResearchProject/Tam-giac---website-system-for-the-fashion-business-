@@ -62,7 +62,15 @@ form.addEventListener('submit', async (event) => {
   setLoading(true);
 
   try {
-    const result = await login(email, password);
+    const recaptchaToken = (window.grecaptcha && grecaptcha.getResponse && grecaptcha.getResponse()) || null;
+
+    if (!recaptchaToken) {
+      showStatus('Vui long hoan thanh reCAPTCHA de tiep tuc.', 'error');
+      setLoading(false);
+      return;
+    }
+
+    const result = await login(email, password, recaptchaToken);
 
     if (!result.success) {
       showStatus(result.error || 'Dang nhap that bai. Vui long thu lai.', 'error');
@@ -76,6 +84,7 @@ form.addEventListener('submit', async (event) => {
   } catch (error) {
     showStatus(error?.error || 'Khong ket noi duoc may chu.', 'error');
   } finally {
+    if (window.grecaptcha && grecaptcha.reset) try { grecaptcha.reset(); } catch (e) {}
     setLoading(false);
   }
 });
