@@ -4,7 +4,6 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const winston = require('winston');
-const path = require('path');
 
 const { connectDB, sequelize, getSqlPool } = require('./config/database');
 const redisClient = require('./config/redis');
@@ -15,7 +14,6 @@ const orderRoutes = require('./routes/orders');
 const adminRoutes = require('./routes/admin');
 const paymentRoutes = require('./routes/payments');
 
-// Logger Winston (bảo mật: không log sensitive data)
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
@@ -35,12 +33,12 @@ if (process.env.NODE_ENV !== 'production') {
   }));
 }
 
-// App Express
 const app = express();
 const localOriginPattern = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+const PORT = Number(process.env.PORT || 3000);
+const DB_OPTIONAL = (process.env.DB_OPTIONAL || 'false').toLowerCase() === 'true';
 
-// Security Middleware (chống tấn công)
-app.use(helmet()); // Headers bảo mật
+app.use(helmet());
 app.use(
   cors({
     origin(origin, callback) {
@@ -52,26 +50,26 @@ app.use(
     },
     credentials: true
   })
-); // Frontend local dev
+);
 
-// Rate limiting (chống DDoS brute-force)
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 phút
-  max: 100, // 100 req/IP
-  message: 'Quá nhiều request, thử lại sau!'
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: 'Qua nhieu request, thu lai sau!'
 });
 app.use('/api/', limiter);
 
-// Body parser với limit + JSON validate
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
-// Health check
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+  res.status(200).json({
+    status: 'OK',
+    dbOptional: DB_OPTIONAL,
+    timestamp: new Date().toISOString()
+  });
 });
 
-// DB health check (xác thực kết nối DB nhanh)
 app.get('/health/db', async (req, res) => {
   try {
     const pool = getSqlPool();
@@ -80,52 +78,62 @@ app.get('/health/db', async (req, res) => {
     } else {
       await sequelize.query('SELECT 1 AS ok');
     }
+
     res.status(200).json({ db: 'OK', timestamp: new Date().toISOString() });
   } catch (error) {
-    logger.error('DB health check failed', { message: error?.message });
+    logger.error('DB health check failed', { message: error && error.message });
     res.status(500).json({ db: 'FAIL', error: 'DB connection failed' });
   }
 });
 
-// Routes API (JWT protected trừ auth)
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payments', paymentRoutes);
 
-// 404 handler
 app.use('*', (req, res) => {
   logger.warn(`Route not found: ${req.method} ${req.originalUrl}`);
-  res.status(404).json({ error: 'Không tìm thấy API' });
+  res.status(404).json({ error: 'Khong tim thay API' });
 });
 
-// Error handler (toàn cục, log lỗi)
 app.use((err, req, res, next) => {
   logger.error(err.stack);
-  res.status(500).json({ error: 'Lỗi server nội bộ' });
+  res.status(500).json({ error: 'Loi server noi bo' });
 });
-
-// Khởi động
-const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
   try {
-    await connectDB();
+    let dbReady = false;
+
+    try {
+      await connectDB();
+      dbReady = true;
+    } catch (dbError) {
+      if (!DB_OPTIONAL) {
+        throw dbError;
+      }
+
+      logger.warn('DB local chua san sang, backend se chay o che do khong phu thuoc DB', {
+        message: dbError && dbError.message
+      });
+    }
+
     if (redisClient) {
       if (!redisClient.isOpen) {
         await redisClient.connect();
       }
-      logger.info('DB và Redis kết nối thành công');
+
+      logger.info(dbReady ? 'DB va Redis ket noi thanh cong' : 'Redis ket noi thanh cong (DB dang bi bo qua)');
     } else {
-      logger.info('DB kết nối thành công (Redis đang tắt)');
+      logger.info(dbReady ? 'DB ket noi thanh cong (Redis dang tat)' : 'Backend chay khong DB (Redis dang tat)');
     }
-    
+
     app.listen(PORT, () => {
-      logger.info(`Server chạy tại http://localhost:${PORT}`);
+      logger.info(`Server chay tai http://localhost:${PORT}`);
     });
   } catch (error) {
-    logger.error('Lỗi khởi động server:', error);
+    logger.error('Loi khoi dong server:', error);
     process.exit(1);
   }
 };

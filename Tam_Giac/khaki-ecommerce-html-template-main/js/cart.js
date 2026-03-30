@@ -16,6 +16,10 @@
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }
 
+  function getSafeQuantity(quantity) {
+    return Math.max(1, Math.min(10, Number(quantity) || 1));
+  }
+
   function parsePrice(text) {
     return Number(String(text || "").replace(/[^\d]/g, "")) || 0;
   }
@@ -44,7 +48,7 @@
     var image = card.querySelector("img");
 
     return {
-      id: slugify(title ? title.textContent : "san-pham"),
+      id: card.dataset.productId || slugify(title ? title.textContent : "san-pham"),
       name: title ? title.textContent.trim() : "San pham Tam Giac",
       category: category ? category.textContent.trim() : "Tam Giac",
       price: parsePrice(price ? price.textContent : 0),
@@ -64,7 +68,7 @@
     var category = wrapper.querySelector(".product-meta p");
 
     return {
-      id: slugify(title ? title.textContent : "san-pham"),
+      id: wrapper.dataset.productId || slugify(title ? title.textContent : "san-pham"),
       name: title ? title.textContent.trim() : "San pham Tam Giac",
       category: category ? category.textContent.replace("Category:", "").trim() : "Tam Giac",
       price: parsePrice(price ? price.textContent : 0),
@@ -78,13 +82,13 @@
     }
 
     var cart = readCart();
-    var nextQuantity = Math.max(1, Number(quantity) || 1);
+    var nextQuantity = getSafeQuantity(quantity);
     var existing = cart.find(function (cartItem) {
       return cartItem.id === item.id;
     });
 
     if (existing) {
-      existing.quantity += nextQuantity;
+      existing.quantity = getSafeQuantity(existing.quantity + nextQuantity);
     } else {
       cart.push({
         id: item.id,
@@ -104,7 +108,7 @@
     var cart = readCart()
       .map(function (item) {
         if (item.id === itemId) {
-          item.quantity = Math.max(1, Number(quantity) || 1);
+          item.quantity = getSafeQuantity(quantity);
         }
         return item;
       });
@@ -119,6 +123,11 @@
     });
 
     saveCart(cart);
+    syncCartUI();
+  }
+
+  function clearCart() {
+    saveCart([]);
     syncCartUI();
   }
 
@@ -363,6 +372,19 @@
       upsertCartItem(item, quantityInput ? quantityInput.value : 1);
       flashButton(form.querySelector('input[type="submit"]'), "Da them");
     });
+
+    var buyNowButton = form.querySelector(".buy-now-trigger");
+    if (buyNowButton) {
+      buyNowButton.addEventListener("click", function () {
+        var item = findDetailData(form);
+        var quantityInput = form.querySelector(".cart-number");
+        upsertCartItem(item, quantityInput ? quantityInput.value : 1);
+        flashButton(buyNowButton, "Dang mo gio");
+        window.setTimeout(function () {
+          window.location.href = "cart.html?source=buy-now";
+        }, 150);
+      });
+    }
   }
 
   function bindCartPageEvents() {
@@ -425,4 +447,11 @@
   });
 
   window.addEventListener("storage", syncCartUI);
+  window.TamGiacCart = {
+    readCart: readCart,
+    clearCart: clearCart,
+    getCartStats: getCartStats,
+    syncCartUI: syncCartUI,
+    upsertCartItem: upsertCartItem
+  };
 })();

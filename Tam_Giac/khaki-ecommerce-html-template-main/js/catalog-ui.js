@@ -28,8 +28,11 @@
       "<h3>" + product.category + "</h3>",
       "<h2>" + product.name + "</h2>",
       '<div class="product-note">' + product.note + "</div>",
+      '<div class="product-actions">',
+      '<a href="' + getProductLink(product) + '" class="product-detail-link">Xem chi tiet</a>',
       '<a href="#" data-add-to-cart="true">Them vao gio</a>',
       "<p>" + formatPrice(product.price) + "</p>",
+      "</div>",
       "</div>",
       "</div>"
     ].join("");
@@ -309,6 +312,7 @@
     }).slice(0, 4);
 
     document.title = currentProduct.name + " | Tam Giac";
+    singleProduct.dataset.productId = currentProduct.id;
 
     var breadcrumbItems = document.querySelectorAll(".breadcrumb li");
     if (breadcrumbItems.length >= 5) {

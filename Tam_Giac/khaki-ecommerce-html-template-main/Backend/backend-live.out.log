@@ -1,0 +1,4 @@
+warn: Google OAuth chua duoc cau hinh {"timestamp":"2026-03-31 03:08:23"}
+info: ✅ Kết nối SQL Server thành công (Integrated Security) {"timestamp":"2026-03-31 03:08:24"}
+info: DB ket noi thanh cong (Redis dang tat) {"timestamp":"2026-03-30T20:08:24.017Z"}
+info: Server chay tai http://localhost:3002 {"timestamp":"2026-03-30T20:08:24.019Z"}

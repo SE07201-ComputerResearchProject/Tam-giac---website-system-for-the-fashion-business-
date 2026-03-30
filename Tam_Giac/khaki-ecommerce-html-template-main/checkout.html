@@ -8,30 +8,15 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<!-- Title -->
  		<title>Tam Giac</title>
- 		<!-- Style Sheet -->
+		<!-- Style Sheet -->
 		<link rel="stylesheet" type="text/css" href="css/style.css" />
 		<!-- Javascript -->	
 		<script type="text/javascript" src="js/jquery.min.js"></script>
-  		<script>
-  			$(document).ready(function(){
-  				
-  				$('input[type="radio"]').change(function(){
-  					
-  					if (this.value == 'easypaisa') {
-  						
-  						$('#easypaisaText').css('display', 'block');
-  					} 
-  					else {
-  						$('#easypaisaText').css('display', 'none');
-  					}
-  					
-  				});
-  			});
-  		</script>
 		<link rel="stylesheet" type="text/css" href="css/mouse-effects.css?v=20260320a" />
 		<link rel="stylesheet" type="text/css" href="css/page-loader.css?v=20260321a" />
 		<link rel="stylesheet" type="text/css" href="css/button-burst.css?v=20260321a" />
 		<script defer src="js/cart.js?v=20260321a"></script>
+		<script defer src="js/checkout.js?v=20260331a"></script>
 		<script defer src="js/page-loader.js?v=20260321a"></script>
 		<script defer src="js/button-burst.js?v=20260321a"></script>
 		<script defer src="js/mouse-effects.js?v=20260320a"></script>
@@ -152,20 +137,26 @@
 					<li>Checkout</li>
 				</ul>
 			</div> <!-- End of Breadcrumb-->
+			<div class="checkout-return-card" id="checkoutReturnCard" hidden>
+				<h3 id="checkoutReturnTitle">Thanh toan thanh cong</h3>
+				<p id="checkoutReturnMessage"></p>
+				<p id="checkoutReturnMeta"></p>
+				<a href="shop.html" id="checkoutReturnContinue">Tiep tuc mua sam</a>
+			</div>
 
 			<h2>Billing Detail</h2>
 			<div class="checkout-page">
 				<div class="billing-detail">					
-					<form class="checkout-form">
+					<form class="checkout-form" id="checkout-form">
 						<h4>Shipping Detail</h4>
 						<div class="form-inline">
 							<div class="form-group">
 								<label>First Name</label>
-								<input type="text" id="fname" name="fname">
+								<input type="text" id="fname" name="fname" required>
 							</div>
 							<div class="form-group">
 								<label>Last Name</label>
-								<input type="text" id="lname" name="lname">
+								<input type="text" id="lname" name="lname" required>
 							</div>
 						</div>
 						<div class="form-group">
@@ -190,13 +181,13 @@
 						</div>
 						<div class="form-group">
 							<label>Address</label>
-							<textarea style="resize:none" id="address" name="address" rows="3"></textarea>
+							<textarea style="resize:none" id="address" name="address" rows="3" required></textarea>
 						</div>
 						<h4>Login Detail</h4>
 						<div class="form-inline">					
 							<div class="form-group">
 								<label>Email</label>
-								<input type="email" id="email" name="email" autocomplete="off">
+								<input type="email" id="email" name="email" autocomplete="off" required>
 							</div>
 							<div class="form-group">
 								<label>Password</label>
@@ -207,17 +198,17 @@
 						<div class="form-inline">					
 							<div class="form-group">
 								<label>Tel</label>
-								<input type="text" id="tel" name="tel" minlength="11" maxlength="11">
+								<input type="text" id="tel" name="tel" minlength="10" maxlength="11" required>
 							</div>
 							<div class="form-group">
 								<label>Mobile</label>
-								<input type="text" id="mobile" name="mobile" minlength="11" maxlength="11">
+								<input type="text" id="mobile" name="mobile" minlength="10" maxlength="11">
 							</div>
 						</div>
 						<h4>Additional Information (Optional)</h4>
 						<div class="form-group">
 							<label>Order Note</label>
-							<textarea style="resize:none" id="address" name="address" rows="3"></textarea>
+							<textarea style="resize:none" id="orderNote" name="orderNote" rows="3"></textarea>
 						</div>					
 				</div>
 				<div class="order-summary">
@@ -230,14 +221,18 @@
 							<hr>
 							<li>Total Amount: <span>1.287.000 đ</span></li>
 							<hr>
-							<li><input type="radio" name="payment"> Thanh toan khi nhan hang</li>
-							<li><input type="radio" id="easypaisa" name="payment" value="easypaisa"> VNPay / Chuyen khoan QR</li>
-							<li>
-								<textarea id="easypaisaText" rows="5" disabled="disable">Vui long hoan tat thanh toan qua VNPay hoac QR, sau do gui ma giao dich de Tam Giac xac nhan don hang.</textarea>
+							<li><label><input type="radio" name="payment" value="cod" checked> Thanh toan khi nhan hang</label></li>
+							<li><label><input type="radio" name="payment" value="momo"> Thanh toan MoMo QR</label></li>
+							<li><label><input type="radio" name="payment" value="vnpay"> VNPay / Chuyen khoan QR</label></li>
+							<li><label><input type="radio" name="payment" value="bank"> Chuyen khoan ngan hang</label></li>
+							<li class="payment-help-row">
+								<textarea id="paymentHelpText" rows="5" disabled>Thanh toan khi nhan hang. Tam Giac se xac nhan don va lien he truoc khi giao.</textarea>
 							</li>
-							<li><input type="radio" name="payment"> Chuyen khoan ngan hang</li>
+							<li class="payment-status-row">
+								<p id="paymentStatus" class="payment-status" aria-live="polite"></p>
+							</li>
 							<hr>
-							<li><input type="submit" name="order" value="Place Order"></li>
+							<li><input type="submit" id="checkoutSubmit" name="order" value="Place Order"></li>
 						</ul>
 					</div>
 					</form> <!-- End of Checkout Form -->

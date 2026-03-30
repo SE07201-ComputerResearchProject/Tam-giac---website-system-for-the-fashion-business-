@@ -1,0 +1,318 @@
+:root {
+  --demo-bg: #091f31;
+  --demo-bg-soft: #123d59;
+  --demo-accent: #6fe5ff;
+  --demo-accent-strong: #1bb9dd;
+  --demo-card: rgba(248, 253, 255, 0.96);
+  --demo-text: #0f2f44;
+  --demo-muted: #5b7a8f;
+  --demo-shadow: 0 24px 70px rgba(3, 22, 35, 0.28);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background:
+    radial-gradient(circle at top, rgba(111, 229, 255, 0.18), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(27, 185, 221, 0.14), transparent 26%),
+    linear-gradient(180deg, var(--demo-bg) 0%, var(--demo-bg-soft) 100%);
+  color: var(--demo-text);
+}
+
+.demo-pay-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+}
+
+.demo-pay-card {
+  width: min(980px, 100%);
+  padding: 28px;
+  border-radius: 32px;
+  background: var(--demo-card);
+  box-shadow: var(--demo-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.demo-pay-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+
+.demo-pay-brand,
+.demo-pay-banner,
+.demo-pay-grid,
+.demo-pay-actions,
+.demo-pay-footer {
+  position: relative;
+  z-index: 1;
+}
+
+.demo-pay-brand {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.demo-pay-mark {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #dffbff 0%, #7fe8ff 55%, #22b9df 100%);
+  color: #083149;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  box-shadow: 0 16px 30px rgba(16, 97, 130, 0.22);
+}
+
+.demo-pay-eyebrow {
+  margin: 0 0 6px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--demo-muted);
+}
+
+.demo-pay-brand h1 {
+  margin: 0;
+  font-size: 34px;
+  letter-spacing: 0.04em;
+}
+
+.demo-pay-banner {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(111, 229, 255, 0.14);
+  color: #0c5776;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.demo-pay-grid {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 22px;
+}
+
+.demo-pay-qr-panel,
+.demo-pay-info {
+  border-radius: 28px;
+  padding: 22px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(105, 197, 223, 0.18);
+}
+
+.demo-pay-qr-panel {
+  position: relative;
+  min-height: 430px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.demo-pay-qr {
+  width: min(320px, 100%);
+  max-width: 320px;
+  border-radius: 24px;
+  box-shadow: 0 24px 54px rgba(10, 60, 82, 0.18);
+}
+
+.demo-pay-qr-trigger {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.demo-pay-qr-trigger:disabled {
+  cursor: not-allowed;
+}
+
+.demo-pay-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  color: var(--demo-muted);
+}
+
+.demo-pay-spinner {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 5px solid rgba(27, 185, 221, 0.16);
+  border-top-color: var(--demo-accent-strong);
+  animation: demo-spin 0.9s linear infinite;
+}
+
+.demo-pay-scanline {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 24%;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(27, 185, 221, 0), rgba(27, 185, 221, 0.85), rgba(27, 185, 221, 0));
+  box-shadow: 0 0 20px rgba(27, 185, 221, 0.52);
+  animation: demo-scan 2.6s ease-in-out infinite;
+}
+
+.demo-pay-caption {
+  margin: 18px 0 0;
+  color: var(--demo-muted);
+  text-align: center;
+}
+
+.demo-pay-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(111, 229, 255, 0.16);
+  color: #0d688b;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.demo-pay-row {
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(91, 122, 143, 0.14);
+}
+
+.demo-pay-row span {
+  color: var(--demo-muted);
+}
+
+.demo-pay-row strong {
+  text-align: right;
+}
+
+.demo-pay-webhook {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 22px;
+  background: #0f2d42;
+  color: #ebfbff;
+}
+
+.demo-pay-webhook-title {
+  margin: 0 0 8px;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(218, 247, 255, 0.76);
+}
+
+.demo-pay-webhook p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.demo-pay-actions {
+  margin-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.demo-pay-btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.demo-pay-btn:hover {
+  transform: translateY(-2px);
+}
+
+.demo-pay-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.demo-pay-btn.is-success {
+  background: linear-gradient(135deg, #0f9b6f, #44d49d);
+  color: #f4fffb;
+  box-shadow: 0 18px 32px rgba(15, 155, 111, 0.24);
+}
+
+.demo-pay-btn.is-primary {
+  background: linear-gradient(135deg, #0e5c7d, #32b9dc);
+  color: #effcff;
+  box-shadow: 0 18px 32px rgba(14, 92, 125, 0.22);
+}
+
+.demo-pay-btn.is-fail {
+  background: linear-gradient(135deg, #d44545, #f07b7b);
+  color: #fff6f6;
+  box-shadow: 0 18px 32px rgba(212, 69, 69, 0.22);
+}
+
+.demo-pay-btn.is-cancel {
+  background: linear-gradient(135deg, #6b7480, #9aa5b1);
+  color: #fbfdff;
+  box-shadow: 0 18px 32px rgba(107, 116, 128, 0.22);
+}
+
+.demo-pay-footer {
+  margin-top: 14px;
+  color: var(--demo-muted);
+  line-height: 1.6;
+}
+
+@keyframes demo-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes demo-scan {
+  0%,
+  100% {
+    transform: translateY(-70px);
+    opacity: 0.22;
+  }
+
+  50% {
+    transform: translateY(150px);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 860px) {
+  .demo-pay-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .demo-pay-card {
+    padding: 20px;
+  }
+}
