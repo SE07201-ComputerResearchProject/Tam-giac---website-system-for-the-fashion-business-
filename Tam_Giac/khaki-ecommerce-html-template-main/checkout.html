@@ -12,6 +12,7 @@
 		<link rel="stylesheet" type="text/css" href="css/style.css" />
 		<!-- Javascript -->	
 		<script type="text/javascript" src="js/jquery.min.js"></script>
+		<script type="module" src="js/header-auth.js" defer></script>
 		<link rel="stylesheet" type="text/css" href="css/mouse-effects.css?v=20260320a" />
 		<link rel="stylesheet" type="text/css" href="css/page-loader.css?v=20260321a" />
 		<link rel="stylesheet" type="text/css" href="css/button-burst.css?v=20260321a" />
@@ -222,9 +223,9 @@
 							<li>Total Amount: <span>1.287.000 đ</span></li>
 							<hr>
 							<li><label><input type="radio" name="payment" value="cod" checked> Thanh toan khi nhan hang</label></li>
-							<li><label><input type="radio" name="payment" value="momo"> Thanh toan MoMo QR</label></li>
-							<li><label><input type="radio" name="payment" value="vnpay"> VNPay / Chuyen khoan QR</label></li>
-							<li><label><input type="radio" name="payment" value="bank"> Chuyen khoan ngan hang</label></li>
+							<li><label class="payment-option-disabled"><input type="radio" name="payment" value="momo" disabled> Thanh toan MoMo QR (tam khoa)</label></li>
+							<li><label class="payment-option-disabled"><input type="radio" name="payment" value="vnpay" disabled> VNPay / Chuyen khoan QR (tam khoa)</label></li>
+							<li><label class="payment-option-disabled"><input type="radio" name="payment" value="bank" disabled> Chuyen khoan ngan hang (tam khoa)</label></li>
 							<li class="payment-help-row">
 								<textarea id="paymentHelpText" rows="5" disabled>Thanh toan khi nhan hang. Tam Giac se xac nhan don va lien he truoc khi giao.</textarea>
 							</li>

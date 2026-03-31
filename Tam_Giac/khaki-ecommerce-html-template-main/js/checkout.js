@@ -5,8 +5,10 @@
   var CHECKOUT_DRAFT_KEY = "tamgiac_checkout_draft";
   var PENDING_PAYMENT_KEY = "tamgiac_pending_payment";
   var LAST_PAYMENT_KEY = "tamgiac_last_payment";
+  var ORDERS_KEY = "tamgiac_orders";
   var LAST_PAYMENT_TTL_MS = 30 * 60 * 1000;
   var RETURN_CARD_VISIBLE_CLASS = "is-visible";
+  var ONLINE_PAYMENT_ENABLED = false;
   var DRAFT_FIELDS = [
     "fname",
     "lname",
@@ -23,20 +25,20 @@
 
   var METHOD_COPY = {
     cod: {
-      help: "Thanh toan khi nhan hang. Tam Giac se xac nhan don va lien he truoc khi giao.",
-      button: "Dat hang COD"
+      help: "Thanh toan khi nhan hang. Day la flow on dinh hien tai de ban hoan tat don hang nhanh va gon.",
+      button: "Dat hang ngay"
     },
     momo: {
-      help: "Neu da cau hinh MoMo test, ban se duoc chuyen sang MoMo. Neu chua, he thong se mo phong luong QR bang Tam Giac DemoPay.",
-      button: "Thanh toan bang MoMo QR"
+      help: "Tam thoi Tam Giac dang khoa MoMo QR de on dinh flow mua hang. Minh se mo lai sau khi xu ly QR.",
+      button: "MoMo QR tam khoa"
     },
     vnpay: {
-      help: "Ban se duoc chuyen sang cong thanh toan VNPay de quet QR hoac thanh toan online.",
-      button: "Thanh toan bang VNPay"
+      help: "Tam thoi Tam Giac dang khoa thanh toan online de uu tien flow dat hang co ban.",
+      button: "VNPay tam khoa"
     },
     bank: {
-      help: "Tam thoi ghi nhan yeu cau chuyen khoan ngan hang. Buoc doi soat giao dich se duoc noi tiep sau.",
-      button: "Gui yeu cau chuyen khoan"
+      help: "Tam thoi Tam Giac dang khoa chuyen khoan ngan hang trong ban on dinh flow hien tai.",
+      button: "Chuyen khoan tam khoa"
     }
   };
 
@@ -81,7 +83,11 @@
 
   function getSelectedMethod(form) {
     var checked = form.querySelector('input[name="payment"]:checked');
-    return checked ? checked.value : "cod";
+    if (!checked || checked.disabled) {
+      return "cod";
+    }
+
+    return checked.value;
   }
 
   function setStatus(text, type) {
@@ -119,6 +125,7 @@
     var title = document.getElementById("checkoutReturnTitle");
     var message = document.getElementById("checkoutReturnMessage");
     var meta = document.getElementById("checkoutReturnMeta");
+    var continueLink = document.getElementById("checkoutReturnContinue");
 
     if (title) {
       title.textContent = details.title || "Cap nhat thanh toan";
@@ -130,6 +137,11 @@
 
     if (meta) {
       meta.textContent = details.meta || "";
+    }
+
+    if (continueLink) {
+      continueLink.textContent = details.linkText || "Tiep tuc mua sam";
+      continueLink.href = details.linkHref || "shop.html";
     }
 
     card.hidden = false;
@@ -171,8 +183,13 @@
     DRAFT_FIELDS.forEach(function (key) {
       if (key === "payment") {
         var radio = form.querySelector('input[name="payment"][value="' + draft.payment + '"]');
-        if (radio) {
+        if (radio && !radio.disabled) {
           radio.checked = true;
+        } else {
+          var defaultRadio = form.querySelector('input[name="payment"][value="cod"]');
+          if (defaultRadio) {
+            defaultRadio.checked = true;
+          }
         }
         return;
       }
@@ -286,8 +303,19 @@
     removeStorage(window.sessionStorage, PENDING_PAYMENT_KEY);
   }
 
+  function clearCheckoutDraft() {
+    removeStorage(window.sessionStorage, CHECKOUT_DRAFT_KEY);
+  }
+
   function rememberCompletedPayment(record) {
     writeStorage(window.sessionStorage, LAST_PAYMENT_KEY, record);
+  }
+
+  function saveOrder(record) {
+    var orders = readStorage(window.localStorage, ORDERS_KEY);
+    orders = Array.isArray(orders) ? orders : [];
+    orders.unshift(record);
+    writeStorage(window.localStorage, ORDERS_KEY, orders.slice(0, 20));
   }
 
   function readCompletedPayment() {
@@ -317,6 +345,33 @@
     }
 
     window.localStorage.setItem(STORAGE_KEY, "[]");
+  }
+
+  function createLocalOrder(form, method) {
+    var stats = getCartStats();
+    var delivery = stats.totalItems ? DELIVERY_FEE : 0;
+    var total = stats.totalAmount + delivery;
+    var firstName = getFieldValue(form, "fname");
+    var lastName = getFieldValue(form, "lname");
+    var orderRecord = {
+      id: buildOrderId(method),
+      createdAt: new Date().toISOString(),
+      fullName: (firstName + " " + lastName).trim() || "Khach hang",
+      email: getFieldValue(form, "email"),
+      tel: getFieldValue(form, "tel"),
+      address: getFieldValue(form, "address"),
+      note: getFieldValue(form, "orderNote"),
+      paymentMethod: method,
+      paymentLabel: method === "cod" ? "Thanh toan khi nhan hang" : method,
+      status: method === "cod" ? "Cho xac nhan" : "Moi tao",
+      subtotal: stats.totalAmount,
+      delivery: delivery,
+      total: total,
+      items: readCart()
+    };
+
+    saveOrder(orderRecord);
+    return orderRecord;
   }
 
   function applySuccessfulReturn(payment, orderId, resultCode, message, pending) {
@@ -435,22 +490,25 @@
       saveCheckoutDraft(form);
 
       if (method === "cod") {
-        setStatus("Da ghi nhan lua chon thanh toan khi nhan hang. Buoc tao don se duoc noi tiep o backend order.", "success");
+        var order = createLocalOrder(form, method);
+        clearPendingPayment();
+        clearCheckoutDraft();
+        clearCartAfterSuccess();
+        form.reset();
+        updateMethodUI(form);
+        setStatus("Dat hang thanh cong. Don hang cua ban da duoc ghi nhan.", "success");
         setReturnCard({
-          title: "Da ghi nhan don COD",
-          message: "Thong tin giao hang da duoc luu. Khi backend order san sang, chung ta se noi tiep buoc tao don chinh thuc.",
-          meta: "Phuong thuc: Thanh toan khi nhan hang"
+          title: "Dat hang thanh cong",
+          message: "Ban da hoan tat flow mua hang co ban. Don hang da duoc luu tam thoi va gio hang da duoc lam moi.",
+          meta: "Ma don: " + order.id + " | Tong don: " + formatPrice(order.total),
+          linkText: "Xem don hang",
+          linkHref: "orders.html"
         });
         return;
       }
 
-      if (method === "bank") {
-        setStatus("Da ghi nhan lua chon chuyen khoan ngan hang. Buoc doi soat giao dich se duoc bo sung sau.", "info");
-        setReturnCard({
-          title: "Da ghi nhan yeu cau chuyen khoan",
-          message: "Ban co the giu nguyen thong tin nay de doi sang luong doi soat khi backend ngan hang san sang.",
-          meta: "Phuong thuc: Chuyen khoan ngan hang"
-        });
+      if (!ONLINE_PAYMENT_ENABLED && method !== "cod") {
+        setStatus("Tam thoi web dang mo on dinh flow dat hang co ban, nen chi ho tro COD. QR va online payment se lam tiep sau.", "info");
         return;
       }
 

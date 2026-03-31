@@ -981,6 +981,10 @@ main .order-summary .checkout-total ul li label{
 	gap: 6px;
 	cursor: pointer;
 }
+main .order-summary .checkout-total ul li label.payment-option-disabled{
+	opacity: 0.56;
+	cursor: not-allowed;
+}
 main .order-summary .checkout-total .payment-help-row,
 main .order-summary .checkout-total .payment-status-row{
 	margin-top: 14px;
@@ -1684,6 +1688,16 @@ main .checkout-page,
 main .cart-page,
 main .account-page{
 	gap: 24px;
+}
+
+main .new-product-section,
+main .collection,
+main .cart-page,
+main .checkout-page,
+main .account-page,
+footer{
+	content-visibility: auto;
+	contain-intrinsic-size: 800px;
 }
 
 main .sidebar,

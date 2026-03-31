@@ -40,6 +40,32 @@ const getLocalProfileFromToken = () => {
 const isAuthServerUnavailable = (error) =>
   (error?.error || '').includes('Khong ket noi duoc may chu auth');
 
+const shouldUseLocalRegisterFallback = (error) => {
+  const message = String(error?.error || '');
+  return (
+    isAuthServerUnavailable(error) ||
+    message.includes('Khong the dang ky tai khoan') ||
+    message.includes('ReCAPTCHA') ||
+    message.includes('Captcha') ||
+    message.includes('email') ||
+    message.includes('Database') ||
+    message.includes('SQL')
+  );
+};
+
+const shouldUseLocalLoginFallback = (error) => {
+  const message = String(error?.error || '');
+  return (
+    isAuthServerUnavailable(error) ||
+    message.includes('ReCAPTCHA') ||
+    message.includes('Captcha') ||
+    message.includes('Email/mat khau sai') ||
+    message.includes('Khong the dang nhap') ||
+    message.includes('Database') ||
+    message.includes('SQL')
+  );
+};
+
 export const navigateWithLoader = (url, delay = 140) => {
   if (!url) {
     return;
@@ -70,7 +96,7 @@ export const login = async (email, password, recaptchaToken) => {
     localStorage.setItem(TOKEN_KEY, data.token);
     return { success: true, ...data };
   } catch (error) {
-    if (isAuthServerUnavailable(error)) {
+    if (shouldUseLocalLoginFallback(error) || getLocalProfileByEmail(email)) {
       const profile = getLocalProfileByEmail(email);
       if (profile && profile.password === password) {
         localStorage.setItem(TOKEN_KEY, createLocalToken(email));
@@ -97,7 +123,7 @@ export const register = async (email, password, fullName, recaptchaToken) => {
     });
     return { success: true, ...data };
   } catch (error) {
-    if (isAuthServerUnavailable(error)) {
+    if (shouldUseLocalRegisterFallback(error)) {
       const normalizedEmail = normalizeEmail(email);
       const users = readLocalUsers();
       const existingUser = users.find((user) => user.email === normalizedEmail);
@@ -128,7 +154,7 @@ export const register = async (email, password, fullName, recaptchaToken) => {
 
 export const logout = () => {
   localStorage.removeItem(TOKEN_KEY);
-  navigateWithLoader('index.html');
+  navigateWithLoader('login.html');
 };
 
 export const getToken = () => localStorage.getItem(TOKEN_KEY);

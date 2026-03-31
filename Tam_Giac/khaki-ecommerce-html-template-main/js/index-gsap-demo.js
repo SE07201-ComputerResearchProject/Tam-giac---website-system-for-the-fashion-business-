@@ -21,6 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const collectionTitles = gsap.utils.toArray('.collection h2');
   const productSections = gsap.utils.toArray('.new-product-section');
   const productCards = gsap.utils.toArray('.new-product-section .product');
+  const prefersLowPower =
+    window.matchMedia('(prefers-reduced-data: reduce)').matches ||
+    window.matchMedia('(update: slow)').matches;
 
   const runIntro = () => {
     const introTimeline = gsap.timeline({
@@ -38,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const enableHeroDepth = () => {
-    if (!heroSlider || !supportsHover || window.innerWidth < 992) {
+    if (!heroSlider || !supportsHover || window.innerWidth < 992 || prefersLowPower) {
       return;
     }
 
@@ -78,61 +81,76 @@ document.addEventListener('DOMContentLoaded', () => {
       duration: 0.55,
       ease: 'power3.out'
     });
+    const imageXTo = heroImages.map((image) => gsap.quickTo(image, 'x', {
+      duration: 0.55,
+      ease: 'power3.out'
+    }));
+    const imageYTo = heroImages.map((image) => gsap.quickTo(image, 'y', {
+      duration: 0.55,
+      ease: 'power3.out'
+    }));
+    const textXTo = heroTexts.map((text) => gsap.quickTo(text, 'x', {
+      duration: 0.55,
+      ease: 'power3.out'
+    }));
+    const textYTo = heroTexts.map((text) => gsap.quickTo(text, 'y', {
+      duration: 0.55,
+      ease: 'power3.out'
+    }));
 
-    heroFrame.addEventListener('pointermove', (event) => {
-      const bounds = heroFrame.getBoundingClientRect();
-      const offsetX = ((event.clientX - bounds.left) / bounds.width) - 0.5;
-      const offsetY = ((event.clientY - bounds.top) / bounds.height) - 0.5;
+    var pendingFrame = 0;
+    var latestClientX = 0;
+    var latestClientY = 0;
+    var latestBounds = null;
+
+    function updateHeroMotion() {
+      pendingFrame = 0;
+      if (!latestBounds) {
+        return;
+      }
+
+      var offsetX = ((latestClientX - latestBounds.left) / latestBounds.width) - 0.5;
+      var offsetY = ((latestClientY - latestBounds.top) / latestBounds.height) - 0.5;
 
       rotateYTo(offsetX * 8);
       rotateXTo(offsetY * -6);
       xTo(offsetX * 10);
+      imageXTo.forEach((setX) => setX(offsetX * -22));
+      imageYTo.forEach((setY) => setY(offsetY * -14));
+      textXTo.forEach((setX) => setX(offsetX * 26));
+      textYTo.forEach((setY) => setY(offsetY * 18));
+    }
 
-      gsap.to(heroImages, {
-        x: offsetX * -22,
-        y: offsetY * -14,
-        scale: 1.08,
-        duration: 0.6,
-        ease: 'power3.out',
-        overwrite: 'auto'
-      });
+    function scheduleHeroMotion(event) {
+      latestClientX = event.clientX;
+      latestClientY = event.clientY;
+      latestBounds = heroFrame.getBoundingClientRect();
 
-      gsap.to(heroTexts, {
-        x: offsetX * 26,
-        y: offsetY * 18,
-        z: 40,
-        duration: 0.6,
-        ease: 'power3.out',
-        overwrite: 'auto'
-      });
-    });
+      if (pendingFrame) {
+        return;
+      }
+
+      pendingFrame = window.requestAnimationFrame(updateHeroMotion);
+    }
+
+    heroFrame.addEventListener('pointermove', scheduleHeroMotion);
 
     heroFrame.addEventListener('pointerleave', () => {
       rotateYTo(0);
       rotateXTo(0);
       xTo(0);
-
-      gsap.to(heroImages, {
-        x: 0,
-        y: 0,
-        scale: 1.04,
-        duration: 0.8,
-        ease: 'power3.out',
-        overwrite: 'auto'
-      });
-
-      gsap.to(heroTexts, {
-        x: 0,
-        y: 0,
-        z: 0,
-        duration: 0.8,
-        ease: 'power3.out',
-        overwrite: 'auto'
-      });
+      imageXTo.forEach((setX) => setX(0));
+      imageYTo.forEach((setY) => setY(0));
+      textXTo.forEach((setX) => setX(0));
+      textYTo.forEach((setY) => setY(0));
     });
   };
 
   const revealProductSection = (section) => {
+    if (prefersLowPower) {
+      return;
+    }
+
     const heading = section.querySelector('.product-section-heading');
     const cards = gsap.utils.toArray(section.querySelectorAll('.product'));
 
@@ -201,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const enableCollectionShowcase = () => {
-    if (!collectionSection || !collectionPanels.length || !ScrollTrigger) {
+    if (!collectionSection || !collectionPanels.length || !ScrollTrigger || prefersLowPower) {
       return;
     }
 
@@ -260,6 +278,10 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const enableCardHover = () => {
+    if (prefersLowPower) {
+      return;
+    }
+
     productCards.forEach((card) => {
       if (!supportsHover || window.innerWidth < 992) {
         return;

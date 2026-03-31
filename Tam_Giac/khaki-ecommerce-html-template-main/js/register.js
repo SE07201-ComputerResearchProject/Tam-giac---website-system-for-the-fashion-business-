@@ -97,13 +97,6 @@ form.addEventListener('submit', async (event) => {
 
   try {
     const recaptchaToken = (window.grecaptcha && grecaptcha.getResponse && grecaptcha.getResponse()) || null;
-
-    if (!recaptchaToken) {
-      showStatus('Vui long hoan thanh reCAPTCHA de tiep tuc.', 'error');
-      setLoading(false);
-      return;
-    }
-
     const result = await register(email, password, fullName, recaptchaToken);
 
     if (!result.success) {

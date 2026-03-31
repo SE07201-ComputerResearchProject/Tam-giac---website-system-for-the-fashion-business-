@@ -44,8 +44,14 @@
     var dotY = targetY;
     var rafId = 0;
     var isRunning = false;
+    var lastHoverTarget = null;
 
     function setHoverState(target) {
+      if (target === lastHoverTarget) {
+        return;
+      }
+
+      lastHoverTarget = target;
       var isInteractive = Boolean(target && target.closest && target.closest(interactiveSelector));
       document.body.classList.toggle("tm-cursor-hover", isInteractive);
     }
@@ -129,16 +135,19 @@
 
     window.addEventListener("blur", function () {
       document.body.classList.remove("tm-cursor-visible", "tm-cursor-hover", "tm-cursor-press");
+      lastHoverTarget = null;
       stopLoop();
     });
 
     document.documentElement.addEventListener("mouseleave", function () {
       document.body.classList.remove("tm-cursor-visible", "tm-cursor-hover", "tm-cursor-press");
+      lastHoverTarget = null;
       stopLoop();
     });
 
     document.addEventListener("visibilitychange", function () {
       if (document.hidden) {
+        lastHoverTarget = null;
         stopLoop();
       }
     });
