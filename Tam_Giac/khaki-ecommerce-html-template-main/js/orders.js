@@ -32,8 +32,8 @@ const renderProfile = async () => {
   }
 
   if (!isLoggedIn()) {
-    profileName.textContent = 'Khach';
-    profileEmail.textContent = 'Vui long dang nhap';
+    profileName.textContent = 'Guest';
+    profileEmail.textContent = 'Please log in';
     return;
   }
 
@@ -42,7 +42,7 @@ const renderProfile = async () => {
     return;
   }
 
-  profileName.textContent = profile.fullName || 'Tai khoan Tam Giac';
+  profileName.textContent = profile.fullName || 'Tam Giac account';
   profileEmail.textContent = profile.email || '';
 };
 
@@ -55,7 +55,7 @@ const renderOrders = () => {
   const orders = readOrders();
 
   if (!orders.length) {
-    tbody.innerHTML = '<tr><td colspan="6">Chua co don hang nao. Hay quay lai shop de mua sam.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6">No orders yet. Head back to the shop to start shopping.</td></tr>';
     return;
   }
 
@@ -65,8 +65,8 @@ const renderOrders = () => {
     `<td>${order.id || '-'}</td>`,
     `<td>${formatPrice(order.total)}</td>`,
     `<td>${order.paymentLabel || order.paymentMethod || '-'}</td>`,
-    `<td>${order.status || 'Moi tao'}</td>`,
-    `<td><a href="shop.html">Mua tiep</a></td>`,
+    `<td>${order.status || 'New'}</td>`,
+    `<td><a href="shop.html">Shop again</a></td>`,
     '</tr>'
   ].join('')).join('');
 };

@@ -38,13 +38,13 @@ const getLocalProfileFromToken = () => {
 };
 
 const isAuthServerUnavailable = (error) =>
-  (error?.error || '').includes('Khong ket noi duoc may chu auth');
+  (error?.error || '').includes('Unable to reach the auth server');
 
 const shouldUseLocalRegisterFallback = (error) => {
   const message = String(error?.error || '');
   return (
     isAuthServerUnavailable(error) ||
-    message.includes('Khong the dang ky tai khoan') ||
+    message.includes('Unable to create the account') ||
     message.includes('ReCAPTCHA') ||
     message.includes('Captcha') ||
     message.includes('email') ||
@@ -60,7 +60,7 @@ const shouldUseLocalLoginFallback = (error) => {
     message.includes('ReCAPTCHA') ||
     message.includes('Captcha') ||
     message.includes('Email/mat khau sai') ||
-    message.includes('Khong the dang nhap') ||
+    message.includes('Unable to log in') ||
     message.includes('Database') ||
     message.includes('SQL')
   );
@@ -103,12 +103,12 @@ export const login = async (email, password, recaptchaToken) => {
         return {
           success: true,
           token: createLocalToken(email),
-          message: 'Dang nhap OK (local dev mode)'
+          message: 'Login successful (local dev mode)'
         };
       }
     }
 
-    return { success: false, error: error.error || 'Dang nhap that bai' };
+    return { success: false, error: error.error || 'Login failed' };
   }
 };
 
@@ -144,11 +144,11 @@ export const register = async (email, password, fullName, recaptchaToken) => {
 
       return {
         success: true,
-        message: 'Dang ky thanh cong (local dev mode)'
+        message: 'Account created successfully (local dev mode)'
       };
     }
 
-    return { success: false, error: error.error || 'Dang ky that bai' };
+    return { success: false, error: error.error || 'Sign up failed' };
   }
 };
 

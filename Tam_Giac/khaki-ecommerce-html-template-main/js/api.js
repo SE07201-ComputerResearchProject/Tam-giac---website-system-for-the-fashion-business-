@@ -15,14 +15,14 @@ export const apiCall = async (endpoint, options = {}) => {
     response = await fetch(`${API_BASE}${endpoint}`, config);
   } catch (error) {
     throw {
-      error: 'Khong ket noi duoc may chu auth. Hay kiem tra backend localhost:3002.'
+      error: 'Unable to reach the auth server. Please check backend localhost:3002.'
     };
   }
 
   if (!response.ok) {
     const error = await response
       .json()
-      .catch(() => ({ error: 'Loi ket noi den may chu auth' }));
+      .catch(() => ({ error: 'Auth server connection error' }));
     throw error;
   }
 

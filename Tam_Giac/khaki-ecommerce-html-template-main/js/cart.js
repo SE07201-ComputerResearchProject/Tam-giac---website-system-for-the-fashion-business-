@@ -48,8 +48,8 @@
     var image = card.querySelector("img");
 
     return {
-      id: card.dataset.productId || slugify(title ? title.textContent : "san-pham"),
-      name: title ? title.textContent.trim() : "San pham Tam Giac",
+      id: card.dataset.productId || slugify(title ? title.textContent : "product"),
+      name: title ? title.textContent.trim() : "Tam Giac product",
       category: category ? category.textContent.trim() : "Tam Giac",
       price: parsePrice(price ? price.textContent : 0),
       image: image ? image.getAttribute("src") : "img/product/img1.jpg"
@@ -68,8 +68,8 @@
     var category = wrapper.querySelector(".product-meta p");
 
     return {
-      id: wrapper.dataset.productId || slugify(title ? title.textContent : "san-pham"),
-      name: title ? title.textContent.trim() : "San pham Tam Giac",
+      id: wrapper.dataset.productId || slugify(title ? title.textContent : "product"),
+      name: title ? title.textContent.trim() : "Tam Giac product",
       category: category ? category.textContent.replace("Category:", "").trim() : "Tam Giac",
       price: parsePrice(price ? price.textContent : 0),
       image: image ? image.getAttribute("src") : "img/product/img1.jpg"
@@ -180,8 +180,8 @@
     menus.forEach(function (menu) {
       if (!cart.length) {
         menu.innerHTML = [
-          '<div class="mini-cart-empty">Chua co san pham nao trong gio hang.</div>',
-          '<div class="mini-cart-actions"><a href="shop.html">Tiep tuc mua sam</a></div>'
+          '<div class="mini-cart-empty">Your cart is empty.</div>',
+          '<div class="mini-cart-actions"><a href="shop.html">Continue shopping</a></div>'
         ].join("");
         return;
       }
@@ -217,10 +217,10 @@
         "</tbody>",
         "</table>",
         '<div class="mini-cart-summary">',
-        "<strong>Tong cong</strong>",
+        "<strong>Total</strong>",
         "<span>" + formatPrice(stats.totalAmount) + "</span>",
         "</div>",
-        '<div class="mini-cart-actions"><a href="cart.html">Mo gio hang</a></div>'
+        '<div class="mini-cart-actions"><a href="cart.html">Open cart</a></div>'
       ].join("");
     });
   }
@@ -241,13 +241,13 @@
     var stats = getCartStats();
 
     if (!cart.length) {
-      tbody.innerHTML = '<tr><td colspan="3" class="cart-empty-row">Chua co san pham nao trong gio hang.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="3" class="cart-empty-row">Your cart is empty.</td></tr>';
       summary.innerHTML = [
         "<li>Number of Products x 0</li>",
         "<li>Number of items x 0</li>",
         "<hr>",
         '<li>Cart Total <span style="float: right;">0 đ</span></li>',
-        '<li><a href="shop.html">Tiep tuc mua sam</a></li>'
+        '<li><a href="shop.html">Continue shopping</a></li>'
       ].join("");
       return;
     }
@@ -262,7 +262,7 @@
           "<h2>" + item.name + "</h2>",
           "<p>" + item.category + "</p>",
           "<br>",
-          "<h3>Gia: " + formatPrice(item.price) + "</h3>",
+          "<h3>Price: " + formatPrice(item.price) + "</h3>",
           "<br>",
           '<a href="#" class="cart-remove" data-item-id="' + item.id + '">x</a> Remove',
           "</td>",
@@ -354,7 +354,7 @@
       event.preventDefault();
       var item = findCardData(button);
       upsertCartItem(item, 1);
-      flashButton(button, "Da them");
+      flashButton(button, "Added");
     });
   }
 
@@ -370,7 +370,7 @@
       var item = findDetailData(form);
       var quantityInput = form.querySelector(".cart-number");
       upsertCartItem(item, quantityInput ? quantityInput.value : 1);
-      flashButton(form.querySelector('input[type="submit"]'), "Da them");
+      flashButton(form.querySelector('input[type="submit"]'), "Added");
     });
 
     var buyNowButton = form.querySelector(".buy-now-trigger");
@@ -379,7 +379,7 @@
         var item = findDetailData(form);
         var quantityInput = form.querySelector(".cart-number");
         upsertCartItem(item, quantityInput ? quantityInput.value : 1);
-        flashButton(buyNowButton, "Dang mo gio");
+        flashButton(buyNowButton, "Opening cart");
         window.setTimeout(function () {
           window.location.href = "cart.html?source=buy-now";
         }, 150);

@@ -1,26 +1,21 @@
-# TODO: Complete E-commerce Auth Integration
+# TODO: Sửa Lỗi Trang Đăng Ký / Đăng Nhập
 
-Status: Planning phase - waiting for DB credentials
+## ✅ Hoàn Thành
+- [x] Tạo file TODO.md với checklist
 
-## 1. Setup Backend Environment [Pending]
-- [ ] Create Backend/.env with DB creds (user to provide)
-- [ ] cd Backend && npm install
-- [ ] Start server: npm start (port 3000)
+## ⏳ Đang Thực Hiện
+- [ ] Bước 1: Sửa đường dẫn CSS/JS trong login.html (prefix `./Tam_Giac/khaki-ecommerce-html-template-main/`, update ?v=20241025a)
+- [ ] Bước 2: Sửa đường dẫn CSS/JS trong register.html (tương tự)
+- [ ] Bước 3: Kiểm tra console không 404, hiệu ứng/nền/màu load đúng
+- [ ] Bước 4: Test lazyload (force-eager.js), form hoạt động
 
-## 2. Database Setup [Pending]
-- [ ] Create MSSQL DB 'tamgiac_db'
-- [ ] Run SQLTGiac.sql
-- [ ] sequelize.sync()
+## 🔧 Hướng Dẫn Test
+1. Mở `Tam_Giac/khaki-ecommerce-html-template-main/login.html` trong browser
+2. Ctrl+Shift+R clear cache
+3. Kiểm tra F12 Console: Không 404 CSS/JS
+4. Nền gradient, blur hero, hover button burst, mouse effects
+5. Form toggle password, strength bar (register)
 
-## 3. Frontend Fixes [Ready]
-- [ ] Update js/api.js port to 3000
-- [ ] Test Live Server port 3001
-
-## 4. Test Auth Flow
-- [ ] Register new user
-- [ ] Login, check token/header
-- [ ] Logout
-
-## 5. Disable/Optional Recaptcha [Ready]
-
-Next step: User provide DB MSSQL details to create .env
+## 🚀 Demo
+```
+start Tam_Giac/khaki-ecommerce-html-template-main/login.html

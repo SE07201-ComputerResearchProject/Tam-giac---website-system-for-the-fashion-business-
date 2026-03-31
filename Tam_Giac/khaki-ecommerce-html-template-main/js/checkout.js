@@ -25,20 +25,20 @@
 
   var METHOD_COPY = {
     cod: {
-      help: "Thanh toan khi nhan hang. Day la flow on dinh hien tai de ban hoan tat don hang nhanh va gon.",
-      button: "Dat hang ngay"
+      help: "Cash on delivery. This is the most stable flow right now so customers can complete orders quickly.",
+      button: "Place order now"
     },
     momo: {
-      help: "Tam thoi Tam Giac dang khoa MoMo QR de on dinh flow mua hang. Minh se mo lai sau khi xu ly QR.",
-      button: "MoMo QR tam khoa"
+      help: "MoMo QR is temporarily disabled while we finish stabilizing the checkout flow.",
+      button: "MoMo QR temporarily disabled"
     },
     vnpay: {
-      help: "Tam thoi Tam Giac dang khoa thanh toan online de uu tien flow dat hang co ban.",
-      button: "VNPay tam khoa"
+      help: "Online payment is temporarily disabled while we prioritize the core purchase flow.",
+      button: "VNPay temporarily disabled"
     },
     bank: {
-      help: "Tam thoi Tam Giac dang khoa chuyen khoan ngan hang trong ban on dinh flow hien tai.",
-      button: "Chuyen khoan tam khoa"
+      help: "Bank transfer is temporarily disabled while the current checkout flow is being stabilized.",
+      button: "Bank transfer temporarily disabled"
     }
   };
 
@@ -78,7 +78,7 @@
   }
 
   function formatPrice(value) {
-    return Number(value || 0).toLocaleString("vi-VN") + " d";
+    return Number(value || 0).toLocaleString("en-US") + " VND";
   }
 
   function getSelectedMethod(form) {
@@ -113,7 +113,7 @@
     }
 
     button.disabled = isLoading;
-    button.value = isLoading ? (label || "Dang xu ly...") : button.dataset.originalLabel;
+    button.value = isLoading ? (label || "Processing...") : button.dataset.originalLabel;
   }
 
   function setReturnCard(details) {
@@ -128,7 +128,7 @@
     var continueLink = document.getElementById("checkoutReturnContinue");
 
     if (title) {
-      title.textContent = details.title || "Cap nhat thanh toan";
+      title.textContent = details.title || "Payment update";
     }
 
     if (message) {
@@ -140,7 +140,7 @@
     }
 
     if (continueLink) {
-      continueLink.textContent = details.linkText || "Tiep tuc mua sam";
+      continueLink.textContent = details.linkText || "Continue shopping";
       continueLink.href = details.linkHref || "shop.html";
     }
 
@@ -240,7 +240,7 @@
       amount: total,
       orderId: buildOrderId(method),
       returnUrl: getReturnUrl(method),
-      orderInfo: "Thanh toan don hang Tam Giac cho " + (fullName || "khach hang"),
+      orderInfo: "Tam Giac order payment for " + (fullName || "customer"),
       extraData: JSON.stringify({
         fullName: fullName,
         email: getFieldValue(form, "email"),
@@ -275,7 +275,7 @@
     });
 
     if (!response.ok) {
-      throw new Error(data.error || "Khong tao duoc giao dich thanh toan");
+      throw new Error(data.error || "Could not create the payment transaction");
     }
 
     return data;
@@ -335,7 +335,7 @@
       return "MoMo QR demo";
     }
 
-    return String(payment || "thanh toan online").replace(/-return$/i, "");
+    return String(payment || "online payment").replace(/-return$/i, "");
   }
 
   function clearCartAfterSuccess() {
@@ -356,14 +356,14 @@
     var orderRecord = {
       id: buildOrderId(method),
       createdAt: new Date().toISOString(),
-      fullName: (firstName + " " + lastName).trim() || "Khach hang",
+      fullName: (firstName + " " + lastName).trim() || "Customer",
       email: getFieldValue(form, "email"),
       tel: getFieldValue(form, "tel"),
       address: getFieldValue(form, "address"),
       note: getFieldValue(form, "orderNote"),
       paymentMethod: method,
-      paymentLabel: method === "cod" ? "Thanh toan khi nhan hang" : method,
-      status: method === "cod" ? "Cho xac nhan" : "Moi tao",
+      paymentLabel: method === "cod" ? "Cash on delivery" : method,
+      status: method === "cod" ? "Awaiting confirmation" : "New",
       subtotal: stats.totalAmount,
       delivery: delivery,
       total: total,
@@ -389,28 +389,28 @@
       orderId: finalOrderId,
       amount: amount,
       resultCode: resultCode || "00",
-      message: message || "Thanh toan thanh cong",
+      message: message || "Payment successful",
       completedAt: Date.now()
     };
 
     rememberCompletedPayment(record);
-    setStatus("Thanh toan " + paymentLabel + " thanh cong. Don " + finalOrderId + " da san sang de doi soat.", "success");
+    setStatus(paymentLabel + " payment completed successfully. Order " + finalOrderId + " is ready for review.", "success");
     setReturnCard({
-      title: "Thanh toan thanh cong",
-      message: "Ban da thanh toan thanh cong bang " + paymentLabel + ". Gio hang da duoc don sach de san sang cho don moi.",
-      meta: "Ma don: " + finalOrderId + (amount ? " | Tong thanh toan: " + amount : "")
+      title: "Payment successful",
+      message: "Your " + paymentLabel + " payment was completed successfully. The cart has been cleared for the next order.",
+      meta: "Order ID: " + finalOrderId + (amount ? " | Paid total: " + amount : "")
     });
   }
 
   function applyUnsuccessfulReturn(payment, resultCode, message, pending) {
     var paymentLabel = getMethodLabel(payment, pending);
-    var info = message || resultCode || "Khong ro trang thai";
+    var info = message || resultCode || "Unknown status";
 
-    setStatus("Da quay ve tu " + paymentLabel + ". Trang thai hien tai: " + info, "info");
+    setStatus("Returned from " + paymentLabel + ". Current status: " + info, "info");
     setReturnCard({
-      title: "Giao dich chua hoan tat",
-      message: "Tam Giac da nhan thong tin quay ve tu " + paymentLabel + ". Ban co the kiem tra lai giao dich hoac thanh toan lai.",
-      meta: "Trang thai: " + info
+      title: "Transaction not completed",
+      message: "Tam Giac received a return state from " + paymentLabel + ". You can review the transaction or try again.",
+      meta: "Status: " + info
     });
   }
 
@@ -435,9 +435,9 @@
     var completed = readCompletedPayment();
     if (completed && completed.status === "success" && (Date.now() - Number(completed.completedAt || 0) <= LAST_PAYMENT_TTL_MS)) {
       setReturnCard({
-        title: "Don hang da thanh toan",
-        message: "Lan thanh toan gan nhat cua ban da thanh cong. Ban co the tiep tuc mua sam ngay tai day.",
-        meta: "Ma don: " + completed.orderId + (completed.amount ? " | Tong thanh toan: " + completed.amount : "")
+        title: "Order already paid",
+        message: "Your latest payment was completed successfully. You can continue shopping right away.",
+        meta: "Order ID: " + completed.orderId + (completed.amount ? " | Paid total: " + completed.amount : "")
       });
     }
   }
@@ -478,12 +478,12 @@
       event.preventDefault();
 
       if (!cartStats.totalItems) {
-        setStatus("Gio hang dang trong. Hay them san pham truoc khi thanh toan.", "error");
+        setStatus("Your cart is empty. Add a product before checking out.", "error");
         return;
       }
 
       if (!form.reportValidity()) {
-        setStatus("Vui long dien day du thong tin giao hang va lien he.", "error");
+        setStatus("Please complete the shipping and contact information.", "error");
         return;
       }
 
@@ -496,39 +496,39 @@
         clearCartAfterSuccess();
         form.reset();
         updateMethodUI(form);
-        setStatus("Dat hang thanh cong. Don hang cua ban da duoc ghi nhan.", "success");
+        setStatus("Order placed successfully. Your order has been recorded.", "success");
         setReturnCard({
-          title: "Dat hang thanh cong",
-          message: "Ban da hoan tat flow mua hang co ban. Don hang da duoc luu tam thoi va gio hang da duoc lam moi.",
-          meta: "Ma don: " + order.id + " | Tong don: " + formatPrice(order.total),
-          linkText: "Xem don hang",
+          title: "Order placed successfully",
+          message: "You completed the core purchase flow. The order was saved and the cart has been refreshed.",
+          meta: "Order ID: " + order.id + " | Order total: " + formatPrice(order.total),
+          linkText: "View orders",
           linkHref: "orders.html"
         });
         return;
       }
 
       if (!ONLINE_PAYMENT_ENABLED && method !== "cod") {
-        setStatus("Tam thoi web dang mo on dinh flow dat hang co ban, nen chi ho tro COD. QR va online payment se lam tiep sau.", "info");
+        setStatus("The site is currently focused on a stable core checkout flow, so only cash on delivery is available for now.", "info");
         return;
       }
 
       try {
-        setSubmitState(submitButton, true, "Dang tao giao dich...");
-        setStatus("Dang tao giao dich " + method.toUpperCase() + ", vui long doi trong giay lat...", "info");
+        setSubmitState(submitButton, true, "Creating transaction...");
+        setStatus("Creating the " + method.toUpperCase() + " transaction. Please wait a moment...", "info");
 
         var payload = buildCheckoutPayload(form, method);
         var data = await createOnlinePayment(method, payload);
         var redirectUrl = getPaymentRedirect(data);
 
         if (!redirectUrl) {
-          throw new Error("Khong nhan duoc link thanh toan tu cong " + method.toUpperCase());
+          throw new Error("Did not receive a payment link from " + method.toUpperCase());
         }
 
         rememberPendingPayment(method, payload);
-        setStatus("Dang chuyen den cong thanh toan " + method.toUpperCase() + "...", "success");
+        setStatus("Redirecting to " + method.toUpperCase() + "...", "success");
         window.location.href = redirectUrl;
       } catch (error) {
-        setStatus(error && error.message ? error.message : "Khong tao duoc giao dich thanh toan", "error");
+        setStatus(error && error.message ? error.message : "Could not create the payment transaction", "error");
       } finally {
         setSubmitState(submitButton, false);
       }

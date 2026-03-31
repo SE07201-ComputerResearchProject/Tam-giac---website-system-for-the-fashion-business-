@@ -29,7 +29,7 @@ const showStatus = (message, type = 'error') => {
 
 const setLoading = (loading) => {
   submitBtn.disabled = loading;
-  submitBtn.textContent = loading ? 'Dang xu ly...' : 'Tao tai khoan';
+  submitBtn.textContent = loading ? 'Processing...' : 'Create account';
 };
 
 const getPasswordStrength = (password) => {
@@ -40,9 +40,9 @@ const getPasswordStrength = (password) => {
   if (/\d/.test(password)) score += 1;
   if (/[@$!%*?&]/.test(password)) score += 1;
 
-  if (score <= 2) return { score, text: 'Mat khau yeu', color: '#c33a33' };
-  if (score <= 4) return { score, text: 'Mat khau kha', color: '#b97f17' };
-  return { score, text: 'Mat khau manh', color: '#1f8f5f' };
+  if (score <= 2) return { score, text: 'Weak password', color: '#c33a33' };
+  if (score <= 4) return { score, text: 'Fair password', color: '#b97f17' };
+  return { score, text: 'Strong password', color: '#1f8f5f' };
 };
 
 const renderPasswordStrength = (password) => {
@@ -79,17 +79,17 @@ form.addEventListener('submit', async (event) => {
   const confirmPassword = document.getElementById('confirmPassword').value;
 
   if (!fullName || !email || !password || !confirmPassword) {
-    showStatus('Vui long nhap day du thong tin.', 'error');
+    showStatus('Please complete all required fields.', 'error');
     return;
   }
 
   if (password !== confirmPassword) {
-    showStatus('Mat khau xac nhan khong khop.', 'error');
+    showStatus('The password confirmation does not match.', 'error');
     return;
   }
 
   if (!PASSWORD_RULE.test(password)) {
-    showStatus('Mat khau chua dat yeu cau bao mat.', 'error');
+    showStatus('Your password does not meet the security requirements.', 'error');
     return;
   }
 
@@ -100,17 +100,17 @@ form.addEventListener('submit', async (event) => {
     const result = await register(email, password, fullName, recaptchaToken);
 
     if (!result.success) {
-      showStatus(result.error || 'Dang ky that bai. Vui long thu lai.', 'error');
+      showStatus(result.error || 'Sign up failed. Please try again.', 'error');
       return;
     }
 
     sessionStorage.setItem('auth_notice', 'register_success');
-    showStatus('Dang ky thanh cong. Dang chuyen sang trang dang nhap...', 'success');
+    showStatus('Account created successfully. Redirecting to the login page...', 'success');
     setTimeout(() => {
       navigateWithLoader('login.html', 120);
     }, 900);
   } catch (error) {
-    showStatus(error?.error || 'Khong ket noi duoc may chu.', 'error');
+    showStatus(error?.error || 'Unable to reach the server.', 'error');
   } finally {
     if (window.grecaptcha && grecaptcha.reset) try { grecaptcha.reset(); } catch (e) {}
     setLoading(false);

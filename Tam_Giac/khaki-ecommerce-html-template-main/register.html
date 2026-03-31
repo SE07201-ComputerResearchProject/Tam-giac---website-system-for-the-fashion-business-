@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dang ky | Tam Giac</title>
+  <title>Sign Up | Tam Giac</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet">
@@ -17,6 +17,18 @@
   <script defer src="js/mouse-effects.js?v=20260320a"></script>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <script src="js/force-eager.js"></script>
+
+  <!-- Thêm đoạn CSS này để vô hiệu hóa forced-colors -->
+  <style>
+    :root {
+      forced-color-adjust: none;
+    }
+    @media (forced-colors: active) {
+      * {
+        forced-color-adjust: none;
+      }
+    }
+  </style>
 </head>
 <body class="auth-page">
   <div class="auth-shell">
@@ -25,9 +37,9 @@
         <div class="auth-badge">Tam Giac Membership</div>
         <div class="hero-copy">
           <p class="hero-kicker">Start your account / first secure step</p>
-          <h1 class="hero-title">Tao tai khoan moi va bat dau hanh trinh mua sam.</h1>
+          <h1 class="hero-title">Create a new account and start your shopping journey.</h1>
           <p class="hero-subtitle">
-            Giao dien dang ky duoc lam moi theo huong sach, sang va chuyen nghiep hon, phu hop de mo rong sang MFA, doi mat khau va profile sau nay.
+            This signup experience is cleaner and more polished, ready for future MFA, password recovery, and profile flows.
           </p>
         </div>
       </div>
@@ -35,24 +47,24 @@
       <div class="hero-preview">
         <article class="preview-card preview-card-primary">
           <div>
-            <span class="preview-label">Mo tai khoan that dep ngay tu dau</span>
-            <strong>Ban dang tao nen buoc cham dau tien cho he thong auth cua Tam Giac.</strong>
+            <span class="preview-label">A better first step</span>
+            <strong>You are setting up the first touchpoint for the Tam Giac auth experience.</strong>
           </div>
           <p>
-            Sau khi dang ky thanh cong, nguoi dung se duoc dua sang dang nhap de tiep tuc dung he thong mot cach mach lac.
+            After signing up successfully, users move straight to login so the flow stays smooth and consistent.
           </p>
         </article>
 
         <div class="preview-stack">
           <article class="mini-card">
             <span class="mini-index">01</span>
-            <strong>Day du va ro rang</strong>
-            <p>Form ngan gon nhung van giu yeu cau mat khau manh.</p>
+            <strong>Clear and complete</strong>
+            <p>The form stays short while still enforcing a strong password.</p>
           </article>
           <article class="mini-card">
             <span class="mini-index">02</span>
-            <strong>San sang mo rong</strong>
-            <p>Cau truc nay de noi them MFA va profile sau dang ky.</p>
+            <strong>Ready to extend</strong>
+            <p>This structure makes it easier to add MFA and profile steps later.</p>
           </article>
         </div>
       </div>
@@ -60,34 +72,34 @@
       <div class="hero-metrics">
         <div class="metric">
           <strong>Strong Password</strong>
-          <span>Do manh mat khau hien ngay tren form.</span>
+          <span>Password strength is visible right inside the form.</span>
         </div>
         <div class="metric">
           <strong>Clean Flow</strong>
-          <span>Dang ky xong la chuyen sang dang nhap.</span>
+          <span>Once signup is done, the user moves directly to login.</span>
         </div>
         <div class="metric">
           <strong>MFA Next</strong>
-          <span>De mo rong sang bao mat da lop sau do.</span>
+          <span>Ready for stronger multi-step security later on.</span>
         </div>
       </div>
     </section>
 
     <section class="auth-card">
       <div class="auth-top">
-        <a class="back-link" href="index.html">Ve trang chu</a>
-        <span class="auth-chip">Dang ky</span>
+        <a class="back-link" href="index.html">Back to home</a>
+        <span class="auth-chip">Sign Up</span>
       </div>
 
-      <h2 class="auth-title">Tao tai khoan Tam Giac</h2>
+      <h2 class="auth-title">Create your Tam Giac account</h2>
       <p class="auth-hint">
-        Dien thong tin co ban de khoi tao tai khoan. Form nay duoc giu de doc, de nhin va khong gay roi khi nhap lieu.
+        Fill in the basics to create your account. The form stays easy to read, easy to scan, and simple to complete.
       </p>
 
       <form id="registerForm" class="auth-form" novalidate>
         <div class="field">
-          <label for="fullName">Ho va ten</label>
-          <input type="text" id="fullName" name="fullName" autocomplete="name" placeholder="Nguyen Van A" required>
+          <label for="fullName">Full name</label>
+          <input type="text" id="fullName" name="fullName" autocomplete="name" placeholder="Alex Nguyen" required>
         </div>
 
         <div class="field">
@@ -96,26 +108,26 @@
         </div>
 
         <div class="field with-button">
-          <label for="password">Mat khau</label>
-          <input type="password" id="password" name="password" autocomplete="new-password" placeholder="Tao mat khau manh" required>
-          <button type="button" class="toggle-password" data-target="password">Hien</button>
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" autocomplete="new-password" placeholder="Create a strong password" required>
+          <button type="button" class="toggle-password" data-target="password">Show</button>
           <div class="strength">
             <div class="strength-track">
               <div id="strengthFill" class="strength-fill"></div>
             </div>
-            <div id="strengthText" class="strength-text">Mat khau can toi thieu 8 ky tu.</div>
+            <div id="strengthText" class="strength-text">Your password should contain at least 8 characters.</div>
           </div>
         </div>
 
         <div class="field with-button">
-          <label for="confirmPassword">Xac nhan mat khau</label>
-          <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" placeholder="Nhap lai mat khau" required>
-          <button type="button" class="toggle-password" data-target="confirmPassword">Hien</button>
+          <label for="confirmPassword">Confirm password</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" placeholder="Re-enter your password" required>
+          <button type="button" class="toggle-password" data-target="confirmPassword">Show</button>
         </div>
 
         <ul class="password-rules">
-          <li>Toi thieu 8 ky tu</li>
-          <li>Co chu hoa, chu thuong, so va ky tu dac biet (@$!%*?&)</li>
+          <li>At least 8 characters</li>
+          <li>Include uppercase, lowercase, a number, and a special character (@$!%*?&)</li>
         </ul>
 
         <div id="registerStatus" class="status" aria-live="polite"></div>
@@ -125,16 +137,16 @@
         </div>
 
         <div class="form-actions">
-          <button id="registerBtn" type="submit" class="btn-auth">Tao tai khoan</button>
+          <button id="registerBtn" type="submit" class="btn-auth">Create account</button>
         </div>
       </form>
 
       <div class="auth-footer">
         <p>
-          Da co tai khoan?
-          <a href="login.html">Dang nhap</a>
+          Already have an account?
+          <a href="login.html">Log in</a>
         </p>
-        <a class="secondary-link" href="login.html">Quay lai man hinh dang nhap</a>
+        <a class="secondary-link" href="login.html">Back to the login screen</a>
       </div>
     </section>
   </div>

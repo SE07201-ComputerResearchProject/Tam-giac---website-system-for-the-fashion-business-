@@ -23,7 +23,7 @@ const showStatus = (message, type = 'error') => {
 
 const setLoading = (loading) => {
   submitBtn.disabled = loading;
-  submitBtn.textContent = loading ? 'Dang xu ly...' : 'Dang nhap';
+  submitBtn.textContent = loading ? 'Processing...' : 'Log In';
 };
 
 const togglePasswordButtons = () => {
@@ -43,7 +43,7 @@ const showRegisterNotice = () => {
   const notice = sessionStorage.getItem('auth_notice');
   if (notice !== 'register_success') return;
 
-  showStatus('Dang ky thanh cong. Ban co the dang nhap ngay bay gio.', 'success');
+  showStatus('Your account was created successfully. You can log in now.', 'success');
   sessionStorage.removeItem('auth_notice');
 };
 
@@ -55,7 +55,7 @@ form.addEventListener('submit', async (event) => {
   const password = document.getElementById('password').value;
 
   if (!email || !password) {
-    showStatus('Vui long nhap day du email va mat khau.', 'error');
+    showStatus('Please enter both your email and password.', 'error');
     return;
   }
 
@@ -66,16 +66,16 @@ form.addEventListener('submit', async (event) => {
     const result = await login(email, password, recaptchaToken);
 
     if (!result.success) {
-      showStatus(result.error || 'Dang nhap that bai. Vui long thu lai.', 'error');
+      showStatus(result.error || 'Login failed. Please try again.', 'error');
       return;
     }
 
-    showStatus('Dang nhap thanh cong. Dang chuyen ve trang chu...', 'success');
+    showStatus('Login successful. Redirecting to the homepage...', 'success');
     setTimeout(() => {
       navigateWithLoader('index.html', 120);
     }, 900);
   } catch (error) {
-    showStatus(error?.error || 'Khong ket noi duoc may chu.', 'error');
+    showStatus(error?.error || 'Unable to reach the server.', 'error');
   } finally {
     if (window.grecaptcha && grecaptcha.reset) try { grecaptcha.reset(); } catch (e) {}
     setLoading(false);

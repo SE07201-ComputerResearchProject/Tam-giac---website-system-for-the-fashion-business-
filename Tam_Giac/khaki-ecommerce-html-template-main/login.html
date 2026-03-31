@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dang nhap | Tam Giac</title>
+  <title>Log In | Tam Giac</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/auth-modern.css?v=20260320c">
+  <link rel="stylesheet" href="css/auth-modern.css?v=20241025a">
   <script type="module" src="js/login.js?v=20260320c" defer></script>
   <link rel="stylesheet" type="text/css" href="css/mouse-effects.css?v=20260320a" />
   <link rel="stylesheet" type="text/css" href="css/page-loader.css?v=20260321a" />
@@ -17,6 +17,18 @@
   <script defer src="js/mouse-effects.js?v=20260320a"></script>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <script src="js/force-eager.js"></script>
+
+  <!-- Thêm đoạn CSS này để vô hiệu hóa forced-colors -->
+  <style>
+    :root {
+      forced-color-adjust: none;
+    }
+    @media (forced-colors: active) {
+      * {
+        forced-color-adjust: none;
+      }
+    }
+  </style>
 </head>
 <body class="auth-page">
   <div class="auth-shell">
@@ -25,100 +37,88 @@
         <div class="auth-badge">Tam Giac Identity</div>
         <div class="hero-copy">
           <p class="hero-kicker">Fashion commerce / secure access</p>
-          <h1 class="hero-title">Dang nhap va quay lai khong gian mua sam cua ban.</h1>
+          <h1 class="hero-title">Sign in and return to your shopping space.</h1>
           <p class="hero-subtitle">
-            Mot diem vao gon gang cho don hang, thong tin tai khoan va cac thao tac bao mat trong giai doan dau cua Tam Giac.
+            A cleaner entry point for orders, account details, and early security flows inside Tam Giac.
           </p>
         </div>
       </div>
-
       <div class="hero-preview">
         <article class="preview-card preview-card-primary">
           <div>
-            <span class="preview-label">Mot tai khoan, mot hanh trinh</span>
-            <strong>Dang nhap xong la quay lai ngay trang chu va tiep tuc mua sam.</strong>
+            <span class="preview-label">One account, one journey</span>
+            <strong>Sign in once and jump straight back to the homepage to keep shopping.</strong>
           </div>
           <p>
-            Giao dien duoc lam theo huong thoi trang hien dai hon, nhung van giu flow dang nhap nhanh va ro rang.
+            The interface feels more fashion-forward now, while keeping the login flow clear and fast.
           </p>
         </article>
-
         <div class="preview-stack">
           <article class="mini-card">
             <span class="mini-index">01</span>
-            <strong>Nhap nhanh</strong>
-            <p>Email va mat khau la du de vao lai he thong.</p>
+            <strong>Quick access</strong>
+            <p>Your email and password are all you need to get back in.</p>
           </article>
           <article class="mini-card">
             <span class="mini-index">02</span>
-            <strong>Roi khoi giao dien cu</strong>
-            <p>Phan login nay duoc tach rieng, dep hon va de tap trung hon.</p>
+            <strong>A cleaner entry</strong>
+            <p>This login area is separated out so it feels more focused and polished.</p>
           </article>
         </div>
       </div>
-
       <div class="hero-metrics">
         <div class="metric">
           <strong>JWT Ready</strong>
-          <span>San sang cho phan API auth cua du an.</span>
+          <span>Ready for the auth API layer of the project.</span>
         </div>
         <div class="metric">
           <strong>Bcrypt</strong>
-          <span>Mat khau duoc dinh huong bao ve dung chuan.</span>
+          <span>Password handling follows a more secure path.</span>
         </div>
         <div class="metric">
           <strong>Fast Return</strong>
-          <span>Dang nhap xong la dua nguoi dung ve trang chu.</span>
+          <span>After sign-in, users head straight back to the homepage.</span>
         </div>
       </div>
     </section>
-
     <section class="auth-card">
       <div class="auth-top">
-        <a class="back-link" href="index.html">Ve trang chu</a>
-        <span class="auth-chip">Dang nhap</span>
+        <a class="back-link" href="index.html">Back to home</a>
+        <span class="auth-chip">Log In</span>
       </div>
-
-      <h2 class="auth-title">Chao mung ban quay tro lai</h2>
+      <h2 class="auth-title">Welcome back</h2>
       <p class="auth-hint">
-        Dang nhap de tiep tuc mua sam, kiem tra don hang va quan ly tai khoan Tam Giac theo cach gon, dep va ro rang hon.
+        Log in to keep shopping, review your orders, and manage your Tam Giac account in a cleaner flow.
       </p>
-
       <form id="loginForm" class="auth-form" novalidate>
         <div class="field">
           <label for="email">Email</label>
           <input type="email" id="email" name="email" autocomplete="email" placeholder="you@example.com" required>
-          <p class="field-note">Nhap dung email ban da su dung khi tao tai khoan.</p>
+          <p class="field-note">Use the same email address you used when creating your account.</p>
         </div>
-
         <div class="field with-button">
-          <label for="password">Mat khau</label>
-          <input type="password" id="password" name="password" autocomplete="current-password" placeholder="Nhap mat khau cua ban" required>
-          <button type="button" class="toggle-password" data-target="password">Hien</button>
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" autocomplete="current-password" placeholder="Enter your password" required>
+          <button type="button" class="toggle-password" data-target="password">Show</button>
         </div>
-
         <div class="auth-inline">
-          <span>Dang nhap thanh cong se dua ban ve trang chu ngay.</span>
-          <a href="change-password.html">Doi mat khau</a>
+          <span>After a successful login, you will be redirected to the homepage.</span>
+          <a href="change-password.html">Change password</a>
         </div>
-
         <div id="loginStatus" class="status" aria-live="polite"></div>
-
         <div class="field">
           <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
         </div>
-
         <div class="form-actions">
-          <button id="loginBtn" type="submit" class="btn-auth">Dang nhap</button>
+          <button id="loginBtn" type="submit" class="btn-auth">Log In</button>
         </div>
       </form>
-
       <div class="auth-footer">
         <p>
-          Chua co tai khoan?
-          <a href="register.html">Dang ky ngay</a>
+          Don't have an account yet?
+          <a href="register.html">Create one now</a>
         </p>
-        <a class="secondary-link" href="register.html">Tao tai khoan moi</a>
+        <a class="secondary-link" href="register.html">Create a new account</a>
       </div>
     </section>
   </div>

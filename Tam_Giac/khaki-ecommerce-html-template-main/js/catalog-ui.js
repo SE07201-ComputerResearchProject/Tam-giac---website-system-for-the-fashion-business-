@@ -29,8 +29,8 @@
       "<h2>" + product.name + "</h2>",
       '<div class="product-note">' + product.note + "</div>",
       '<div class="product-actions">',
-      '<a href="' + getProductLink(product) + '" class="product-detail-link">Xem chi tiet</a>',
-      '<a href="#" data-add-to-cart="true">Them vao gio</a>',
+      '<a href="' + getProductLink(product) + '" class="product-detail-link">View details</a>',
+      '<a href="#" data-add-to-cart="true">Add to cart</a>',
       "<p>" + formatPrice(product.price) + "</p>",
       "</div>",
       "</div>",
@@ -57,31 +57,31 @@
     var trending = catalog.products.slice(0, 8);
     var recommended = catalog.products.slice(28, 36);
 
-    homeSections[0].querySelector(".product-section-heading h2").innerHTML = 'Goc mac chau A noi bat <img src="img/icons/increase.png">';
-    homeSections[0].querySelector(".product-section-heading h3").textContent = "108 thiet ke moi lay cam hung tu Seoul, Tokyo, Shanghai, Saigon";
+    homeSections[0].querySelector(".product-section-heading h2").innerHTML = 'Asian city highlights <img src="img/icons/increase.png">';
+    homeSections[0].querySelector(".product-section-heading h3").textContent = "108 fresh pieces inspired by Seoul, Tokyo, Shanghai, and Saigon";
     renderProductList(homeSections[0].querySelector(".product-content"), trending);
 
-    homeSections[1].querySelector(".product-section-heading h2").innerHTML = 'De xuat cho gu thanh thi <img src="img/icons/good_quality.png">';
-    homeSections[1].querySelector(".product-section-heading h3").textContent = "Pha tron minimal, tailoring va urban layer theo tinh than chau A";
+    homeSections[1].querySelector(".product-section-heading h2").innerHTML = 'Curated for urban wardrobes <img src="img/icons/good_quality.png">';
+    homeSections[1].querySelector(".product-section-heading h3").textContent = "A blend of minimal tailoring and layered Asian city dressing";
     renderProductList(homeSections[1].querySelector(".product-content"), recommended);
 
     var slides = document.querySelectorAll(".slider-text");
     if (slides[0]) {
       slides[0].querySelector("h3").textContent = "Seoul capsule";
       slides[0].querySelector("h2").textContent = "Layering for city nights";
-      slides[0].querySelector("a").textContent = "Kham pha ngay";
+      slides[0].querySelector("a").textContent = "Explore now";
       slides[0].querySelector("a").setAttribute("href", "shop.html?collection=seoul-street");
     }
     if (slides[1]) {
       slides[1].querySelector("h3").textContent = "Tokyo minimal";
       slides[1].querySelector("h2").textContent = "Quiet lines, strong silhouette";
-      slides[1].querySelector("a").textContent = "Xem bo suu tap";
+      slides[1].querySelector("a").textContent = "View collection";
       slides[1].querySelector("a").setAttribute("href", "shop.html?collection=tokyo-minimal");
     }
     if (slides[2]) {
       slides[2].querySelector("h3").textContent = "Saigon x Shanghai";
       slides[2].querySelector("h2").textContent = "Modern daily wardrobe";
-      slides[2].querySelector("a").textContent = "Tim phong cach";
+      slides[2].querySelector("a").textContent = "Find your style";
       slides[2].querySelector("a").setAttribute("href", "shop.html");
     }
 
@@ -96,7 +96,7 @@
           "<span>Seoul / Tokyo</span>",
           "<h2>Asian Street Layers</h2>",
           "<p>Bomber, overshirt, wide trousers and quiet sneakers for a sharper daily look.</p>",
-          '<a href="shop.html?collection=seoul-street">Xem line nay</a>',
+          '<a href="shop.html?collection=seoul-street">View this line</a>',
           "</div>"
         ].join("");
       }
@@ -107,7 +107,7 @@
           "<span>Kyoto / Shanghai</span>",
           "<h2>Soft Tailored Edit</h2>",
           "<p>Slip dress, cropped blazer and pleated silhouettes with calm Asian polish.</p>",
-          '<a href="shop.html?collection=kyoto-linen">Kham pha phong cach</a>',
+          '<a href="shop.html?collection=kyoto-linen">Explore the style</a>',
           "</div>"
         ].join("");
       }
@@ -149,13 +149,13 @@
     var toolbar = document.createElement("div");
     toolbar.className = "catalog-toolbar";
     toolbar.innerHTML = [
-      '<div class="catalog-summary">Asian wardrobe / ' + catalog.products.length + ' san pham</div>',
+      '<div class="catalog-summary">Asian wardrobe / ' + catalog.products.length + ' products</div>',
       '<div class="catalog-state"></div>'
     ].join("");
     content.parentNode.insertBefore(toolbar, content);
 
     if (searchInput) {
-      searchInput.placeholder = "Tim blazer, tee, bag, Seoul, Tokyo...";
+      searchInput.placeholder = "Search blazer, tee, bag, Seoul, Tokyo...";
       if (searchInput.form) {
         searchInput.form.addEventListener("submit", function (event) {
           event.preventDefault();
@@ -171,7 +171,7 @@
     if (sidebarList) {
       var collectionItems = catalog.getCollectionCounts();
       sidebarList.innerHTML = [
-        '<li><a href="#" class="sidebar-filter-link" data-collection="all">Tat ca <span class="sidebar-count">' + catalog.products.length + "</span></a></li>"
+        '<li><a href="#" class="sidebar-filter-link" data-collection="all">All <span class="sidebar-count">' + catalog.products.length + "</span></a></li>"
       ].concat(collectionItems.map(function (collection) {
         return '<li><a href="#" class="sidebar-filter-link" data-collection="' + collection.key + '">' + collection.label + ' <span class="sidebar-count">' + collection.count + "</span></a></li>";
       })).join("");
@@ -217,21 +217,21 @@
       }
 
       if (!filtered.length) {
-        content.innerHTML = '<div class="catalog-empty">Khong tim thay san pham phu hop. Thu mo rong khoang gia hoac doi tu khoa tim kiem.</div>';
+        content.innerHTML = '<div class="catalog-empty">No matching products were found. Try widening the price range or changing your search.</div>';
       } else {
         renderProductList(content, visible);
       }
 
       if (stateNode) {
-        stateNode.textContent = "Dang xem " + Math.min(visible.length, filtered.length) + " / " + filtered.length + " san pham";
+        stateNode.textContent = "Showing " + Math.min(visible.length, filtered.length) + " / " + filtered.length + " products";
       }
 
       if (loadMoreButton) {
         if (visible.length >= filtered.length || !filtered.length) {
-          loadMoreButton.textContent = "Da hien het";
+          loadMoreButton.textContent = "All shown";
           loadMoreButton.classList.add("is-disabled");
         } else {
-          loadMoreButton.textContent = "Xem them";
+          loadMoreButton.textContent = "Load more";
           loadMoreButton.classList.remove("is-disabled");
         }
       }
@@ -355,7 +355,7 @@
 
     var cartButton = singleProduct.querySelector('#cart-form input[type="submit"]');
     if (cartButton) {
-      cartButton.value = "Them vao gio";
+      cartButton.value = "Add to cart";
     }
 
     var metaItems = singleProduct.querySelectorAll(".product-meta p");
@@ -368,14 +368,14 @@
 
     var wishlistText = singleProduct.querySelector("#wishlist-form .form-group");
     if (wishlistText) {
-      wishlistText.innerHTML = '<input type="checkbox" class="wishlist" name="wishlist"> Luu vao yeu thich';
+      wishlistText.innerHTML = '<input type="checkbox" class="wishlist" name="wishlist"> Save to wishlist';
     }
 
     var relatedSection = document.querySelector("main .new-product-section .product-content");
     var relatedHeading = document.querySelector("main .new-product-section .product-section-heading");
     if (relatedSection && relatedHeading) {
-      relatedHeading.querySelector("h2").innerHTML = 'Mac cung tinh than <img src="img/icons/good_quality.png">';
-      relatedHeading.querySelector("h3").textContent = "Them lua chon cung mood de hoan chinh set do chau A";
+      relatedHeading.querySelector("h2").innerHTML = 'Complete the mood <img src="img/icons/good_quality.png">';
+      relatedHeading.querySelector("h3").textContent = "More options that match the same Asian-inspired outfit direction";
       renderProductList(relatedSection, related);
     }
 

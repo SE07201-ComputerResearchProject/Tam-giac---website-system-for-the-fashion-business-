@@ -1,46 +1,61 @@
-// Dynamic header auth cho tất cả pages
 import { isLoggedIn, logout, loadProfile } from './auth.js';
 
 export const initHeaderAuth = async () => {
   const accountIcon = document.querySelector('.shop-icon .dropdown:first-child');
-  if (!accountIcon) return;
+  if (!accountIcon) {
+    return;
+  }
 
-  const isLogin = isLoggedIn();
-  const profile = isLogin ? await loadProfile().catch(() => null) : null;
+  const loggedIn = isLoggedIn();
+  const profile = loggedIn ? await loadProfile().catch(() => null) : null;
 
-  if (isLogin && profile) {
-    // Logged in: Hiển thị tên
+  if (loggedIn && profile) {
     accountIcon.innerHTML = `
       <div class="user-menu">
-        <img src="img/icons/account.png">
-        <span>Xin chào ${profile.fullName || profile.email}</span>
+        <img src="img/icons/account.png" alt="Account">
+        <div class="user-copy">
+          <span class="user-kicker">Signed in</span>
+          <strong class="user-name">${profile.fullName || profile.email}</strong>
+        </div>
         <div class="dropdown-menu">
           <ul>
-            <li><a href="account.html">Tài khoản</a></li>
-            <li><a href="orders.html">Đơn hàng</a></li>
-            <li><a href="javascript:logout()">Đăng xuất</a></li>
+            <li><a href="account.html">My Account</a></li>
+            <li><a href="orders.html">My Orders</a></li>
+            <li><a href="javascript:logout()">Log Out</a></li>
           </ul>
         </div>
       </div>
     `;
-  } else {
-    // Guest: Login/Register
-    accountIcon.innerHTML = `
-      <div class="dropdown">
-        <img src="img/icons/account.png" title="Đăng nhập">
-        <div class="dropdown-menu login-links">
-          <ul>
-            <li><a href="login.html">Đăng nhập</a></li>
-            <li><a href="register.html">Đăng ký</a></li>
-          </ul>
-        </div>
-      </div>
-    `;
+    return;
   }
+
+  accountIcon.innerHTML = `
+    <div class="dropdown">
+      <img src="img/icons/account.png" title="Account" alt="Account">
+      <div class="dropdown-menu login-links">
+        <ul>
+          <li><a href="login.html">Log In</a></li>
+          <li><a href="register.html">Sign Up</a></li>
+        </ul>
+      </div>
+    </div>
+  `;
 };
 
-// Expose logout for inline handler in existing header markup.
 window.logout = logout;
 
-// Auto init khi load page
 document.addEventListener('DOMContentLoaded', initHeaderAuth);
+// Load chatbot widget (non-blocking)
+if (typeof window !== 'undefined') {
+  document.addEventListener('DOMContentLoaded', function () {
+    try {
+      import('./chatbot-widget.js');
+    } catch (e) {
+      // dynamic import may not be supported in some environments; fallback to adding script
+      const s = document.createElement('script');
+      s.defer = true;
+      s.src = 'js/chatbot-widget.js';
+      document.head.appendChild(s);
+    }
+  });
+}

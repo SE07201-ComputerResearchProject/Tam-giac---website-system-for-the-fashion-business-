@@ -19,57 +19,57 @@
       </div>
 
       <div class="demo-pay-banner">
-        Ban mo phong luong thanh toan QR cho do an. Trang nay khong phai cong thanh toan that.
+        This page simulates a QR payment flow for the project. It is not a real payment gateway.
       </div>
 
       <div class="demo-pay-grid">
         <div class="demo-pay-qr-panel">
           <div class="demo-pay-loading" id="demoPayLoading">
             <div class="demo-pay-spinner"></div>
-            <p>Dang tao ma QR demo...</p>
+            <p>Generating demo QR code...</p>
           </div>
           <button type="button" class="demo-pay-qr-trigger" id="demoPayQrTrigger" hidden>
             <img id="demoPayQr" class="demo-pay-qr" alt="Demo QR">
           </button>
           <div class="demo-pay-scanline"></div>
-          <p class="demo-pay-caption">Bam vao QR de mo phong hanh dong quet va xac nhan thanh toan</p>
+          <p class="demo-pay-caption">Tap the QR to simulate scanning and confirming payment</p>
         </div>
 
         <div class="demo-pay-info">
-          <div class="demo-pay-status-pill" id="demoPayStatusPill">Dang cho thanh toan</div>
+          <div class="demo-pay-status-pill" id="demoPayStatusPill">Waiting for payment</div>
           <div class="demo-pay-row">
-            <span>Don hang</span>
+            <span>Order</span>
             <strong id="demoPayOrderId">-</strong>
           </div>
           <div class="demo-pay-row">
-            <span>Noi dung</span>
+            <span>Description</span>
             <strong id="demoPayOrderInfo">-</strong>
           </div>
           <div class="demo-pay-row">
-            <span>So tien</span>
+            <span>Amount</span>
             <strong id="demoPayAmount">-</strong>
           </div>
           <div class="demo-pay-row">
-            <span>Con lai</span>
+            <span>Time left</span>
             <strong id="demoPayCountdown">-</strong>
           </div>
 
           <div class="demo-pay-webhook">
-            <p class="demo-pay-webhook-title">Webhook demo</p>
-            <p id="demoPayWebhookText">Dang cho su kien thanh toan...</p>
+            <p class="demo-pay-webhook-title">Demo webhook</p>
+            <p id="demoPayWebhookText">Waiting for a payment event...</p>
           </div>
         </div>
       </div>
 
       <div class="demo-pay-actions">
-        <button type="button" class="demo-pay-btn is-primary" id="demoPayScanButton" data-action="success">Toi da quet QR</button>
-        <button type="button" class="demo-pay-btn is-success" data-action="success">Thanh toan thanh cong</button>
-        <button type="button" class="demo-pay-btn is-fail" data-action="fail">That bai</button>
-        <button type="button" class="demo-pay-btn is-cancel" data-action="cancel">Huy giao dich</button>
+        <button type="button" class="demo-pay-btn is-primary" id="demoPayScanButton" data-action="success">I scanned the QR</button>
+        <button type="button" class="demo-pay-btn is-success" data-action="success">Payment successful</button>
+        <button type="button" class="demo-pay-btn is-fail" data-action="fail">Fail payment</button>
+        <button type="button" class="demo-pay-btn is-cancel" data-action="cancel">Cancel transaction</button>
       </div>
 
       <div class="demo-pay-footer">
-        <p id="demoPayNote">He thong se tu dong redirect ve checkout sau khi xac nhan.</p>
+        <p id="demoPayNote">The system will automatically redirect back to checkout after confirmation.</p>
       </div>
     </section>
   </main>
