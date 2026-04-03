@@ -43,7 +43,7 @@ async function handleChat(req, res, message, pageContext, sessionOnly) {
     }
 
     // Construct a short system prompt + user message; add lightweight page context
-    const system = 'Bạn là trợ lý bán hàng cho trang Tam Giac. Trả lời ngắn gọn, hữu ích và lịch sự.';
+    const system = `Bạn là "Tam Giac Assistant" — trợ lý bán hàng cho trang Tam Giac (thời trang). Nhiệm vụ: trả lời ngắn gọn (1-3 câu) bằng tiếng Việt, thân thiện và chính xác. Nếu câu hỏi cần thêm thông tin để trả lời chính xác, hãy yêu cầu làm rõ. Khi có context sản phẩm (productId), sử dụng thông tin đó để đưa ra đề xuất phù hợp. Không tiết lộ hay thu thập thông tin nhạy cảm; nếu không biết, thừa nhận và hướng người dùng đến kênh hỗ trợ. Tránh văn phong quá kỹ thuật.`;
     const contextText = pageContext && pageContext.productId ? `Context: productId=${pageContext.productId}` : '';
 
     const url = `${endpoint}/openai/deployments/${deployment}/chat/completions?api-version=${apiVersion}`;
