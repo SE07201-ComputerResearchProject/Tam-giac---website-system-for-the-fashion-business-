@@ -7,11 +7,20 @@ const Product = sequelize.define('Product', {
     primaryKey: true,
     autoIncrement: true
   },
+  slug: {
+    type: DataTypes.STRING,
+    unique: true
+  },
+  sku: {
+    type: DataTypes.STRING,
+    unique: true
+  },
   name: {
     type: DataTypes.STRING,
     allowNull: false
   },
   description: DataTypes.TEXT,
+  descriptionLongJson: DataTypes.TEXT,
   price: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false
@@ -21,6 +30,16 @@ const Product = sequelize.define('Product', {
     defaultValue: 0
   },
   imageUrl: DataTypes.STRING,
+  galleryJson: DataTypes.TEXT,
+  type: DataTypes.STRING,
+  badge: DataTypes.STRING,
+  city: DataTypes.STRING,
+  collectionKey: DataTypes.STRING,
+  collectionLabel: DataTypes.STRING,
+  material: DataTypes.STRING,
+  fit: DataTypes.STRING,
+  note: DataTypes.TEXT,
+  searchText: DataTypes.TEXT,
   categoryId: {
     type: DataTypes.INTEGER,
     references: {

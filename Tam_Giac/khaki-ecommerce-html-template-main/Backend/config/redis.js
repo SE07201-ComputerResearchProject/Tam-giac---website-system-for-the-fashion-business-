@@ -1,5 +1,5 @@
 const redis = require('redis');
-require('dotenv').config();
+require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
 
 const redisEnabled = (process.env.REDIS_ENABLED || 'false').toLowerCase() === 'true';
 

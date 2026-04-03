@@ -2,7 +2,6 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const passport = require('passport');
 const logger = require('../utils/logger');
 const authMiddleware = require('../middleware/auth');
 const mfaMiddleware = require('../middleware/mfa');
@@ -10,11 +9,6 @@ const recaptchaMiddleware = require('../middleware/recaptcha');
 const { getSqlPool, sql } = require('../config/database');
 
 const router = express.Router();
-
-const googleOAuthEnabled =
-  Boolean(process.env.GOOGLE_CLIENT_ID) &&
-  Boolean(process.env.GOOGLE_CLIENT_SECRET) &&
-  Boolean(process.env.GOOGLE_CALLBACK_URL);
 
 let ensureUsersTablePromise = null;
 
@@ -35,17 +29,13 @@ const ensureUsersTable = async () => {
         CREATE TABLE dbo.Users (
           id INT IDENTITY(1,1) PRIMARY KEY,
           email NVARCHAR(255) NOT NULL UNIQUE,
-          password NVARCHAR(255) NOT NULL,
-          fullName NVARCHAR(255) NULL,
+          password_hash NVARCHAR(255) NOT NULL,
+          full_name NVARCHAR(255) NULL,
           phone NVARCHAR(50) NULL,
           role NVARCHAR(20) NOT NULL DEFAULT 'user',
-          isActive BIT NOT NULL DEFAULT 1,
-          mfaSecret NVARCHAR(255) NULL,
-          mfaEnabled BIT NOT NULL DEFAULT 0,
-          googleId NVARCHAR(255) NULL,
-          lastLogin DATETIME NULL,
-          createdAt DATETIME NOT NULL DEFAULT GETDATE(),
-          updatedAt DATETIME NOT NULL DEFAULT GETDATE()
+          is_verified BIT NOT NULL DEFAULT 0,
+          is_active BIT NOT NULL DEFAULT 1,
+          created_at DATETIME NOT NULL DEFAULT GETDATE()
         );
       END
     `);
@@ -69,10 +59,6 @@ const signAuthToken = (user) =>
     { expiresIn: '24h' }
   );
 
-if (!googleOAuthEnabled) {
-  logger.warn('Google OAuth chua duoc cau hinh');
-}
-
 router.post(
   '/register',
   recaptchaMiddleware.verifyCaptcha,
@@ -93,7 +79,9 @@ router.post(
 
       await ensureUsersTable();
       const pool = getPoolOrThrow();
-      const { email, password, fullName } = req.body;
+      const email = String(req.body.email || '').trim().toLowerCase();
+      const password = String(req.body.password || '');
+      const fullName = String(req.body.fullName || '').trim();
 
       const existingUser = await pool
         .request()
@@ -104,16 +92,32 @@ router.post(
         return res.status(400).json({ error: 'Email da ton tai' });
       }
 
-      const hashedPassword = await bcrypt.hash(password, 12);
+      const passwordHash = await bcrypt.hash(password, 12);
       const createdUser = await pool
         .request()
         .input('email', sql.NVarChar(255), email)
-        .input('password', sql.NVarChar(255), hashedPassword)
+        .input('passwordHash', sql.NVarChar(255), passwordHash)
         .input('fullName', sql.NVarChar(255), fullName)
         .query(`
-          INSERT INTO dbo.Users (email, password, fullName, createdAt, updatedAt)
+          INSERT INTO dbo.Users (
+            email,
+            password_hash,
+            full_name,
+            role,
+            is_verified,
+            is_active,
+            created_at
+          )
           OUTPUT INSERTED.id
-          VALUES (@email, @password, @fullName, GETDATE(), GETDATE())
+          VALUES (
+            @email,
+            @passwordHash,
+            @fullName,
+            'user',
+            0,
+            1,
+            GETDATE()
+          )
         `);
 
       logger.info(`User registered: ${email}`);
@@ -132,7 +136,8 @@ router.post('/login', recaptchaMiddleware.verifyCaptcha, async (req, res) => {
   try {
     await ensureUsersTable();
     const pool = getPoolOrThrow();
-    const { email, password } = req.body;
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const password = String(req.body.password || '');
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Vui long nhap email va mat khau' });
@@ -142,7 +147,14 @@ router.post('/login', recaptchaMiddleware.verifyCaptcha, async (req, res) => {
       .request()
       .input('email', sql.NVarChar(255), email)
       .query(`
-        SELECT TOP 1 id, email, password, role, fullName, phone, mfaEnabled, isActive
+        SELECT TOP 1
+          id,
+          email,
+          password_hash AS passwordHash,
+          role,
+          full_name AS fullName,
+          phone,
+          is_active AS isActive
         FROM dbo.Users
         WHERE email = @email
       `);
@@ -152,19 +164,14 @@ router.post('/login', recaptchaMiddleware.verifyCaptcha, async (req, res) => {
       return res.status(401).json({ error: 'Email/mat khau sai' });
     }
 
-    const passwordMatched = await bcrypt.compare(password, user.password);
+    const passwordMatched = await bcrypt.compare(password, user.passwordHash);
     if (!passwordMatched) {
       return res.status(401).json({ error: 'Email/mat khau sai' });
     }
 
-    await pool
-      .request()
-      .input('id', sql.Int, user.id)
-      .query('UPDATE dbo.Users SET lastLogin = GETDATE(), updatedAt = GETDATE() WHERE id = @id');
-
     res.json({
       token: signAuthToken(user),
-      mfaEnabled: Boolean(user.mfaEnabled),
+      mfaEnabled: false,
       message: 'Dang nhap OK'
     });
   } catch (error) {
@@ -173,83 +180,21 @@ router.post('/login', recaptchaMiddleware.verifyCaptcha, async (req, res) => {
   }
 });
 
-router.post('/mfa/setup', authMiddleware.authenticateToken, async (req, res, next) => {
-  try {
-    await ensureUsersTable();
-    const pool = getPoolOrThrow();
-    const userResult = await pool
-      .request()
-      .input('id', sql.Int, req.user.id)
-      .query('SELECT TOP 1 id, email FROM dbo.Users WHERE id = @id');
-
-    const dbUser = userResult.recordset[0];
-    if (!dbUser) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    req.user = { ...req.user, ...dbUser };
-    return mfaMiddleware.generateMFASecret(req, res, next);
-  } catch (error) {
-    logger.error('MFA setup init failed', { message: error?.message });
-    return res.status(500).json({ error: 'Khong the tao MFA' });
+router.post(
+  '/mfa/setup',
+  authMiddleware.authenticateToken,
+  async (req, res) => {
+    return res.status(501).json({ error: 'MFA chua duoc bat cho schema hien tai' });
   }
-}, async (req, res) => {
-  try {
-    const pool = getPoolOrThrow();
-    await pool
-      .request()
-      .input('id', sql.Int, req.user.id)
-      .input('mfaSecret', sql.NVarChar(255), req.mfa.secret)
-      .query(`
-        UPDATE dbo.Users
-        SET mfaSecret = @mfaSecret, updatedAt = GETDATE()
-        WHERE id = @id
-      `);
+);
 
-    res.json({
-      qrCode: req.mfa.qr,
-      secret: req.mfa.secret,
-      message: 'Scan QR bang Google Authenticator'
-    });
-  } catch (error) {
-    logger.error('MFA setup save failed', { message: error?.message });
-    res.status(500).json({ error: 'Khong the luu MFA' });
+router.post(
+  '/mfa/verify',
+  authMiddleware.authenticateToken,
+  async (req, res) => {
+    return res.status(501).json({ error: 'MFA chua duoc bat cho schema hien tai' });
   }
-});
-
-router.post('/mfa/verify', authMiddleware.authenticateToken, async (req, res, next) => {
-  try {
-    const pool = getPoolOrThrow();
-    const userResult = await pool
-      .request()
-      .input('id', sql.Int, req.user.id)
-      .query('SELECT TOP 1 id, mfaSecret FROM dbo.Users WHERE id = @id');
-
-    const dbUser = userResult.recordset[0];
-    if (!dbUser) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    req.user = { ...req.user, ...dbUser };
-    return mfaMiddleware.verifyMFA(req, res, next);
-  } catch (error) {
-    logger.error('MFA verify init failed', { message: error?.message });
-    return res.status(500).json({ error: 'Khong the xac minh MFA' });
-  }
-}, async (req, res) => {
-  try {
-    const pool = getPoolOrThrow();
-    await pool
-      .request()
-      .input('id', sql.Int, req.user.id)
-      .query('UPDATE dbo.Users SET mfaEnabled = 1, updatedAt = GETDATE() WHERE id = @id');
-
-    res.json({ message: 'MFA kich hoat thanh cong' });
-  } catch (error) {
-    logger.error('MFA enable failed', { message: error?.message });
-    res.status(500).json({ error: 'Khong the kich hoat MFA' });
-  }
-});
+);
 
 router.get('/google', (req, res) => {
   res.status(501).json({ error: 'Google OAuth chua duoc cau hinh cho local flow nay' });
@@ -267,7 +212,12 @@ router.get('/me', authMiddleware.authenticateToken, async (req, res) => {
       .request()
       .input('id', sql.Int, req.user.id)
       .query(`
-        SELECT TOP 1 id, email, fullName, role, phone
+        SELECT TOP 1
+          id,
+          email,
+          full_name AS fullName,
+          role,
+          phone
         FROM dbo.Users
         WHERE id = @id
       `);
@@ -283,5 +233,70 @@ router.get('/me', authMiddleware.authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+router.put(
+  '/profile',
+  authMiddleware.authenticateToken,
+  [
+    body('fullName')
+      .optional()
+      .trim()
+      .isLength({ min: 2, max: 255 })
+      .withMessage('Ho ten khong hop le'),
+    body('phone')
+      .optional({ values: 'falsy' })
+      .trim()
+      .isLength({ max: 50 })
+      .withMessage('So dien thoai khong hop le')
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ error: errors.array()[0].msg });
+      }
+
+      await ensureUsersTable();
+      const pool = getPoolOrThrow();
+      const fullName = req.body.fullName ? String(req.body.fullName).trim() : null;
+      const phone = req.body.phone ? String(req.body.phone).trim() : null;
+
+      await pool
+        .request()
+        .input('id', sql.Int, req.user.id)
+        .input('fullName', sql.NVarChar(255), fullName)
+        .input('phone', sql.NVarChar(50), phone)
+        .query(`
+          UPDATE dbo.Users
+          SET
+            full_name = COALESCE(@fullName, full_name),
+            phone = @phone
+          WHERE id = @id
+        `);
+
+      const result = await pool
+        .request()
+        .input('id', sql.Int, req.user.id)
+        .query(`
+          SELECT TOP 1
+            id,
+            email,
+            full_name AS fullName,
+            role,
+            phone
+          FROM dbo.Users
+          WHERE id = @id
+        `);
+
+      res.json({
+        message: 'Cap nhat tai khoan thanh cong',
+        user: result.recordset[0]
+      });
+    } catch (error) {
+      logger.error('Update profile failed', { message: error?.message });
+      res.status(500).json({ error: 'Khong the cap nhat tai khoan' });
+    }
+  }
+);
 
 module.exports = router;

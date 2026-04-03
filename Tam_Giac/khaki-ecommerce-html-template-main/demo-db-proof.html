@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Proof Demo | Tam Giac</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/db-proof-demo.css?v=20260403a">
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <script type="module" src="js/db-proof-demo.js?v=20260403a" defer></script>
+</head>
+<body>
+  <div class="page-shell">
+    <section class="hero-panel">
+      <div class="hero-copy">
+        <p class="eyebrow">Tam Giac Proof Lab</p>
+        <h1>Interactive proof that account signup is writing into SQL Server.</h1>
+        <p class="intro">
+          This page proves the database connection with three concrete steps:
+          reach the database, create a fresh account, then log in and read that same account back.
+        </p>
+      </div>
+
+      <div class="proof-banner" id="proofBanner">
+        <span class="proof-chip">Pending</span>
+        <strong>Run the proof steps below.</strong>
+        <p>The demo only marks success when the backend responds and the account is read back from the API.</p>
+      </div>
+
+      <ol class="step-grid">
+        <li class="step-card pending" data-step-card="db">
+          <span class="step-index">01</span>
+          <div>
+            <strong>DB health</strong>
+            <p id="step-db-detail">Check `/health/db` first.</p>
+          </div>
+        </li>
+        <li class="step-card pending" data-step-card="register">
+          <span class="step-index">02</span>
+          <div>
+            <strong>Register account</strong>
+            <p id="step-register-detail">Create a new user through `/api/auth/register`.</p>
+          </div>
+        </li>
+        <li class="step-card pending" data-step-card="login">
+          <span class="step-index">03</span>
+          <div>
+            <strong>Login and read profile</strong>
+            <p id="step-login-detail">Use `/api/auth/login` and `/api/auth/me` to read back the record.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="control-panel">
+      <div class="panel-head">
+        <div>
+          <p class="panel-kicker">Demo controls</p>
+          <h2>Drive the proof manually</h2>
+        </div>
+        <a class="home-link" href="index.html">Back to home</a>
+      </div>
+
+      <form id="proofForm" class="proof-form" novalidate>
+        <div class="field">
+          <label for="backendOrigin">Backend origin</label>
+          <input id="backendOrigin" name="backendOrigin" type="url" value="http://127.0.0.1:3002" spellcheck="false">
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="fullName">Full name</label>
+            <input id="fullName" name="fullName" type="text" autocomplete="name">
+          </div>
+          <div class="field">
+            <label for="email">Demo email</label>
+            <input id="email" name="email" type="email" autocomplete="email" spellcheck="false">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="text" autocomplete="new-password" spellcheck="false">
+            <small>Use a strong password because the backend enforces the rule.</small>
+          </div>
+          <div class="field action-field">
+            <label>Quick actions</label>
+            <button id="generateIdentityBtn" class="ghost-btn" type="button">Generate fresh demo account</button>
+            <small>This creates a unique email so registration can prove a brand-new insert.</small>
+          </div>
+        </div>
+
+        <div class="status-box" id="statusBox" aria-live="polite">
+          Complete reCAPTCHA before each secured step. Register and login use different tokens.
+        </div>
+
+        <div class="recaptcha-wrap">
+          <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
+        </div>
+
+        <div class="action-row">
+          <button id="checkDbBtn" class="primary-btn" type="button">1. Check DB health</button>
+          <button id="registerBtn" class="primary-btn accent" type="button">2. Register in DB</button>
+          <button id="loginBtn" class="primary-btn dark" type="button">3. Login and load profile</button>
+        </div>
+
+        <div class="helper-strip">
+          <span>Need a clean run? Generate a fresh email, tick reCAPTCHA, then click Register.</span>
+          <button id="resetLogBtn" class="text-btn" type="button">Clear console</button>
+        </div>
+      </form>
+
+      <div class="evidence-grid">
+        <article class="evidence-card">
+          <div class="evidence-head">
+            <span class="evidence-label">DB health</span>
+            <strong id="dbBadge">Waiting</strong>
+          </div>
+          <pre id="dbEvidence">No health check yet.</pre>
+        </article>
+
+        <article class="evidence-card">
+          <div class="evidence-head">
+            <span class="evidence-label">Register response</span>
+            <strong id="registerBadge">Waiting</strong>
+          </div>
+          <pre id="registerEvidence">No account created yet.</pre>
+        </article>
+
+        <article class="evidence-card">
+          <div class="evidence-head">
+            <span class="evidence-label">Login token</span>
+            <strong id="loginBadge">Waiting</strong>
+          </div>
+          <pre id="loginEvidence">No token yet.</pre>
+        </article>
+
+        <article class="evidence-card">
+          <div class="evidence-head">
+            <span class="evidence-label">Profile from DB</span>
+            <strong id="profileBadge">Waiting</strong>
+          </div>
+          <pre id="profileEvidence">No profile loaded yet.</pre>
+        </article>
+      </div>
+
+      <section class="console-panel">
+        <div class="console-head">
+          <div>
+            <p class="panel-kicker">Live console</p>
+            <h3>Proof log</h3>
+          </div>
+          <span class="console-note">Newest entries appear first.</span>
+        </div>
+        <div class="console-log" id="consoleLog"></div>
+      </section>
+    </section>
+  </div>
+</body>
+</html>

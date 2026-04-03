@@ -13,6 +13,7 @@ start "TamGiac Frontend" cmd /k "cd /d ""%FRONTEND_DIR%"" && node dev-static-ser
 
 echo Frontend preview: http://127.0.0.1:3001/register.html
 echo Login page:       http://127.0.0.1:3001/login.html
+echo DB proof demo:    http://127.0.0.1:3001/demo-db-proof.html
 echo Backend health:   http://localhost:3002/health
 echo.
 echo Keep both opened terminal windows running while testing.
