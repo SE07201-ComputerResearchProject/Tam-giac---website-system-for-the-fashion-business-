@@ -11,6 +11,15 @@ const { getSqlPool, sql } = require('../config/database');
 const router = express.Router();
 
 let ensureUsersTablePromise = null;
+const guidPattern =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+const withUserIdInput = (request, id) =>
+  request.input(
+    'id',
+    typeof id === 'string' && guidPattern.test(id) ? sql.UniqueIdentifier : sql.Int,
+    id
+  );
 
 const ensureUsersTable = async () => {
   if (ensureUsersTablePromise) {
@@ -27,7 +36,7 @@ const ensureUsersTable = async () => {
       IF OBJECT_ID(N'dbo.Users', N'U') IS NULL
       BEGIN
         CREATE TABLE dbo.Users (
-          id INT IDENTITY(1,1) PRIMARY KEY,
+          id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
           email NVARCHAR(255) NOT NULL UNIQUE,
           password_hash NVARCHAR(255) NOT NULL,
           full_name NVARCHAR(255) NULL,
@@ -209,8 +218,11 @@ router.get('/me', authMiddleware.authenticateToken, async (req, res) => {
     await ensureUsersTable();
     const pool = getPoolOrThrow();
     const result = await pool
-      .request()
-      .input('id', sql.Int, req.user.id)
+      .request();
+
+    withUserIdInput(result, req.user.id);
+
+    const userResult = await result
       .query(`
         SELECT TOP 1
           id,
@@ -222,7 +234,7 @@ router.get('/me', authMiddleware.authenticateToken, async (req, res) => {
         WHERE id = @id
       `);
 
-    const user = result.recordset[0];
+    const user = userResult.recordset[0];
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -261,11 +273,12 @@ router.put(
       const fullName = req.body.fullName ? String(req.body.fullName).trim() : null;
       const phone = req.body.phone ? String(req.body.phone).trim() : null;
 
-      await pool
-        .request()
-        .input('id', sql.Int, req.user.id)
-        .input('fullName', sql.NVarChar(255), fullName)
-        .input('phone', sql.NVarChar(50), phone)
+      const updateRequest = pool.request();
+      withUserIdInput(updateRequest, req.user.id);
+      updateRequest.input('fullName', sql.NVarChar(255), fullName);
+      updateRequest.input('phone', sql.NVarChar(50), phone);
+
+      await updateRequest
         .query(`
           UPDATE dbo.Users
           SET
@@ -274,9 +287,10 @@ router.put(
           WHERE id = @id
         `);
 
-      const result = await pool
-        .request()
-        .input('id', sql.Int, req.user.id)
+      const profileRequest = pool.request();
+      withUserIdInput(profileRequest, req.user.id);
+
+      const result = await profileRequest
         .query(`
           SELECT TOP 1
             id,

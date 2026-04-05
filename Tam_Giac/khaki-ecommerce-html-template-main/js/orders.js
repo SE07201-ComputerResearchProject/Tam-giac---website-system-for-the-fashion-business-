@@ -1,6 +1,4 @@
-import { isLoggedIn, loadProfile, navigateWithLoader } from './auth.js?v=20260320b';
-
-const ORDERS_KEY = 'tamgiac_orders';
+import { isLoggedIn, loadProfile, navigateWithLoader, logout, apiCall } from './auth.js';
 
 const formatPrice = (value) => `${Number(value || 0).toLocaleString('vi-VN')} d`;
 
@@ -13,16 +11,6 @@ const formatDate = (value) => {
   return date.toLocaleDateString('vi-VN');
 };
 
-const readOrders = () => {
-  try {
-    const raw = localStorage.getItem(ORDERS_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (error) {
-    return [];
-  }
-};
-
 const renderProfile = async () => {
   const profileName = document.querySelector('.profile-img h2');
   const profileEmail = document.querySelector('.profile-img p');
@@ -31,14 +19,10 @@ const renderProfile = async () => {
     return;
   }
 
-  if (!isLoggedIn()) {
-    profileName.textContent = 'Guest';
-    profileEmail.textContent = 'Please log in';
-    return;
-  }
-
   const profile = await loadProfile().catch(() => null);
   if (!profile) {
+    profileName.textContent = 'Guest';
+    profileEmail.textContent = 'Please log in';
     return;
   }
 
@@ -46,34 +30,45 @@ const renderProfile = async () => {
   profileEmail.textContent = profile.email || '';
 };
 
-const renderOrders = () => {
+const renderOrders = async () => {
   const tbody = document.querySelector('.order-detail table tbody');
   if (!tbody) {
     return;
   }
 
-  const orders = readOrders();
+  try {
+    const orders = await apiCall('/orders/my');
 
-  if (!orders.length) {
-    tbody.innerHTML = '<tr><td colspan="6">No orders yet. Head back to the shop to start shopping.</td></tr>';
-    return;
+    if (!orders.length) {
+      tbody.innerHTML = '<tr><td colspan="6">No orders yet. Head back to the shop to start shopping.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = orders
+      .map((order) => [
+        '<tr>',
+        `<td>${formatDate(order.createdAt)}</td>`,
+        `<td>${order.reference || order.id || '-'}</td>`,
+        `<td>${formatPrice(order.totalAmount)}</td>`,
+        `<td>${order.paymentLabel || 'Cash on delivery'}</td>`,
+        `<td>${order.status || 'Pending'}</td>`,
+        `<td><a href="shop.html">Shop again</a></td>`,
+        '</tr>'
+      ].join(''))
+      .join('');
+  } catch (error) {
+    tbody.innerHTML = '<tr><td colspan="6">Could not load your orders right now.</td></tr>';
   }
-
-  tbody.innerHTML = orders.map((order) => [
-    '<tr>',
-    `<td>${formatDate(order.createdAt)}</td>`,
-    `<td>${order.id || '-'}</td>`,
-    `<td>${formatPrice(order.total)}</td>`,
-    `<td>${order.paymentLabel || order.paymentMethod || '-'}</td>`,
-    `<td>${order.status || 'New'}</td>`,
-    `<td><a href="shop.html">Shop again</a></td>`,
-    '</tr>'
-  ].join('')).join('');
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
+  if (!isLoggedIn()) {
+    navigateWithLoader('login.html', 0);
+    return;
+  }
+
   await renderProfile();
-  renderOrders();
+  await renderOrders();
 
   const logoutLink = Array.from(document.querySelectorAll('.profile a')).find((link) =>
     /logout/i.test(link.textContent || '')
@@ -82,8 +77,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (logoutLink) {
     logoutLink.addEventListener('click', (event) => {
       event.preventDefault();
-      localStorage.removeItem('token');
-      navigateWithLoader('login.html', 80);
+      logout();
     });
   }
 });

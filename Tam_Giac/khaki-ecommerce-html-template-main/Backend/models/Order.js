@@ -5,12 +5,14 @@ const Order = sequelize.define(
   'Order',
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       primaryKey: true,
-      autoIncrement: true
+      defaultValue: DataTypes.UUIDV4
     },
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
+      allowNull: false,
+      field: 'user_id',
       references: {
         model: 'Users',
         key: 'id'
@@ -18,37 +20,22 @@ const Order = sequelize.define(
     },
     totalAmount: {
       type: DataTypes.DECIMAL(10, 2),
-      allowNull: false
-    },
-    subtotalAmount: {
-      type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
-      defaultValue: 0
-    },
-    deliveryFee: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: false,
-      defaultValue: 0
-    },
-    itemCount: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0
+      field: 'total_price'
     },
     status: {
-      type: DataTypes.ENUM('pending', 'paid', 'shipped', 'delivered', 'cancelled'),
+      type: DataTypes.STRING,
       defaultValue: 'pending'
     },
-    paymentMethod: DataTypes.STRING,
-    paymentId: DataTypes.STRING,
-    customerName: DataTypes.STRING,
-    customerEmail: DataTypes.STRING,
-    customerPhone: DataTypes.STRING,
-    orderNote: DataTypes.TEXT,
-    shippingAddress: DataTypes.JSON,
-    vnpayResponse: DataTypes.JSON
+    createdAt: {
+      type: DataTypes.DATE,
+      field: 'created_at',
+      defaultValue: sequelize.literal('GETDATE()')
+    }
   },
   {
-    timestamps: true
+    tableName: 'Orders',
+    timestamps: false
   }
 );
 

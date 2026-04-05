@@ -5,38 +5,41 @@ const OrderItem = sequelize.define(
   'OrderItem',
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       primaryKey: true,
-      autoIncrement: true
+      defaultValue: DataTypes.UUIDV4
     },
     orderId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
+      field: 'order_id',
       references: {
         model: 'Orders',
         key: 'id'
       }
     },
     productId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
+      field: 'product_id',
       references: {
         model: 'Products',
         key: 'id'
       }
     },
-    price: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: false
-    },
     quantity: {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 1
+    },
+    price: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false
     }
   },
   {
-    timestamps: true
+    tableName: 'Order_Items',
+    timestamps: false
   }
 );
 
@@ -46,4 +49,3 @@ OrderItem.associate = (models) => {
 };
 
 module.exports = OrderItem;
-

@@ -1,48 +1,68 @@
-// Account page - Load dynamic profile
-import { loadProfile, apiCall, isLoggedIn, navigateWithLoader } from './auth.js';
+import { loadProfile, apiCall, isLoggedIn, navigateWithLoader, logout } from './auth.js';
 import { initHeaderAuth } from './header-auth.js';
+
+const showAlert = (message, type = 'info') => {
+  window.alert(message);
+};
 
 document.addEventListener('DOMContentLoaded', async () => {
   initHeaderAuth();
 
-  const profileImg = document.querySelector('.profile-img');
   const form = document.querySelector('.checkout-form');
   const profileName = document.querySelector('.profile-img h2');
   const profileEmail = document.querySelector('.profile-img p');
-  const updateBtn = document.getElementById('update');
+  const logoutLink = Array.from(document.querySelectorAll('.profile a')).find((link) =>
+    /logout/i.test(link.textContent || '')
+  );
 
   if (!isLoggedIn()) {
     navigateWithLoader('login.html', 0);
     return;
   }
 
+  if (logoutLink) {
+    logoutLink.addEventListener('click', (event) => {
+      event.preventDefault();
+      logout();
+    });
+  }
+
   try {
     const profile = await loadProfile();
+    if (!profile) {
+      throw new Error('Profile not found');
+    }
+
     profileName.textContent = profile.fullName || profile.email;
     profileEmail.textContent = profile.email;
-    // Fill form
     document.getElementById('fname').value = profile.fullName ? profile.fullName.split(' ')[0] : '';
     document.getElementById('lname').value = profile.fullName ? profile.fullName.split(' ').slice(1).join(' ') : '';
     document.getElementById('mobile').value = profile.phone || '';
   } catch (error) {
-    console.error('Load profile error:', error);
     navigateWithLoader('login.html', 0);
+    return;
   }
 
-  // Update profile
-  updateBtn.addEventListener('click', async () => {
-    const fullName = document.getElementById('fname').value + ' ' + document.getElementById('lname').value;
-    const phone = document.getElementById('mobile').value;
-    
+  if (!form) {
+    return;
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const fullName = `${document.getElementById('fname').value} ${document.getElementById('lname').value}`.trim();
+    const phone = document.getElementById('mobile').value.trim();
+
     try {
-      await apiCall('/auth/profile', {
+      const result = await apiCall('/auth/profile', {
         method: 'PUT',
         body: JSON.stringify({ fullName, phone })
       });
-      alert('Cập nhật thành công!');
-      window.location.reload();
+
+      profileName.textContent = result.user?.fullName || fullName;
+      showAlert('Cap nhat tai khoan thanh cong.');
     } catch (error) {
-      alert('Lỗi cập nhật: ' + (error.error || error.message));
+      showAlert(error.error || 'Khong the cap nhat tai khoan.', 'error');
     }
   });
 });

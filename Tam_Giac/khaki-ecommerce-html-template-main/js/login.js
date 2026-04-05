@@ -1,4 +1,4 @@
-import { isLoggedIn, login, navigateWithLoader } from './auth.js?v=20260320b';
+import { isLoggedIn, login, navigateWithLoader } from './auth.js?v=20260403a';
 
 const form = document.getElementById('loginForm');
 const statusBox = document.getElementById('loginStatus');

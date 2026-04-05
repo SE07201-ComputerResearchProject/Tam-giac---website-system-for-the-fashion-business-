@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 
- 	<head>
- 		<!-- Meta Tags -->
+	<head>
 		<meta charset="UTF-8">
 		<meta name="author" content="Kamran Mubarik">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<!-- Title -->
- 		<title>Tam Giac Admin</title>
-		<!-- Style Sheet -->
+		<title>Tam Giac Admin</title>
 		<link rel="stylesheet" type="text/css" href="css/style.css" />
 		<link rel="stylesheet" type="text/css" href="../css/mouse-effects.css?v=20260320a" />
 		<link rel="stylesheet" type="text/css" href="../css/page-loader.css?v=20260321a" />
 		<script defer src="../js/page-loader.js?v=20260321a"></script>
 		<script defer src="../js/mouse-effects.js?v=20260320a"></script>
- 	</head>
+		<script defer src="js/product-admin.js?v=20260403a"></script>
+	</head>
 <body>
 
 	<header>
@@ -25,79 +23,82 @@
 						<img src="../img/icons/tam-giac-logo.svg">
 						<div class="logo-text">
 							<p class="big-logo">Tam Giac</p>
-							<p class="small-logo">thoi trang Viet</p>
+							<p class="small-logo">admin panel</p>
 						</div>
 					</a>
-				</div> <!-- logo -->
+				</div>
 				<div class="shop-icon">
 					<div class="dropdown">
 						<img src="../img/icons/account.png">
 						<div class="dropdown-menu">
 							<ul>
-								<li><a href="#">My Account</a></li>								
-								<li><a href="#">Settings</a></li>
-								<li><a href="#">Logout</a></li>
+								<li><a href="../account.html">My Account</a></li>
+								<li><a href="../orders.html">My Orders</a></li>
+								<li><a href="#" id="adminLogoutLink">Logout</a></li>
 							</ul>
 						</div>
 					</div>
-				</div> <!-- shop icons -->
-			</div> <!-- brand -->
-		</div> <!-- container -->
-	</header> <!-- header -->
+				</div>
+			</div>
+		</div>
+	</header>
 
 	<main>
-		
 		<div class="main-content">
 			<div class="sidebar">
 				<h3>Menu</h3>
 				<ul>
 					<li><a href="index.html">Home</a></li>
 					<li><a class="active" href="product.html">Product</a></li>
+					<li><a href="order.html">Order</a></li>
 					<li><a href="category.html">Category</a></li>
 					<li><a href="stock.html">Stock</a></li>
-					<li><a href="">Users</a></li>
-				</ul>				
+				</ul>
 			</div>
 			<div class="content">
-				<h3>Product</h3>
+				<h3>Product Manager</h3>
+				<p id="adminStatus" style="margin-bottom: 20px; color: #666;">Connecting to admin API...</p>
 				<div class="content-data">
 					<div class="content-form">
-						<form>
-							<h4>Add Product</h4>
+						<form id="productAdminForm">
+							<input type="hidden" id="productId" name="productId">
+							<h4 id="productFormTitle">Add Product</h4>
 							<div class="form-inline">
 								<div class="form-group">
 									<label>Product Name</label>
-									<input type="text" name="pname">
+									<input type="text" id="pname" name="pname" required>
 								</div>
 								<div class="form-group">
 									<label>Price</label>
-									<input type="text" name="price">
+									<input type="number" id="price" name="price" min="0" step="1000" required>
 								</div>
-							</div>
-							<div class="form-group">
-								<label>Short Description</label>
-								<input type="text" name="sdesc">
-							</div>
-							<div class="form-group">
-								<label>Long Description</label>
-								<textarea style="resize:none" name="ldesc" rows="3"></textarea>
 							</div>
 							<div class="form-inline">
 								<div class="form-group">
-									<label>Category</label>
-									<select name="category">
-										<option>---Select a Category---</option>
-										<option>Thoi trang nam</option>
-									</select>
+									<label>Stock</label>
+									<input type="number" id="stock" name="stock" min="0" step="1" value="10" required>
 								</div>
 								<div class="form-group">
-									<label>Images</label>
-									<input type="file" name="image" multiple>
+									<label>Category</label>
+									<select id="categoryId" name="categoryId"></select>
 								</div>
-							</div>												
+							</div>
+							<div class="form-group">
+								<label>New Category (Optional)</label>
+								<input type="text" id="categoryName" name="categoryName" placeholder="Create a new category if needed">
+							</div>
+							<div class="form-group">
+								<label>Short Description</label>
+								<input type="text" id="sdesc" name="sdesc" required>
+							</div>
+							<div class="form-group">
+								<label>Primary Image URL</label>
+								<input type="url" id="imageUrl" name="imageUrl" placeholder="https://...">
+							</div>
 							<div class="form-group">
 								<label></label>
-								<input type="submit" name="addProduct" value="Add Product">
+								<input type="submit" id="productSubmit" value="Add Product">
+								<button type="button" id="productCancel" style="margin-left: 12px;">Reset</button>
 							</div>
 						</form>
 					</div>
@@ -109,26 +110,22 @@
 									<th>Product</th>
 									<th>Price</th>
 									<th>Category</th>
+									<th>Status</th>
 									<th>Edit</th>
 									<th>Delete</th>
 								</tr>
 							</thead>
-							<tbody>
+							<tbody id="adminProductsTable">
 								<tr>
-									<td>Blue Jeans</td>
-									<td>1.500.000 đ</td>
-									<td>Pants</td>
-									<td>Edit</td>
-									<td>Delete</td>
+									<td colspan="6">Loading products...</td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
 				</div>
 			</div>
-		</div>		
-
-	</main> <!-- Main Area -->
+		</div>
+	</main>
 
 	<footer>
 		<div class="container">
@@ -136,9 +133,9 @@
 				<div class="copyright-text">
 					<p>Copryright 2020 - All Rights Reserved</p>
 				</div>
-			</div> <!-- Footer Bar -->
+			</div>
 		</div>
-	</footer> <!-- Footer Area -->
+	</footer>
 
 </body>
 

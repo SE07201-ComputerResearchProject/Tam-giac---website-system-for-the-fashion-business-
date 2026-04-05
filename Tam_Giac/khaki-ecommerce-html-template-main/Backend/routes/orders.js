@@ -1,18 +1,22 @@
 const express = require('express');
 const { sequelize } = require('../config/database');
-const { Order, OrderItem, Product } = require('../models');
+const { Order, OrderItem, Product, ProductImage, ShippingAddress } = require('../models');
 const authMiddleware = require('../middleware/auth');
 const { serializeOrder } = require('../services/storefront');
 const logger = require('../utils/logger');
 
 const router = express.Router();
-const DELIVERY_FEE = 30000;
-const allowedPaymentMethods = new Set(['cod', 'momo', 'vnpay', 'bank']);
 const orderInclude = [
   {
     model: OrderItem,
     required: false,
-    include: [{ model: Product, required: false }]
+    include: [
+      {
+        model: Product,
+        required: false,
+        include: [{ model: ProductImage, required: false }]
+      }
+    ]
   }
 ];
 
@@ -37,56 +41,33 @@ router.post('/', authMiddleware.authenticateToken, async (req, res) => {
 
     const normalizedItems = requestedItems
       .map((item) => ({
-        productId: Number(item.productId || item.id),
+        productId: String(item.productId || item.id || '').trim(),
         quantity: normalizeQuantity(item.quantity)
       }))
-      .filter((item) => Number.isFinite(item.productId));
-
-    if (!normalizedItems.length) {
-      await transaction.rollback();
-      return res.status(400).json({ error: 'Khong co san pham hop le de dat hang' });
-    }
+      .filter((item) => item.productId);
 
     const productIds = [...new Set(normalizedItems.map((item) => item.productId))];
     const products = await Product.findAll({
       where: { id: productIds, isActive: true },
       transaction
     });
-    const productMap = new Map(products.map((product) => [product.id, product]));
+    const productMap = new Map(products.map((product) => [String(product.id), product]));
 
-    if (productMap.size !== productIds.length) {
+    if (!productIds.length || productMap.size !== productIds.length) {
       await transaction.rollback();
       return res.status(400).json({ error: 'Mot so san pham khong hop le hoac da ngung ban' });
     }
 
-    const paymentMethod = String(req.body.paymentMethod || 'cod').toLowerCase();
-    if (!allowedPaymentMethods.has(paymentMethod)) {
-      await transaction.rollback();
-      return res.status(400).json({ error: 'Phuong thuc thanh toan khong hop le' });
-    }
-
-    const itemCount = normalizedItems.reduce((sum, item) => sum + item.quantity, 0);
-    const subtotalAmount = normalizedItems.reduce((sum, item) => {
+    const totalAmount = normalizedItems.reduce((sum, item) => {
       const product = productMap.get(item.productId);
       return sum + (Number(product.price) * item.quantity);
     }, 0);
-    const deliveryFee = itemCount > 0 ? DELIVERY_FEE : 0;
-    const totalAmount = subtotalAmount + deliveryFee;
 
     const order = await Order.create(
       {
         userId: req.user.id,
         totalAmount,
-        subtotalAmount,
-        deliveryFee,
-        itemCount,
-        status: 'pending',
-        paymentMethod,
-        customerName: String(req.body.customerName || '').trim(),
-        customerEmail: String(req.body.customerEmail || req.user.email || '').trim(),
-        customerPhone: String(req.body.customerPhone || '').trim(),
-        orderNote: String(req.body.orderNote || '').trim(),
-        shippingAddress: req.body.shippingAddress || null
+        status: 'pending'
       },
       { transaction }
     );
@@ -97,12 +78,35 @@ router.post('/', authMiddleware.authenticateToken, async (req, res) => {
         return {
           orderId: order.id,
           productId: item.productId,
-          price: product.price,
-          quantity: item.quantity
+          quantity: item.quantity,
+          price: product.price
         };
       }),
       { transaction }
     );
+
+    const shippingAddress = req.body.shippingAddress || null;
+    if (shippingAddress && shippingAddress.addressLine) {
+      const existingAddress = await ShippingAddress.findOne({
+        where: { userId: req.user.id },
+        order: [['id', 'DESC']],
+        transaction
+      });
+
+      const addressPayload = {
+        userId: req.user.id,
+        addressLine: String(shippingAddress.addressLine || '').trim(),
+        city: String(shippingAddress.city || '').trim(),
+        country: String(shippingAddress.country || '').trim(),
+        postalCode: String(shippingAddress.postalCode || '').trim()
+      };
+
+      if (existingAddress) {
+        await existingAddress.update(addressPayload, { transaction });
+      } else {
+        await ShippingAddress.create(addressPayload, { transaction });
+      }
+    }
 
     await transaction.commit();
 
@@ -123,8 +127,7 @@ router.get('/my', authMiddleware.authenticateToken, async (req, res) => {
     const orders = await Order.findAll({
       where: { userId: req.user.id },
       include: orderInclude,
-      order: [['id', 'DESC']],
-      limit: 50
+      order: [['createdAt', 'DESC']]
     });
 
     res.json(orders.map(serializeOrder));

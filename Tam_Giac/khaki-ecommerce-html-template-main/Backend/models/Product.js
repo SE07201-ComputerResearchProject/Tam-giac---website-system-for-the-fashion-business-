@@ -1,64 +1,57 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
 
-const Product = sequelize.define('Product', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
-  slug: {
-    type: DataTypes.STRING,
-    unique: true
-  },
-  sku: {
-    type: DataTypes.STRING,
-    unique: true
-  },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  description: DataTypes.TEXT,
-  descriptionLongJson: DataTypes.TEXT,
-  price: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: false
-  },
-  stock: {
-    type: DataTypes.INTEGER,
-    defaultValue: 0
-  },
-  imageUrl: DataTypes.STRING,
-  galleryJson: DataTypes.TEXT,
-  type: DataTypes.STRING,
-  badge: DataTypes.STRING,
-  city: DataTypes.STRING,
-  collectionKey: DataTypes.STRING,
-  collectionLabel: DataTypes.STRING,
-  material: DataTypes.STRING,
-  fit: DataTypes.STRING,
-  note: DataTypes.TEXT,
-  searchText: DataTypes.TEXT,
-  categoryId: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: 'Categories',
-      key: 'id'
+const Product = sequelize.define(
+  'Product',
+  {
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      defaultValue: DataTypes.UUIDV4
+    },
+    categoryId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      field: 'category_id',
+      references: {
+        model: 'Product_Categories',
+        key: 'id'
+      }
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    description: DataTypes.STRING,
+    price: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false
+    },
+    stock: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+      field: 'is_active'
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      field: 'created_at',
+      defaultValue: sequelize.literal('GETDATE()')
     }
   },
-  isActive: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: true
+  {
+    tableName: 'Products',
+    timestamps: false
   }
-}, {
-  timestamps: true
-});
+);
 
 Product.associate = (models) => {
   Product.belongsTo(models.Category, { foreignKey: 'categoryId' });
+  Product.hasMany(models.ProductImage, { foreignKey: 'productId' });
   Product.hasMany(models.OrderItem, { foreignKey: 'productId' });
 };
 
 module.exports = Product;
-

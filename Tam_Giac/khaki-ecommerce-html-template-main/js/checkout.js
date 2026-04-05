@@ -1,14 +1,7 @@
 (function () {
   var STORAGE_KEY = "tamgiac_cart";
-  var DELIVERY_FEE = 30000;
-  var API_BASE = "http://127.0.0.1:3002/api/payments";
   var CHECKOUT_DRAFT_KEY = "tamgiac_checkout_draft";
-  var PENDING_PAYMENT_KEY = "tamgiac_pending_payment";
-  var LAST_PAYMENT_KEY = "tamgiac_last_payment";
-  var ORDERS_KEY = "tamgiac_orders";
-  var LAST_PAYMENT_TTL_MS = 30 * 60 * 1000;
-  var RETURN_CARD_VISIBLE_CLASS = "is-visible";
-  var ONLINE_PAYMENT_ENABLED = false;
+  var API_BASE = "http://127.0.0.1:3002/api";
   var DRAFT_FIELDS = [
     "fname",
     "lname",
@@ -19,28 +12,8 @@
     "email",
     "tel",
     "mobile",
-    "orderNote",
-    "payment"
+    "orderNote"
   ];
-
-  var METHOD_COPY = {
-    cod: {
-      help: "Cash on delivery. This is the most stable flow right now so customers can complete orders quickly.",
-      button: "Place order now"
-    },
-    momo: {
-      help: "MoMo QR is temporarily disabled while we finish stabilizing the checkout flow.",
-      button: "MoMo QR temporarily disabled"
-    },
-    vnpay: {
-      help: "Online payment is temporarily disabled while we prioritize the core purchase flow.",
-      button: "VNPay temporarily disabled"
-    },
-    bank: {
-      help: "Bank transfer is temporarily disabled while the current checkout flow is being stabilized.",
-      button: "Bank transfer temporarily disabled"
-    }
-  };
 
   function readStorage(storage, key) {
     try {
@@ -64,30 +37,12 @@
     return Array.isArray(cart) ? cart : [];
   }
 
-  function getCartStats() {
-    return readCart().reduce(function (stats, item) {
-      var quantity = Math.max(1, Math.min(10, Number(item.quantity) || 1));
-      var price = Math.max(0, Number(item.price) || 0);
-      stats.totalItems += quantity;
-      stats.totalAmount += price * quantity;
-      return stats;
-    }, {
-      totalItems: 0,
-      totalAmount: 0
-    });
+  function getToken() {
+    return window.localStorage.getItem("token");
   }
 
   function formatPrice(value) {
-    return Number(value || 0).toLocaleString("en-US") + " VND";
-  }
-
-  function getSelectedMethod(form) {
-    var checked = form.querySelector('input[name="payment"]:checked');
-    if (!checked || checked.disabled) {
-      return "cod";
-    }
-
-    return checked.value;
+    return Number(value || 0).toLocaleString("vi-VN") + " d";
   }
 
   function setStatus(text, type) {
@@ -128,7 +83,7 @@
     var continueLink = document.getElementById("checkoutReturnContinue");
 
     if (title) {
-      title.textContent = details.title || "Payment update";
+      title.textContent = details.title || "Checkout update";
     }
 
     if (message) {
@@ -145,7 +100,15 @@
     }
 
     card.hidden = false;
-    card.classList.add(RETURN_CARD_VISIBLE_CLASS);
+  }
+
+  function clearCartAfterSuccess() {
+    if (window.TamGiacCart && typeof window.TamGiacCart.clearCart === "function") {
+      window.TamGiacCart.clearCart();
+      return;
+    }
+
+    window.localStorage.setItem(STORAGE_KEY, "[]");
   }
 
   function getFieldValue(form, id) {
@@ -153,20 +116,8 @@
     return node ? String(node.value || "").trim() : "";
   }
 
-  function setFieldValue(form, id, value) {
-    var node = form.querySelector("#" + id);
-    if (node) {
-      node.value = value;
-    }
-  }
-
   function saveCheckoutDraft(form) {
     var draft = DRAFT_FIELDS.reduce(function (result, key) {
-      if (key === "payment") {
-        result.payment = getSelectedMethod(form);
-        return result;
-      }
-
       result[key] = getFieldValue(form, key);
       return result;
     }, {});
@@ -181,265 +132,11 @@
     }
 
     DRAFT_FIELDS.forEach(function (key) {
-      if (key === "payment") {
-        var radio = form.querySelector('input[name="payment"][value="' + draft.payment + '"]');
-        if (radio && !radio.disabled) {
-          radio.checked = true;
-        } else {
-          var defaultRadio = form.querySelector('input[name="payment"][value="cod"]');
-          if (defaultRadio) {
-            defaultRadio.checked = true;
-          }
-        }
-        return;
-      }
-
-      if (draft[key]) {
-        setFieldValue(form, key, draft[key]);
+      var field = form.querySelector("#" + key);
+      if (field && draft[key]) {
+        field.value = draft[key];
       }
     });
-  }
-
-  function updateMethodUI(form) {
-    var method = getSelectedMethod(form);
-    var copy = METHOD_COPY[method] || METHOD_COPY.cod;
-    var helpNode = document.getElementById("paymentHelpText");
-    var submitButton = document.getElementById("checkoutSubmit");
-
-    if (helpNode) {
-      helpNode.value = copy.help;
-    }
-
-    if (submitButton) {
-      submitButton.value = copy.button;
-      submitButton.dataset.originalLabel = copy.button;
-    }
-  }
-
-  function buildOrderId(method) {
-    return [method.toUpperCase(), "TG", Date.now()].join("-");
-  }
-
-  function getReturnUrl(method) {
-    if (method === "vnpay") {
-      return "http://127.0.0.1:3002/api/payments/vnpay_return";
-    }
-
-    return window.location.origin + "/checkout.html?payment=" + encodeURIComponent(method) + "-return";
-  }
-
-  function buildCheckoutPayload(form, method) {
-    var stats = getCartStats();
-    var delivery = stats.totalItems ? DELIVERY_FEE : 0;
-    var total = stats.totalAmount + delivery;
-    var firstName = getFieldValue(form, "fname");
-    var lastName = getFieldValue(form, "lname");
-    var fullName = (firstName + " " + lastName).trim();
-
-    return {
-      amount: total,
-      orderId: buildOrderId(method),
-      returnUrl: getReturnUrl(method),
-      orderInfo: "Tam Giac order payment for " + (fullName || "customer"),
-      extraData: JSON.stringify({
-        fullName: fullName,
-        email: getFieldValue(form, "email"),
-        tel: getFieldValue(form, "tel"),
-        mobile: getFieldValue(form, "mobile"),
-        address: getFieldValue(form, "address"),
-        orderNote: getFieldValue(form, "orderNote"),
-        paymentMethod: method
-      })
-    };
-  }
-
-  async function createOnlinePayment(method, payload) {
-    var endpoint = method === "momo" ? "/momo/create" : "/create";
-    var requestBody = method === "momo"
-      ? payload
-      : {
-          amount: payload.amount,
-          orderId: payload.orderId,
-          returnUrl: payload.returnUrl
-        };
-
-    var response = await fetch(API_BASE + endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(requestBody)
-    });
-    var data = await response.json().catch(function () {
-      return {};
-    });
-
-    if (!response.ok) {
-      throw new Error(data.error || "Could not create the payment transaction");
-    }
-
-    return data;
-  }
-
-  function getPaymentRedirect(data) {
-    return data.payUrl || data.paymentUrl || data.deeplink || data.qrCodeUrl || "";
-  }
-
-  function rememberPendingPayment(method, payload) {
-    writeStorage(window.sessionStorage, PENDING_PAYMENT_KEY, {
-      method: method,
-      orderId: payload.orderId,
-      amount: payload.amount,
-      createdAt: Date.now(),
-      cart: readCart()
-    });
-  }
-
-  function readPendingPayment() {
-    return readStorage(window.sessionStorage, PENDING_PAYMENT_KEY);
-  }
-
-  function clearPendingPayment() {
-    removeStorage(window.sessionStorage, PENDING_PAYMENT_KEY);
-  }
-
-  function clearCheckoutDraft() {
-    removeStorage(window.sessionStorage, CHECKOUT_DRAFT_KEY);
-  }
-
-  function rememberCompletedPayment(record) {
-    writeStorage(window.sessionStorage, LAST_PAYMENT_KEY, record);
-  }
-
-  function saveOrder(record) {
-    var orders = readStorage(window.localStorage, ORDERS_KEY);
-    orders = Array.isArray(orders) ? orders : [];
-    orders.unshift(record);
-    writeStorage(window.localStorage, ORDERS_KEY, orders.slice(0, 20));
-  }
-
-  function readCompletedPayment() {
-    return readStorage(window.sessionStorage, LAST_PAYMENT_KEY);
-  }
-
-  function getMethodLabel(payment, pending) {
-    if (pending && pending.method === "momo") {
-      return "MoMo QR";
-    }
-
-    if (pending && pending.method === "vnpay") {
-      return "VNPay";
-    }
-
-    if (/demopay/i.test(payment || "")) {
-      return "MoMo QR demo";
-    }
-
-    return String(payment || "online payment").replace(/-return$/i, "");
-  }
-
-  function clearCartAfterSuccess() {
-    if (window.TamGiacCart && typeof window.TamGiacCart.clearCart === "function") {
-      window.TamGiacCart.clearCart();
-      return;
-    }
-
-    window.localStorage.setItem(STORAGE_KEY, "[]");
-  }
-
-  function createLocalOrder(form, method) {
-    var stats = getCartStats();
-    var delivery = stats.totalItems ? DELIVERY_FEE : 0;
-    var total = stats.totalAmount + delivery;
-    var firstName = getFieldValue(form, "fname");
-    var lastName = getFieldValue(form, "lname");
-    var orderRecord = {
-      id: buildOrderId(method),
-      createdAt: new Date().toISOString(),
-      fullName: (firstName + " " + lastName).trim() || "Customer",
-      email: getFieldValue(form, "email"),
-      tel: getFieldValue(form, "tel"),
-      address: getFieldValue(form, "address"),
-      note: getFieldValue(form, "orderNote"),
-      paymentMethod: method,
-      paymentLabel: method === "cod" ? "Cash on delivery" : method,
-      status: method === "cod" ? "Awaiting confirmation" : "New",
-      subtotal: stats.totalAmount,
-      delivery: delivery,
-      total: total,
-      items: readCart()
-    };
-
-    saveOrder(orderRecord);
-    return orderRecord;
-  }
-
-  function applySuccessfulReturn(payment, orderId, resultCode, message, pending) {
-    var paymentLabel = getMethodLabel(payment, pending);
-    var finalOrderId = orderId || (pending && pending.orderId) || "-";
-    var amount = pending && pending.amount ? formatPrice(pending.amount) : "";
-
-    clearCartAfterSuccess();
-    clearPendingPayment();
-
-    var record = {
-      status: "success",
-      payment: payment,
-      paymentLabel: paymentLabel,
-      orderId: finalOrderId,
-      amount: amount,
-      resultCode: resultCode || "00",
-      message: message || "Payment successful",
-      completedAt: Date.now()
-    };
-
-    rememberCompletedPayment(record);
-    setStatus(paymentLabel + " payment completed successfully. Order " + finalOrderId + " is ready for review.", "success");
-    setReturnCard({
-      title: "Payment successful",
-      message: "Your " + paymentLabel + " payment was completed successfully. The cart has been cleared for the next order.",
-      meta: "Order ID: " + finalOrderId + (amount ? " | Paid total: " + amount : "")
-    });
-  }
-
-  function applyUnsuccessfulReturn(payment, resultCode, message, pending) {
-    var paymentLabel = getMethodLabel(payment, pending);
-    var info = message || resultCode || "Unknown status";
-
-    setStatus("Returned from " + paymentLabel + ". Current status: " + info, "info");
-    setReturnCard({
-      title: "Transaction not completed",
-      message: "Tam Giac received a return state from " + paymentLabel + ". You can review the transaction or try again.",
-      meta: "Status: " + info
-    });
-  }
-
-  function handleReturnState() {
-    var params = new URLSearchParams(window.location.search);
-    var payment = params.get("payment");
-    var resultCode = params.get("resultCode");
-    var message = params.get("message");
-    var orderId = params.get("orderId");
-    var pending = readPendingPayment();
-
-    if (payment) {
-      if (resultCode === "0" || resultCode === "00") {
-        applySuccessfulReturn(payment, orderId, resultCode, message, pending);
-        return;
-      }
-
-      applyUnsuccessfulReturn(payment, resultCode, message, pending);
-      return;
-    }
-
-    var completed = readCompletedPayment();
-    if (completed && completed.status === "success" && (Date.now() - Number(completed.completedAt || 0) <= LAST_PAYMENT_TTL_MS)) {
-      setReturnCard({
-        title: "Order already paid",
-        message: "Your latest payment was completed successfully. You can continue shopping right away.",
-        meta: "Order ID: " + completed.orderId + (completed.amount ? " | Paid total: " + completed.amount : "")
-      });
-    }
   }
 
   function bindDraftPersistence(form) {
@@ -452,6 +149,103 @@
     });
   }
 
+  async function apiCall(endpoint, options) {
+    var token = getToken();
+    if (!token) {
+      throw new Error("Bạn cần đăng nhập trước khi đặt hàng.");
+    }
+
+    var response = await fetch(API_BASE + endpoint, Object.assign({
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      }
+    }, options || {}));
+
+    var data = await response.json().catch(function () {
+      return { error: "API error" };
+    });
+
+    if (!response.ok) {
+      throw new Error(data.error || "Không thể xử lý đơn hàng.");
+    }
+
+    return data;
+  }
+
+  function getSelectedMethod(form) {
+    var checked = form.querySelector('input[name="payment"]:checked');
+    return checked ? checked.value : "cod";
+  }
+
+  function updateMethodUI() {
+    var helpNode = document.getElementById("paymentHelpText");
+    var submitButton = document.getElementById("checkoutSubmit");
+
+    if (helpNode) {
+      helpNode.value = "Cash on delivery is the active payment flow. The order will be stored directly in SQL Server.";
+    }
+
+    if (submitButton) {
+      submitButton.value = "Place Order";
+      submitButton.dataset.originalLabel = "Place Order";
+    }
+  }
+
+  async function prefillProfile(form) {
+    var token = getToken();
+    if (!token) {
+      return;
+    }
+
+    try {
+      var profile = await apiCall("/auth/me", { method: "GET" });
+      var parts = String(profile.fullName || "").trim().split(/\s+/).filter(Boolean);
+      if (parts.length && !getFieldValue(form, "fname")) {
+        form.querySelector("#fname").value = parts[0];
+        form.querySelector("#lname").value = parts.slice(1).join(" ");
+      }
+      if (!getFieldValue(form, "email")) {
+        form.querySelector("#email").value = profile.email || "";
+      }
+      if (!getFieldValue(form, "mobile")) {
+        form.querySelector("#mobile").value = profile.phone || "";
+      }
+    } catch (error) {
+      // Keep checkout usable even if profile load fails.
+    }
+  }
+
+  async function createOrder(form) {
+    var cart = readCart();
+    var items = cart.map(function (item) {
+      return {
+        productId: item.id,
+        quantity: item.quantity
+      };
+    });
+
+    return apiCall("/orders", {
+      method: "POST",
+      body: JSON.stringify({
+        items: items,
+        paymentMethod: getSelectedMethod(form),
+        customerName: (getFieldValue(form, "fname") + " " + getFieldValue(form, "lname")).trim(),
+        customerEmail: getFieldValue(form, "email"),
+        customerPhone: getFieldValue(form, "mobile") || getFieldValue(form, "tel"),
+        orderNote: getFieldValue(form, "orderNote"),
+        shippingAddress: {
+          addressLine: getFieldValue(form, "address"),
+          city: getFieldValue(form, "cityy"),
+          country: getFieldValue(form, "country"),
+          postalCode: "",
+          tel: getFieldValue(form, "tel"),
+          mobile: getFieldValue(form, "mobile")
+        }
+      })
+    });
+  }
+
   function bindCheckout() {
     var form = document.getElementById("checkout-form");
     if (!form || form.dataset.checkoutBound === "true") {
@@ -460,25 +254,26 @@
 
     form.dataset.checkoutBound = "true";
     restoreCheckoutDraft(form);
-    updateMethodUI(form);
-    handleReturnState();
+    updateMethodUI();
     bindDraftPersistence(form);
-
-    form.addEventListener("change", function (event) {
-      if (event.target.name === "payment") {
-        updateMethodUI(form);
-      }
-    });
+    prefillProfile(form);
 
     form.addEventListener("submit", async function (event) {
       var submitButton = document.getElementById("checkoutSubmit");
-      var method = getSelectedMethod(form);
-      var cartStats = getCartStats();
+      var cart = readCart();
 
       event.preventDefault();
 
-      if (!cartStats.totalItems) {
+      if (!cart.length) {
         setStatus("Your cart is empty. Add a product before checking out.", "error");
+        return;
+      }
+
+      if (!getToken()) {
+        setStatus("Please log in before placing an order. Redirecting...", "error");
+        window.setTimeout(function () {
+          window.location.href = "login.html";
+        }, 800);
         return;
       }
 
@@ -487,48 +282,34 @@
         return;
       }
 
-      saveCheckoutDraft(form);
+      if (getSelectedMethod(form) !== "cod") {
+        setStatus("Only cash on delivery is active right now.", "info");
+        return;
+      }
 
-      if (method === "cod") {
-        var order = createLocalOrder(form, method);
-        clearPendingPayment();
-        clearCheckoutDraft();
+      saveCheckoutDraft(form);
+      setSubmitState(submitButton, true, "Saving order...");
+      setStatus("Saving your order to the database...", "info");
+
+      try {
+        var result = await createOrder(form);
+        var order = result.order || {};
+
         clearCartAfterSuccess();
+        removeStorage(window.sessionStorage, CHECKOUT_DRAFT_KEY);
         form.reset();
-        updateMethodUI(form);
-        setStatus("Order placed successfully. Your order has been recorded.", "success");
+        updateMethodUI();
+
+        setStatus("Order placed successfully.", "success");
         setReturnCard({
           title: "Order placed successfully",
-          message: "You completed the core purchase flow. The order was saved and the cart has been refreshed.",
-          meta: "Order ID: " + order.id + " | Order total: " + formatPrice(order.total),
+          message: "Your order has been saved through the backend and written to SQL Server.",
+          meta: "Order ref: " + (order.reference || order.id || "-") + " | Total: " + formatPrice(order.totalAmount || 0),
           linkText: "View orders",
           linkHref: "orders.html"
         });
-        return;
-      }
-
-      if (!ONLINE_PAYMENT_ENABLED && method !== "cod") {
-        setStatus("The site is currently focused on a stable core checkout flow, so only cash on delivery is available for now.", "info");
-        return;
-      }
-
-      try {
-        setSubmitState(submitButton, true, "Creating transaction...");
-        setStatus("Creating the " + method.toUpperCase() + " transaction. Please wait a moment...", "info");
-
-        var payload = buildCheckoutPayload(form, method);
-        var data = await createOnlinePayment(method, payload);
-        var redirectUrl = getPaymentRedirect(data);
-
-        if (!redirectUrl) {
-          throw new Error("Did not receive a payment link from " + method.toUpperCase());
-        }
-
-        rememberPendingPayment(method, payload);
-        setStatus("Redirecting to " + method.toUpperCase() + "...", "success");
-        window.location.href = redirectUrl;
       } catch (error) {
-        setStatus(error && error.message ? error.message : "Could not create the payment transaction", "error");
+        setStatus(error.message || "Could not save the order.", "error");
       } finally {
         setSubmitState(submitButton, false);
       }

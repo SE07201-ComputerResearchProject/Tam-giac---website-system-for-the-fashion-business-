@@ -10,6 +10,10 @@ export const initHeaderAuth = async () => {
   const profile = loggedIn ? await loadProfile().catch(() => null) : null;
 
   if (loggedIn && profile) {
+    const adminLink = profile.role === 'admin'
+      ? '<li><a href="admin/product.html">Admin Panel</a></li>'
+      : '';
+
     accountIcon.innerHTML = `
       <div class="user-menu">
         <img src="img/icons/account.png" alt="Account">
@@ -19,6 +23,7 @@ export const initHeaderAuth = async () => {
         </div>
         <div class="dropdown-menu">
           <ul>
+            ${adminLink}
             <li><a href="account.html">My Account</a></li>
             <li><a href="orders.html">My Orders</a></li>
             <li><a href="javascript:logout()">Log Out</a></li>

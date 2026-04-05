@@ -7,6 +7,7 @@ const winston = require('winston');
 
 const { connectDB, sequelize, getSqlPool } = require('./config/database');
 const redisClient = require('./config/redis');
+const { ensureCatalogSeed } = require('./services/catalog-seed');
 
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
@@ -110,7 +111,9 @@ const startServer = async () => {
 
     try {
       await connectDB();
+      const catalogState = await ensureCatalogSeed();
       dbReady = true;
+      logger.info('Catalog ready', catalogState);
     } catch (dbError) {
       if (!DB_OPTIONAL) {
         throw dbError;
