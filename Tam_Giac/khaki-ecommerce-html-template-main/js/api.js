@@ -1,4 +1,4 @@
-const API_BASE = 'http://127.0.0.1:3002/api';
+const API_BASE = '/api';
 
 export const apiCall = async (endpoint, options = {}) => {
   const token = localStorage.getItem('token');
@@ -15,7 +15,7 @@ export const apiCall = async (endpoint, options = {}) => {
     response = await fetch(`${API_BASE}${endpoint}`, config);
   } catch (error) {
     throw {
-      error: 'Unable to reach the backend server. Please check backend 127.0.0.1:3002.'
+      error: 'Unable to reach the web server. Please make sure Tam Giac server is running.'
     };
   }
 

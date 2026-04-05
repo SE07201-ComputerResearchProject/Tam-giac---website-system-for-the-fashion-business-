@@ -1,12 +1,8 @@
-import { isLoggedIn, login, navigateWithLoader } from './auth.js?v=20260403a';
+import { login, navigateWithLoader } from './auth.js?v=20260403a';
 
 const form = document.getElementById('loginForm');
 const statusBox = document.getElementById('loginStatus');
 const submitBtn = document.getElementById('loginBtn');
-
-if (isLoggedIn()) {
-  navigateWithLoader('index.html', 0);
-}
 
 const showStatus = (message, type = 'error') => {
   if (!message) {

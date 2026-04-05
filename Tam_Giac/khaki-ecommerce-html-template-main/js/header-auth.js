@@ -26,11 +26,20 @@ export const initHeaderAuth = async () => {
             ${adminLink}
             <li><a href="account.html">My Account</a></li>
             <li><a href="orders.html">My Orders</a></li>
-            <li><a href="javascript:logout()">Log Out</a></li>
+            <li><a href="login.html" data-auth-logout="true">Log Out</a></li>
           </ul>
         </div>
       </div>
     `;
+
+    const logoutLink = accountIcon.querySelector('[data-auth-logout="true"]');
+    if (logoutLink) {
+      logoutLink.addEventListener('click', (event) => {
+        event.preventDefault();
+        logout();
+      });
+    }
+
     return;
   }
 
@@ -46,8 +55,6 @@ export const initHeaderAuth = async () => {
     </div>
   `;
 };
-
-window.logout = logout;
 
 document.addEventListener('DOMContentLoaded', initHeaderAuth);
 // Load chatbot widget (non-blocking)

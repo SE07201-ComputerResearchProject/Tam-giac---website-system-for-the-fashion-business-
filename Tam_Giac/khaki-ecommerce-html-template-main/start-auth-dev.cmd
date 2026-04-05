@@ -3,19 +3,27 @@ setlocal
 
 set "ROOT=%~dp0"
 set "BACKEND_DIR=%ROOT%Backend"
-set "FRONTEND_DIR=%ROOT%"
 
-echo Starting Tam Giac auth dev servers...
+echo Starting Tam Giac web server...
 echo.
 
-start "TamGiac Backend" cmd /k "cd /d ""%BACKEND_DIR%"" && node server.js"
-start "TamGiac Frontend" cmd /k "cd /d ""%FRONTEND_DIR%"" && node dev-static-server.js"
-
-echo Frontend preview: http://127.0.0.1:3001/register.html
-echo Login page:       http://127.0.0.1:3001/login.html
-echo DB proof demo:    http://127.0.0.1:3001/demo-db-proof.html
-echo Backend health:   http://localhost:3002/health
+echo Main website:     http://127.0.0.1:3002
+echo Register page:    http://127.0.0.1:3002/register.html
+echo Login page:       http://127.0.0.1:3002/login.html
+echo Admin page:       http://127.0.0.1:3002/admin/product.html
+echo Backend health:   http://127.0.0.1:3002/health
 echo.
-echo Keep both opened terminal windows running while testing.
+echo Keep this window open while testing.
+echo.
+
+cd /d "%BACKEND_DIR%"
+node server.js
+
+echo.
+echo Server stopped with exit code %ERRORLEVEL%.
+echo If the website did not open, check:
+echo %BACKEND_DIR%\logs\combined.log
+echo %BACKEND_DIR%\logs\error.log
+pause
 
 endlocal

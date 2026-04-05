@@ -3,10 +3,11 @@ const logger = require('../utils/logger');
 
 const recaptchaEnabled =
   (process.env.RECAPTCHA_ENABLED || 'false').toLowerCase() === 'true';
+const isDevelopment = (process.env.NODE_ENV || 'development').toLowerCase() !== 'production';
 const hasRecaptchaConfig =
   Boolean(process.env.RECAPTCHA_SITE_KEY) &&
   Boolean(process.env.RECAPTCHA_SECRET_KEY);
-const canVerifyCaptcha = recaptchaEnabled && hasRecaptchaConfig;
+const canVerifyCaptcha = !isDevelopment && recaptchaEnabled && hasRecaptchaConfig;
 
 const verifyRecaptcha = canVerifyCaptcha
   ? new recaptcha({
@@ -17,7 +18,8 @@ const verifyRecaptcha = canVerifyCaptcha
 
 module.exports = {
   verifyCaptcha: (req, res, next) => {
-    // In local/dev, if ReCAPTCHA is not fully configured, bypass verification.
+    // In local/dev, bypass verification so auth can be tested against the real DB
+    // without relying on third-party widgets or network access.
     if (!canVerifyCaptcha || !verifyRecaptcha) {
       return next();
     }

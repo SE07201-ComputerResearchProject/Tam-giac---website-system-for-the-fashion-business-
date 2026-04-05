@@ -1,4 +1,5 @@
-require('dotenv').config({ path: require('path').join(__dirname, '.env') });
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -39,8 +40,27 @@ const app = express();
 const localOriginPattern = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
 const PORT = Number(process.env.PORT || 3000);
 const DB_OPTIONAL = (process.env.DB_OPTIONAL || 'false').toLowerCase() === 'true';
+const frontendRoot = path.resolve(__dirname, '..');
 
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        baseUri: ["'self'"],
+        fontSrc: ["'self'", 'https:', 'data:'],
+        formAction: ["'self'"],
+        frameAncestors: ["'self'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        objectSrc: ["'none'"],
+        scriptSrc: ["'self'"],
+        scriptSrcAttr: ["'none'"],
+        styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
+        upgradeInsecureRequests: []
+      }
+    }
+  })
+);
 app.use(
   cors({
     origin(origin, callback) {
@@ -95,9 +115,52 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/chat', chatRoutes);
 
-app.use('*', (req, res) => {
+app.use('/api/*', (req, res) => {
   logger.warn(`Route not found: ${req.method} ${req.originalUrl}`);
   res.status(404).json({ error: 'Khong tim thay API' });
+});
+
+app.use(
+  express.static(frontendRoot, {
+    extensions: ['html'],
+    index: false,
+    etag: false,
+    setHeaders(res) {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    }
+  })
+);
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(frontendRoot, 'index.html'));
+});
+
+app.get('*', (req, res, next) => {
+  if (!req.accepts('html')) {
+    return next();
+  }
+
+  const requestedPath = req.path === '/' ? 'index.html' : req.path.replace(/^\/+/, '');
+  const htmlCandidate = requestedPath.endsWith('.html')
+    ? path.join(frontendRoot, requestedPath)
+    : path.join(frontendRoot, `${requestedPath}.html`);
+
+  return res.sendFile(htmlCandidate, (error) => {
+    if (!error) {
+      return;
+    }
+
+    if (error.code === 'ENOENT') {
+      res.status(404).sendFile(path.join(frontendRoot, '404.html'), (fallbackError) => {
+        if (fallbackError) {
+          res.status(404).send('Not found');
+        }
+      });
+      return;
+    }
+
+    next(error);
+  });
 });
 
 app.use((err, req, res, next) => {

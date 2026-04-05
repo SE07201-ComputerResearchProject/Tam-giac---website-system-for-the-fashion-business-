@@ -1,7 +1,7 @@
 (function () {
   var STORAGE_KEY = "tamgiac_cart";
   var CHECKOUT_DRAFT_KEY = "tamgiac_checkout_draft";
-  var API_BASE = "http://127.0.0.1:3002/api";
+  var API_BASE = "/api";
   var DRAFT_FIELDS = [
     "fname",
     "lname",

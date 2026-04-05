@@ -1,5 +1,5 @@
 (function () {
-  var API_BASE = "http://127.0.0.1:3002/api";
+  var API_BASE = "/api";
 
   function formatPrice(value) {
     return Number(value || 0).toLocaleString("vi-VN") + " d";

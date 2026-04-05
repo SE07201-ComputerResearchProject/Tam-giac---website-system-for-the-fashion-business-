@@ -1,4 +1,4 @@
-import { isLoggedIn, navigateWithLoader, register } from './auth.js?v=20260403a';
+import { navigateWithLoader, register } from './auth.js?v=20260403a';
 
 const form = document.getElementById('registerForm');
 const statusBox = document.getElementById('registerStatus');
@@ -6,10 +6,6 @@ const submitBtn = document.getElementById('registerBtn');
 const passwordInput = document.getElementById('password');
 const strengthFill = document.getElementById('strengthFill');
 const strengthText = document.getElementById('strengthText');
-
-if (isLoggedIn()) {
-  navigateWithLoader('index.html', 0);
-}
 
 const PASSWORD_RULE =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
