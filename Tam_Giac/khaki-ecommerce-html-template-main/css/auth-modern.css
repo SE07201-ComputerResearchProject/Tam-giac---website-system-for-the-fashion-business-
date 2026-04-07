@@ -521,6 +521,32 @@ body.auth-page::after {
   filter: saturate(1.05);
 }
 
+.btn-google {
+  width: 100%;
+  min-height: 60px;
+  background: #ffffff;
+  color: #202124;
+  border: 1px solid #dadce0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border-radius: 18px;
+  text-decoration: none;
+}
+
+.btn-google:hover {
+  background: #f7f8f9;
+  filter: none;
+  transform: none;
+}
+
+.btn-google svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
 .btn-auth:disabled {
   opacity: 0.78;
   cursor: not-allowed;

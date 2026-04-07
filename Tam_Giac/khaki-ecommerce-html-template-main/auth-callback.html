@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Sign In</title>
+  <style>
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f4f4f4;
+      font-family: 'Be Vietnam Pro', sans-serif;
+    }
+    .card {
+      max-width: 420px;
+      width: 100%;
+      padding: 2rem;
+      background: #ffffff;
+      border-radius: 22px;
+      box-shadow: 0 24px 56px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    .card h1 {
+      font-size: 1.4rem;
+      margin: 0 0 1rem;
+      color: #202124;
+    }
+    .card p {
+      margin: 0.85rem 0 0;
+      color: #5f6368;
+      line-height: 1.6;
+    }
+    .card a {
+      display: inline-block;
+      margin-top: 1.25rem;
+      color: #1a73e8;
+      text-decoration: none;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Đang hoàn tất đăng nhập Google...</h1>
+    <p>Bạn sẽ được chuyển tiếp về trang chủ ngay khi xác thực xong.</p>
+  </div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+
+    if (token) {
+      localStorage.setItem('token', token);
+      window.location.href = 'index.html';
+    } else {
+      document.querySelector('.card').innerHTML = '<h1>Đăng nhập không thành công</h1><p>Không tìm thấy token Google.</p><a href="login.html">Quay lại trang đăng nhập</a>';
+    }
+  </script>
+</body>
+</html>

@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const passport = require('passport');
 const winston = require('winston');
 
 const { connectDB, sequelize, getSqlPool } = require('./config/database');
@@ -83,6 +84,7 @@ app.use('/api/', limiter);
 
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(passport.initialize());
 
 app.get('/health', (req, res) => {
   res.status(200).json({

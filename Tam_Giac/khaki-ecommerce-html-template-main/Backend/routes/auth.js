@@ -2,6 +2,9 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const passport = require('passport');
+const crypto = require('crypto');
+const { Strategy: GoogleStrategy } = require('passport-google-oauth20');
 const logger = require('../utils/logger');
 const authMiddleware = require('../middleware/auth');
 const mfaMiddleware = require('../middleware/mfa');
@@ -68,6 +71,119 @@ const signAuthToken = (user) =>
     process.env.JWT_SECRET,
     { expiresIn: '24h' }
   );
+
+const getGoogleCallbackUrl = () =>
+  process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/api/auth/google/callback';
+
+const findOrCreateGoogleUser = async (profile) => {
+  if (!profile || !profile.emails?.length) {
+    throw new Error('No email returned from Google');
+  }
+
+  const email = String(profile.emails[0].value || '').trim().toLowerCase();
+  const fullName = String(profile.displayName || profile.name?.givenName || email.split('@')[0] || '').trim();
+
+  await ensureUsersTable();
+  const pool = getPoolOrThrow();
+
+  const existing = await pool
+    .request()
+    .input('email', sql.NVarChar(255), email)
+    .query('SELECT TOP 1 * FROM dbo.Users WHERE email = @email');
+
+  if (existing.recordset.length > 0) {
+    const user = existing.recordset[0];
+    if (!user.is_active) {
+      throw new Error('User is inactive');
+    }
+    return user;
+  }
+
+  const passwordHash = await bcrypt.hash(crypto.randomBytes(32).toString('hex'), 12);
+
+  const result = await pool
+    .request()
+    .input('email', sql.NVarChar(255), email)
+    .input('passwordHash', sql.NVarChar(255), passwordHash)
+    .input('fullName', sql.NVarChar(255), fullName)
+    .query(`
+      INSERT INTO dbo.Users (
+        email,
+        password_hash,
+        full_name,
+        role,
+        is_verified,
+        is_active,
+        created_at
+      )
+      OUTPUT INSERTED.*
+      VALUES (
+        @email,
+        @passwordHash,
+        @fullName,
+        'user',
+        1,
+        1,
+        GETDATE()
+      )
+    `);
+
+  return result.recordset[0];
+};
+
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID || '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+      callbackURL: getGoogleCallbackUrl()
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        const user = await findOrCreateGoogleUser(profile);
+        done(null, user);
+      } catch (error) {
+        done(error);
+      }
+    }
+  )
+);
+
+router.use(passport.initialize());
+
+router.get('/google', (req, res, next) => {
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    return res.status(501).json({ error: 'Google OAuth chua duoc cau hinh cho local flow nay' });
+  }
+
+  passport.authenticate('google', {
+    scope: ['profile', 'email'],
+    session: false
+  })(req, res, next);
+});
+
+router.get(
+  '/google/callback',
+  (req, res, next) => {
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+      return res.status(501).json({ error: 'Google OAuth chua duoc cau hinh cho local flow nay' });
+    }
+
+    passport.authenticate('google', {
+      failureRedirect: '/login.html?authError=google',
+      session: false
+    })(req, res, next);
+  },
+  (req, res) => {
+    if (!req.user) {
+      return res.redirect('/login.html?authError=google');
+    }
+
+    const token = signAuthToken(req.user);
+    const redirectUrl = `/auth-callback.html?token=${encodeURIComponent(token)}`;
+    res.redirect(redirectUrl);
+  }
+);
 
 router.post(
   '/register',
@@ -217,14 +333,6 @@ router.post(
     return res.status(501).json({ error: 'MFA chua duoc bat cho schema hien tai' });
   }
 );
-
-router.get('/google', (req, res) => {
-  res.status(501).json({ error: 'Google OAuth chua duoc cau hinh cho local flow nay' });
-});
-
-router.get('/google/callback', (req, res) => {
-  res.status(501).json({ error: 'Google OAuth chua duoc cau hinh cho local flow nay' });
-});
 
 router.get('/me', authMiddleware.authenticateToken, async (req, res) => {
   try {
