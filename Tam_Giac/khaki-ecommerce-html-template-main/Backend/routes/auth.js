@@ -72,9 +72,11 @@ const signAuthToken = (user) =>
     { expiresIn: '24h' }
   );
 
-const getGoogleCallbackUrl = () =>
-  process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/api/auth/google/callback';
-
+const getGoogleCallbackUrl = () => {
+  const url = process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3002/api/auth/google/callback';
+  console.log('Using Google callback URL:', url);
+  return url;
+};
 const findOrCreateGoogleUser = async (profile) => {
   if (!profile || !profile.emails?.length) {
     throw new Error('No email returned from Google');
@@ -175,13 +177,32 @@ router.get(
     })(req, res, next);
   },
   (req, res) => {
-    if (!req.user) {
-      return res.redirect('/login.html?authError=google');
-    }
+    try {
+      logger.info('Google callback received. Checking for user object.');
+      if (!req.user) {
+        logger.warn('Redirecting: No user found after Google auth.');
+        return res.redirect('/login.html?authError=google_nouser');
+      }
 
-    const token = signAuthToken(req.user);
-    const redirectUrl = `/auth-callback.html?token=${encodeURIComponent(token)}`;
-    res.redirect(redirectUrl);
+      logger.info('User found, attempting to sign token.', { userId: req.user.id });
+      const token = signAuthToken(req.user);
+
+      if (!token) {
+        logger.error('JWT signing returned an empty or null token.', { userId: req.user.id });
+        return res.redirect('/login.html?authError=token_generation_failed');
+      }
+      
+      logger.info('Token signed successfully. Redirecting to auth-callback.');
+      const redirectUrl = `/auth-callback.html?token=${encodeURIComponent(token)}`;
+      res.redirect(redirectUrl);
+
+    } catch (error) {
+      logger.error('CRITICAL: Error in Google callback token signing/redirect.', { 
+        message: error.message, 
+        stack: error.stack 
+      });
+      res.redirect('/login.html?authError=internal_error');
+    }
   }
 );
 
@@ -258,16 +279,17 @@ router.post(
   }
 );
 
-router.post('/login', recaptchaMiddleware.verifyCaptcha, async (req, res) => {
+router.post('/login', async (req, res) => {
   try {
-    await ensureUsersTable();
-    const pool = getPoolOrThrow();
     const email = String(req.body.email || '').trim().toLowerCase();
     const password = String(req.body.password || '');
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Vui long nhap email va mat khau' });
     }
+
+    await ensureUsersTable();
+    const pool = getPoolOrThrow();
 
     const result = await pool
       .request()
@@ -286,25 +308,12 @@ router.post('/login', recaptchaMiddleware.verifyCaptcha, async (req, res) => {
       `);
 
     const user = result.recordset[0];
-    if (!user || !user.isActive) {
-      return res.status(401).json({ error: 'Email/mat khau sai' });
-    }
+    const passwordMatched = user ? await bcrypt.compare(password, user.passwordHash) : false;
 
-const passwordMatched = await bcrypt.compare(password, user.passwordHash);
-    if (!passwordMatched) {
-      const ip = req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown';
-      if (redisClient) {
-        try {
-          const key = `loginAttempts:${ip}`;
-          await redisClient.multi()
-            .incr(key)
-            .expire(key, 1800)
-            .exec();
-        } catch (err) {
-          logger.warn('Redis login attempt incr fail:', err.message);
-        }
-      }
-      return res.status(401).json({ error: 'Email/mat khau sai', requireRecaptcha: true });
+    if (!user || !user.isActive || !passwordMatched) {
+      return res.status(401).json({ 
+        error: 'Email/mat khau sai'
+      });
     }
 
     res.json({

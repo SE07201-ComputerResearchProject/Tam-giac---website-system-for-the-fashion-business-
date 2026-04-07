@@ -50,9 +50,9 @@ Can co san:
 Neu chua cai package, chay 1 lan:
 
 ```powershell
-cd "c:\Users\buih1\OneDrive\Máy tính\LAST Chance\khaki-ecommerce-html-template-main\Tam-giac---website-system-for-the-fashion-business-\Tam_Giac\khaki-ecommerce-html-template-main\Backend"
+   cd "c:\Users\buih1\OneDrive\Máy tính\LAST Chance\khaki-ecommerce-html-template-main\Tam-giac---website-system-for-the-fashion-business-\Tam_Giac\khaki-ecommerce-html-template-main\Backend"
 npm install
-```
+```kill-port.bat
 
 Sau do, moi lan sau chi can double click:
 

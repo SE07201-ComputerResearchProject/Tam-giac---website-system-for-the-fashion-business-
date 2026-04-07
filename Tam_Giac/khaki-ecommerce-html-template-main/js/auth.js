@@ -20,12 +20,9 @@ export const navigateWithLoader = (url, delay = 140) => {
   go();
 };
 
-export const login = async (email, password, recaptchaToken) => {
+export const login = async (email, password) => {
   try {
     const body = { email, password };
-    if (recaptchaToken) {
-      body.recaptchaToken = recaptchaToken;
-    }
 
     const data = await apiCall('/auth/login', {
       method: 'POST',

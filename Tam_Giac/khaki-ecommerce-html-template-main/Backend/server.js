@@ -54,7 +54,7 @@ app.use(
         frameAncestors: ["'self'"],
         imgSrc: ["'self'", 'data:', 'https:'],
         objectSrc: ["'none'"],
-        scriptSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
         scriptSrcAttr: ["'none'"],
         styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
         upgradeInsecureRequests: []

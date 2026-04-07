@@ -1,8 +1,8 @@
-
+import { login, navigateWithLoader } from './auth.js';
 
 const form = document.getElementById('loginForm');
 const statusBox = document.getElementById('loginStatus');
-const submitBtn = document.getElementById('loginBtn');
+const submitBtn = document.getElementById('loginBtn');       
 
 const showStatus = (message, type = 'error') => {
   if (!message) {
@@ -36,7 +36,7 @@ const togglePasswordButtons = () => {
 };
 
 const showRegisterNotice = () => {
-  const notice = sessionStorage.getItem('auth_notice');
+  const notice = sessionStorage.getItem('auth_notice');      
   if (notice !== 'register_success') return;
 
   showStatus('Your account was created successfully. You can log in now.', 'success');
