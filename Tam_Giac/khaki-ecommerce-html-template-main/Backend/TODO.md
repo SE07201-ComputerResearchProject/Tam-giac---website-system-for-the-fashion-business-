@@ -1,22 +1,10 @@
-# TODO Backend Tam-Giac ✅ Tiến độ: 5/18
+# TODO: Hoàn thiện chức năng đăng nhập Google
 
-**Hoàn thành:**
-- ✅ package.json
-- ✅ .env.example
-- ✅ server.js (Express + middleware cơ bản: helmet, rate-limit, cors, logger)
-- ✅ config/database.js (Sequelize SQL Server)
-- ✅ config/redis.js
-- ✅ utils/logger.js (Winston)
+## Danh sách các bước cần hoàn thành:
 
-## Giai đoạn 2: Models & DB (bắt đầu)
-- [ ] Bước 5: models/index.js, User.js (bcrypt field, mfaSecret), Product.js, Order.js, Category.js
-- [ ] Bước 6: Tạo migrations/ folder & CLI config
-
-## Còn lại:
-- Middleware bảo mật (auth JWT, MFA speakeasy, ReCAPTCHA)
-- Routes (auth với OAuth2 Google, products, orders)
-- VNPay integration
-- docker-compose.yml
-- Dockerfile
-
-**Tiếp theo: Chạy `cd Backend && npm install` rồi bảo tôi output để test server.js (sẽ lỗi models tạm thời).**
+- [x] Bước 1: Tạo file Backend/.env với Google Client ID/Secret và callback URL
+- [x] Bước 2: Cập nhật link Google button trong login.html (thay hardcode localhost:3002 bằng dynamic URL)
+- [x] Bước 3: Cập nhật link Google button trong register.html (tương tự)
+- [ ] Bước 4: Restart backend server
+- [ ] Bước 5: Test Google login flow từ login.html → index.html với token
+- [ ] Bước 6: Verify token bằng API /api/auth/me
