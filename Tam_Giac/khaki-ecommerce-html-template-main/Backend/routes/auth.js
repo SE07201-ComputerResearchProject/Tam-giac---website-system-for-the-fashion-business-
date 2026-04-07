@@ -6,6 +6,7 @@ const logger = require('../utils/logger');
 const authMiddleware = require('../middleware/auth');
 const mfaMiddleware = require('../middleware/mfa');
 const recaptchaMiddleware = require('../middleware/recaptcha');
+const redisClient = require('../config/redis');
 const { getSqlPool, sql } = require('../config/database');
 
 const router = express.Router();
@@ -173,9 +174,21 @@ router.post('/login', recaptchaMiddleware.verifyCaptcha, async (req, res) => {
       return res.status(401).json({ error: 'Email/mat khau sai' });
     }
 
-    const passwordMatched = await bcrypt.compare(password, user.passwordHash);
+const passwordMatched = await bcrypt.compare(password, user.passwordHash);
     if (!passwordMatched) {
-      return res.status(401).json({ error: 'Email/mat khau sai' });
+      const ip = req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown';
+      if (redisClient) {
+        try {
+          const key = `loginAttempts:${ip}`;
+          await redisClient.multi()
+            .incr(key)
+            .expire(key, 1800)
+            .exec();
+        } catch (err) {
+          logger.warn('Redis login attempt incr fail:', err.message);
+        }
+      }
+      return res.status(401).json({ error: 'Email/mat khau sai', requireRecaptcha: true });
     }
 
     res.json({

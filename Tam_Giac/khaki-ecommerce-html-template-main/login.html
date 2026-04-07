@@ -99,6 +99,10 @@
           <label for="password">Password</label>
           <input type="password" id="password" name="password" autocomplete="current-password" placeholder="Enter your password" required>
           <button type="button" class="toggle-password" data-target="password">Show</button>
+</div>
+        <div id="recaptchaContainer" class="recaptcha-container" style="display: none; margin: 1rem 0; padding: 1rem; border: 1px solid #ddd; border-radius: 4px;">
+          <div class="g-recaptcha" data-sitekey="YOUR_RECAPTCHA_SITE_KEY_HERE" data-callback="onRecaptchaSuccess"></div>
+          <p style="font-size: 0.85rem; color: #666; margin-top: 0.5rem;">Xác nhận bạn không phải robot để tiếp tục.</p>
         </div>
         <div class="auth-inline">
           <span>After a successful login, you will be redirected to the homepage.</span>
