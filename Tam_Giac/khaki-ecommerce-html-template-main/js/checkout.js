@@ -152,7 +152,7 @@
   async function apiCall(endpoint, options) {
     var token = getToken();
     if (!token) {
-      throw new Error("Bạn cần đăng nhập trước khi đặt hàng.");
+      throw new Error("Ban can dang nhap truoc khi dat hang.");
     }
 
     var response = await fetch(API_BASE + endpoint, Object.assign({
@@ -167,7 +167,7 @@
     });
 
     if (!response.ok) {
-      throw new Error(data.error || "Không thể xử lý đơn hàng.");
+      throw new Error(data.error || "Khong the xu ly don hang.");
     }
 
     return data;
@@ -178,18 +178,31 @@
     return checked ? checked.value : "cod";
   }
 
-  function updateMethodUI() {
+  function updateMethodUI(form) {
     var helpNode = document.getElementById("paymentHelpText");
     var submitButton = document.getElementById("checkoutSubmit");
+    var method = getSelectedMethod(form);
 
     if (helpNode) {
-      helpNode.value = "Cash on delivery is the active payment flow. The order will be stored directly in SQL Server.";
+      if (method === "vnpay") {
+        helpNode.value = "VNPay QR sandbox is active. After saving the order, Tam Giac will redirect you to the VNPay payment page so you can scan the QR code on your phone.";
+      } else {
+        helpNode.value = "Cash on delivery is the active payment flow. The order will be stored directly in SQL Server.";
+      }
     }
 
     if (submitButton) {
-      submitButton.value = "Place Order";
-      submitButton.dataset.originalLabel = "Place Order";
+      submitButton.value = method === "vnpay" ? "Pay with VNPay QR" : "Place Order";
+      submitButton.dataset.originalLabel = submitButton.value;
     }
+  }
+
+  function bindPaymentMethodUI(form) {
+    form.querySelectorAll('input[name="payment"]').forEach(function (radio) {
+      radio.addEventListener("change", function () {
+        updateMethodUI(form);
+      });
+    });
   }
 
   async function prefillProfile(form) {
@@ -246,6 +259,62 @@
     });
   }
 
+  async function createVnpayPayment(orderId) {
+    return apiCall("/payments/vnpay/create", {
+      method: "POST",
+      body: JSON.stringify({
+        orderId: orderId
+      })
+    });
+  }
+
+  function getReturnContext() {
+    var params = new URLSearchParams(window.location.search);
+
+    if (params.get("payment") !== "vnpay-return") {
+      return null;
+    }
+
+    return {
+      orderId: params.get("orderId") || "",
+      resultCode: params.get("resultCode") || "",
+      status: params.get("status") || "",
+      success: params.get("success") === "1",
+      transactionNo: params.get("transactionNo") || "",
+      message: params.get("message") || ""
+    };
+  }
+
+  function applyReturnContext() {
+    var context = getReturnContext();
+    if (!context) {
+      return;
+    }
+
+    if (context.success) {
+      clearCartAfterSuccess();
+      removeStorage(window.sessionStorage, CHECKOUT_DRAFT_KEY);
+      setStatus("VNPay payment completed successfully.", "success");
+      setReturnCard({
+        title: "VNPay payment completed",
+        message: context.message || "Your payment was confirmed and the order has been recorded in the database.",
+        meta: "Order ref: " + (context.orderId || "-") + (context.transactionNo ? " | VNPay txn: " + context.transactionNo : ""),
+        linkText: "View orders",
+        linkHref: "orders.html"
+      });
+      return;
+    }
+
+    setStatus(context.message || "VNPay payment was not completed.", "error");
+    setReturnCard({
+      title: "VNPay payment not completed",
+      message: context.message || "You can review the order and try again with a new checkout attempt.",
+      meta: "Order ref: " + (context.orderId || "-") + (context.resultCode ? " | Code: " + context.resultCode : ""),
+      linkText: "Back to cart",
+      linkHref: "cart.html"
+    });
+  }
+
   function bindCheckout() {
     var form = document.getElementById("checkout-form");
     if (!form || form.dataset.checkoutBound === "true") {
@@ -254,13 +323,16 @@
 
     form.dataset.checkoutBound = "true";
     restoreCheckoutDraft(form);
-    updateMethodUI();
     bindDraftPersistence(form);
+    bindPaymentMethodUI(form);
+    updateMethodUI(form);
     prefillProfile(form);
+    applyReturnContext();
 
     form.addEventListener("submit", async function (event) {
       var submitButton = document.getElementById("checkoutSubmit");
       var cart = readCart();
+      var paymentMethod = getSelectedMethod(form);
 
       event.preventDefault();
 
@@ -282,12 +354,27 @@
         return;
       }
 
-      if (getSelectedMethod(form) !== "cod") {
-        setStatus("Only cash on delivery is active right now.", "info");
+      saveCheckoutDraft(form);
+
+      if (paymentMethod === "vnpay") {
+        setSubmitState(submitButton, true, "Connecting to VNPay...");
+        setStatus("Creating your order and preparing the VNPay QR payment page...", "info");
+
+        try {
+          var paymentOrderResult = await createOrder(form);
+          var paymentOrder = paymentOrderResult.order || {};
+          var paymentGateway = await createVnpayPayment(paymentOrder.id);
+
+          setStatus("Redirecting to VNPay QR...", "info");
+          window.location.href = paymentGateway.paymentUrl;
+        } catch (error) {
+          setStatus(error.message || "Could not start VNPay payment.", "error");
+          setSubmitState(submitButton, false);
+        }
+
         return;
       }
 
-      saveCheckoutDraft(form);
       setSubmitState(submitButton, true, "Saving order...");
       setStatus("Saving your order to the database...", "info");
 
@@ -298,7 +385,7 @@
         clearCartAfterSuccess();
         removeStorage(window.sessionStorage, CHECKOUT_DRAFT_KEY);
         form.reset();
-        updateMethodUI();
+        updateMethodUI(form);
 
         setStatus("Order placed successfully.", "success");
         setReturnCard({

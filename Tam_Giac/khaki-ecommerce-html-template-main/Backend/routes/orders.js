@@ -3,6 +3,7 @@ const { sequelize } = require('../config/database');
 const { Order, OrderItem, Product, ProductImage, ShippingAddress } = require('../models');
 const authMiddleware = require('../middleware/auth');
 const { serializeOrder } = require('../services/storefront');
+const { getInitialOrderStatus, normalizePaymentMethod } = require('../services/order-payment');
 const logger = require('../utils/logger');
 
 const router = express.Router();
@@ -33,6 +34,7 @@ router.post('/', authMiddleware.authenticateToken, async (req, res) => {
   const transaction = await sequelize.transaction();
 
   try {
+    const paymentMethod = normalizePaymentMethod(req.body.paymentMethod);
     const requestedItems = Array.isArray(req.body.items) ? req.body.items : [];
     if (!requestedItems.length) {
       await transaction.rollback();
@@ -67,7 +69,7 @@ router.post('/', authMiddleware.authenticateToken, async (req, res) => {
       {
         userId: req.user.id,
         totalAmount,
-        status: 'pending'
+        status: getInitialOrderStatus(paymentMethod)
       },
       { transaction }
     );

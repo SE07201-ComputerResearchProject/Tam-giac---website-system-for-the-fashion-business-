@@ -51,7 +51,7 @@ const renderOrders = async () => {
         `<td>${order.reference || order.id || '-'}</td>`,
         `<td>${formatPrice(order.totalAmount)}</td>`,
         `<td>${order.paymentLabel || 'Cash on delivery'}</td>`,
-        `<td>${order.status || 'Pending'}</td>`,
+        `<td>${order.statusLabel || order.status || 'Pending'}</td>`,
         `<td><a href="shop.html">Shop again</a></td>`,
         '</tr>'
       ].join(''))

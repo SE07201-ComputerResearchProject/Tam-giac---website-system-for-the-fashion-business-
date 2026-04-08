@@ -704,14 +704,17 @@ main .load-more a:hover{
 }
 /* Content Section === Cart Page */
 main .cart-page{
-	max-height: 580px;
 	display: flex;
 	justify-content: space-between;
+	align-items: flex-start;
+	flex-wrap: wrap;
 	padding: 10px;
 }
 /* Content main === Cart Page === Cart Items */
 main .cart-page .cart-items{
-	width: 70%;
+	flex: 1 1 0;
+	width: auto;
+	min-width: 0;
 }
 main h2{
 	color: var(--darkStaleGray);
@@ -724,7 +727,7 @@ main .cart-page .cart-items table{
 }
 main .cart-page .cart-items table .qty{
 	text-align: center;
-	position: relative;
+	min-width: 150px;
 }
 main .cart-page .cart-items tbody img{
 	width: 100px;
@@ -751,6 +754,9 @@ main .cart-page .cart-items table td a{
 main .cart-page .cart-items table td a:hover{
 	background-color: var(--darkStaleGray);
 }
+main .cart-page .cart-items .pagination{
+	display: none;
+}
 main .cart-page .cart-items .pagination ul{
 	width: 60%;
 	display: flex;
@@ -769,57 +775,55 @@ main .cart-page .cart-items .pagination ul li a:hover{
 	color: var(--darkStaleGray);
 	background-color: var(--khaki);
 }
-input.cartNumber::-webkit-outer-spin-button,
-input.cartNumber::-webkit-inner-spin-button {
+main .cart-page input.cartNumber::-webkit-outer-spin-button,
+main .cart-page input.cartNumber::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-input.cartNumber{
-	width: 50px;
-	height: 25px;
-	position: absolute;
+main .cart-page .qty-control{
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	margin-bottom: 14px;
+}
+main .cart-page input.cartNumber{
+	width: 58px;
+	height: 36px;
 	padding: 0 5px;
-	top: 20%;
-	left: 23px; 
+	text-align: center;
 }
-div.prev{
-	width: 30px;
-	height: 25px;
-	position: absolute;
-	left: -10px;
-	top: 20%;
+main .cart-page .prev,
+main .cart-page .next{
+	width: 32px;
+	height: 32px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: none;
 	background-color: var(--darkStaleGray);
 	color: var(--khaki);
-	border-radius: 2px;
-	padding-top: 4px;
-	z-index: 1000;
+	border-radius: 8px;
 	cursor: pointer;
 }
-div.next{
-	width: 30px;
-	height: 25px;
-	position: absolute;
-	right: -10px;
-	top: 20%;
-	background-color: var(--darkStaleGray);
-	color: var(--khaki);
-	border-radius: 2px;
-	padding-top: 4px;
-	z-index: 1000;
-	cursor: pointer;
-}
-div.prev:hover,
-div.next:hover{
+main .cart-page .prev:hover,
+main .cart-page .next:hover{
 	background-color: var(--khaki);
 	color: var(--darkStaleGray);
 }
+main .cart-page .cart-line-total{
+	margin: 0;
+}
 /* Content Section === Cart Page === Cart Summary */
 main .cart-summary{
-	width: 25%;
-	height: 220px;
-	padding: 5px;
+	flex: 0 0 260px;
+	width: 260px;
+	min-width: 260px;
+	height: auto;
+	padding: 20px;
 	border: 1px solid rgba(236, 240, 241,0.3);
-	margin-top: 28px;
+	margin-top: 0;
+	align-self: flex-start;
 }
 main .cart-summary .checkout-total h3{
 	background-color: var(--darkStaleGray);
@@ -829,10 +833,13 @@ main .cart-summary .checkout-total h3{
 }
 main .cart-summary .checkout-total ul{
 	list-style: none;
-	padding: 10px;
+	padding: 14px 0 0;
 }
 main .cart-summary .checkout-total ul li{
-	margin-bottom: 10px;
+	margin-bottom: 14px;
+}
+main .cart-summary .checkout-total ul li:last-child{
+	margin-bottom: 0;
 }
 main .cart-summary .checkout-total ul li a{
 	background-color: var(--khaki);
@@ -840,8 +847,8 @@ main .cart-summary .checkout-total ul li a{
 	text-transform: uppercase;
 	text-decoration: none;
 	text-align: center;
-	padding: 5px 8px;
-	margin-top: 20px;
+	padding: 12px 16px;
+	margin-top: 0;
 	display: block;
 }
 main .cart-summary .checkout-total ul li a:hover{
@@ -1838,6 +1845,10 @@ main .single-product .product-detail .product-cart #cart-form .buy-now-trigger:h
 	main .checkout-page .billing-detail,
 	main .checkout-page .order-summary{
 		width: 100%;
+	}
+
+	main .cart-page .cart-summary{
+		min-width: 0;
 	}
 
 	footer .footer-widget .widget{

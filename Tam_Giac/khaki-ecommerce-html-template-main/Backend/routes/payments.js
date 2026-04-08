@@ -1,25 +1,168 @@
 const express = require('express');
+const { Order } = require('../models');
+const authMiddleware = require('../middleware/auth');
 const vnpayService = require('../services/vnpay');
 const momoService = require('../services/momo');
 const mockPaymentService = require('../services/mock-payment');
 const { getMissingConfig } = require('../config/momo');
+const {
+  ORDER_STATUSES,
+  PAYMENT_METHODS,
+  canCreateVnpayPayment,
+  getPaymentMethodFromStatus,
+  getVnpayStatusFromResponse,
+  isFinalOrderStatus
+} = require('../services/order-payment');
+const { createOrderReference } = require('../services/storefront');
 const logger = require('../utils/logger');
 
 const router = express.Router();
 
-// Tạo link thanh toán VNPay
-router.post('/create', async (req, res) => {
-  const { amount, orderId, returnUrl } = req.body;
-  const ipAddr = req.ip || req.connection.remoteAddress || '127.0.0.1';
-  
-  try {
-    const paymentUrl = vnpayService.createPaymentUrl(amount, orderId, returnUrl, ipAddr);
-    res.json({ paymentUrl });
-  } catch (error) {
-    logger.error('VNPay create error:', error);
-    res.status(500).json({ error: 'Tạo thanh toán thất bại' });
+function getExpectedVnpayAmount(order) {
+  return Math.round(Number(order && order.totalAmount ? order.totalAmount : 0) * 100);
+}
+
+function isExpectedVnpayAmount(order, amountFromGateway) {
+  return getExpectedVnpayAmount(order) === Number(amountFromGateway || 0);
+}
+
+function buildVnpayOrderInfo(order) {
+  return `Thanh toan don hang ${createOrderReference(order.id)}`;
+}
+
+function getReturnMessage(responseCode, status) {
+  if (status === ORDER_STATUSES.VNPAY_PAID) {
+    return 'VNPay payment completed successfully.';
   }
-});
+
+  if (status === ORDER_STATUSES.VNPAY_CANCELLED) {
+    return 'The VNPay transaction was cancelled.';
+  }
+
+  if (status === ORDER_STATUSES.VNPAY_EXPIRED) {
+    return 'The VNPay QR session expired before payment completed.';
+  }
+
+  if (responseCode === '97') {
+    return 'VNPay callback signature is invalid.';
+  }
+
+  if (responseCode === '01') {
+    return 'The order could not be found.';
+  }
+
+  if (responseCode === '04') {
+    return 'The payment amount did not match the order total.';
+  }
+
+  return 'VNPay payment was not completed.';
+}
+
+function redirectToCheckoutResult(req, res, details) {
+  return res.redirect(302, vnpayService.buildCheckoutResultUrl(req, details));
+}
+
+async function applyVnpayResult(order, verification, source) {
+  if (!order) {
+    return { ok: false, code: '01', message: 'Order not Found' };
+  }
+
+  if (getPaymentMethodFromStatus(order.status) !== PAYMENT_METHODS.VNPAY) {
+    return { ok: false, code: '99', message: 'Invalid request' };
+  }
+
+  if (!isExpectedVnpayAmount(order, verification.amount)) {
+    return { ok: false, code: '04', message: 'Invalid Amount' };
+  }
+
+  if (isFinalOrderStatus(order.status)) {
+    return {
+      ok: true,
+      code: '02',
+      message: 'Order already confirmed',
+      status: order.status
+    };
+  }
+
+  const nextStatus = getVnpayStatusFromResponse(
+    verification.responseCode,
+    verification.transactionStatus
+  );
+
+  await order.update({ status: nextStatus });
+
+  logger.info('VNPay order status updated', {
+    source,
+    orderId: order.id,
+    nextStatus,
+    responseCode: verification.responseCode,
+    transactionStatus: verification.transactionStatus,
+    transactionNo: verification.transactionNo
+  });
+
+  return {
+    ok: true,
+    code: '00',
+    message: 'Confirm Success',
+    status: nextStatus
+  };
+}
+
+async function createVnpayPayment(req, res) {
+  const orderId = String((req.body && req.body.orderId) || '').trim();
+
+  try {
+    if (!orderId) {
+      return res.status(400).json({ error: 'Order id is required' });
+    }
+
+    const order = await Order.findOne({
+      where: {
+        id: orderId,
+        userId: req.user.id
+      }
+    });
+
+    if (!order) {
+      return res.status(404).json({ error: 'Khong tim thay don hang' });
+    }
+
+    if (getPaymentMethodFromStatus(order.status) !== PAYMENT_METHODS.VNPAY) {
+      return res.status(400).json({ error: 'Don hang nay khong su dung VNPay QR' });
+    }
+
+    if (!canCreateVnpayPayment(order.status)) {
+      return res.status(409).json({ error: 'Don hang VNPay nay da duoc xu ly roi' });
+    }
+
+    const paymentUrl = vnpayService.createPaymentUrl({
+      amount: Number(order.totalAmount || 0),
+      orderId: order.id,
+      orderInfo: buildVnpayOrderInfo(order),
+      returnUrl: vnpayService.getReturnUrl(req),
+      ipAddr: vnpayService.getClientIp(req)
+    });
+
+    return res.json({
+      provider: 'vnpay',
+      orderId: order.id,
+      reference: createOrderReference(order.id),
+      paymentUrl
+    });
+  } catch (error) {
+    logger.error('VNPay create error', {
+      message: error && error.message,
+      orderId
+    });
+
+    return res.status(500).json({
+      error: error && error.message ? error.message : 'Tao thanh toan VNPay that bai'
+    });
+  }
+}
+
+router.post('/create', authMiddleware.authenticateToken, createVnpayPayment);
+router.post('/vnpay/create', authMiddleware.authenticateToken, createVnpayPayment);
 
 router.post('/momo/create', async (req, res) => {
   const { amount, orderId, returnUrl, orderInfo, extraData } = req.body || {};
@@ -153,29 +296,84 @@ router.post('/mock/session/:sessionId/action', (req, res) => {
   });
 });
 
-// VNPay return URL (frontend redirect về)
-router.get('/vnpay_return', (req, res) => {
-  const result = vnpayService.verifyPayment(req);
-  
-  if (result.isSuccess) {
-    logger.info(`Payment success: ${result.orderId}`);
-    res.json({ success: true, message: 'Thanh toán thành công!', transactionNo: result.transactionNo });
-  } else {
-    logger.warn(`Payment fail: ${result.orderId}`);
-    res.json({ success: false, message: 'Thanh toán thất bại' });
+router.get('/vnpay_return', async (req, res) => {
+  try {
+    const verification = vnpayService.verifyPayment(req.query);
+
+    if (!verification.isVerified) {
+      logger.warn('VNPay return invalid signature', {
+        orderId: verification.orderId
+      });
+
+      return redirectToCheckoutResult(req, res, {
+        orderId: verification.orderId,
+        resultCode: '97',
+        status: ORDER_STATUSES.VNPAY_FAILED,
+        success: '0',
+        message: getReturnMessage('97', ORDER_STATUSES.VNPAY_FAILED)
+      });
+    }
+
+    const order = await Order.findByPk(verification.orderId);
+    const updateResult = await applyVnpayResult(order, verification, 'return');
+    const finalStatus =
+      updateResult.status || getVnpayStatusFromResponse(verification.responseCode, verification.transactionStatus);
+    const resultCode = updateResult.ok ? verification.responseCode || updateResult.code : updateResult.code;
+
+    return redirectToCheckoutResult(req, res, {
+      orderId: verification.orderId,
+      transactionNo: verification.transactionNo,
+      resultCode,
+      status: finalStatus,
+      success: finalStatus === ORDER_STATUSES.VNPAY_PAID ? '1' : '0',
+      message: getReturnMessage(resultCode, finalStatus)
+    });
+  } catch (error) {
+    logger.error('VNPay return error', {
+      message: error && error.message
+    });
+
+    return redirectToCheckoutResult(req, res, {
+      resultCode: '99',
+      status: ORDER_STATUSES.VNPAY_FAILED,
+      success: '0',
+      message: 'VNPay return handling failed.'
+    });
   }
 });
 
-// IPN (VNPay server gọi - verify lại)
-router.post('/vnpay_ipn', (req, res) => {
-  const result = vnpayService.verifyPayment(req);
-  // Update Order.status = 'paid' nếu success
-  
-  // Response cho VNPay
-  res.status(200).json({ 
-    RspCode: '00', 
-    Message: 'IPN OK' 
-  });
+router.get('/vnpay_ipn', async (req, res) => {
+  try {
+    const verification = vnpayService.verifyPayment(req.query);
+
+    if (!verification.isVerified) {
+      logger.warn('VNPay IPN invalid signature', {
+        orderId: verification.orderId
+      });
+
+      return res.status(200).json({
+        RspCode: '97',
+        Message: 'Invalid Signature'
+      });
+    }
+
+    const order = await Order.findByPk(verification.orderId);
+    const updateResult = await applyVnpayResult(order, verification, 'ipn');
+
+    return res.status(200).json({
+      RspCode: updateResult.code,
+      Message: updateResult.message
+    });
+  } catch (error) {
+    logger.error('VNPay IPN error', {
+      message: error && error.message
+    });
+
+    return res.status(200).json({
+      RspCode: '99',
+      Message: 'Unknown error'
+    });
+  }
 });
 
 router.post('/momo/ipn', (req, res) => {
@@ -211,4 +409,3 @@ router.post('/momo/ipn', (req, res) => {
 });
 
 module.exports = router;
-

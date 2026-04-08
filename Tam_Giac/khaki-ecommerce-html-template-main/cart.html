@@ -10,36 +10,9 @@
  		<title>Tam Giac</title>
  		<!-- Style Sheet -->
 		<link rel="stylesheet" type="text/css" href="css/style.css" />
-		<!-- Javascript -->	
+		<!-- Javascript -->
 		<script type="text/javascript" src="js/jquery.min.js"></script>
 		<script type="module" src="js/header-auth.js" defer></script>
-  		<script>
-  			$(document).ready(function(){
-  				
-  				$('.prev').on("click", function(){
-
-  					var prev = $(this).closest('.qty').find("input").val();
-  					
-  					if (prev == 1) {
-  						$(this).closest('.qty').find("input").val('1');
-  					}else{
-  						var prevVal = prev - 1;
-  						$(this).closest('.qty').find("input").val(prevVal);
-  					}  					
-  				});
-  				$('.next').on("click", function(){
-
-  					var next = $(this).closest('.qty').find("input").val();
-  					
-  					if (next == 10) {
-  						$(this).closest('.qty').find("input").val('10');
-  					}else{
-  						var nextVal = ++next;
-  						$(this).closest('.qty').find("input").val(nextVal);
-  					}  					
-  				});
-  			});
-  		</script>
 		<link rel="stylesheet" type="text/css" href="css/mouse-effects.css?v=20260320a" />
 		<link rel="stylesheet" type="text/css" href="css/page-loader.css?v=20260321a" />
 		<link rel="stylesheet" type="text/css" href="css/button-burst.css?v=20260321a" />
@@ -98,33 +71,7 @@
 					<div class="dropdown">
 						<img src="img/icons/shopping_cart.png">
 						<div class="dropdown-menu cart-item">
-							<table border="1">
-								<thead>
-									<tr>
-										<th>Image</th>
-										<th>Product Name</th>
-										<th class="center">Price</th>
-										<th class="center">Qty.</th>
-										<th class="center">Amount</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr>
-										<td><img src="img/product/img1.jpg"></td>
-										<td>product name</td>
-										<td class="center">1.200.000 đ</td>
-										<td class="center">2</td>
-										<td class="center">2.400.000 đ</td>
-									</tr>
-									<tr>
-										<td><img src="img/product/img2.jpg"></td>
-										<td>product name</td>
-										<td class="center">1.500.000 đ</td>
-										<td class="center">2</td>
-										<td class="center">3.000.000 đ</td>
-									</tr>
-								</tbody>
-							</table>
+							<div class="mini-cart-empty">Your cart is empty.</div>
 						</div>
 					</div>
 				</div> <!-- shop icons -->
@@ -165,7 +112,7 @@
 
 			<h2>Shopping Cart</h2>
 			<div class="cart-page">
-				<div class="cart-items">					
+				<div class="cart-items">
 					<table>
 						<thead>
 							<tr>
@@ -174,82 +121,24 @@
 						</thead>
 						<tbody>
 							<tr>
-								<td style="width: 20%;"><img src="img/product/img1.jpg"></td>
-								<td style="width: 60%;">
-									<h2>Product Title</h2>
-									<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-									<br>
-									<h3>Gia: 1.200.000 đ</h3>
-									<br>
-									<a href="">x</a> Remove
-								</td>
-								<td class="qty" style="width: 15%;">
-									<div class="prev">-</div>
-									<div class="next">+</div>
-									<input type="number" name="cartNumber" class="cartNumber" value="1" min="1" max="10">
-									<br><br>
-									<h3>1.200.000 đ</h3>
-								</td>
+								<td colspan="3" class="cart-empty-row">Your cart is empty.</td>
 							</tr>
-							<tr>
-								<td style="width: 20%;"><img src="img/product/img2.jpg"></td>
-								<td style="width: 60%;">
-									<h2>Product Title</h2>
-									<p >Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-									<br>
-									<h3>Gia: 1.200.000 đ</h3>
-									<br>
-									<a href="">x</a> Remove
-								</td>
-								<td class="qty" style="width: 15%;">
-									<div class="prev">-</div>
-									<div class="next">+</div>
-									<input type="number" name="cartNumber" class="cartNumber" value="1" min="1" max="10">
-									<br><br>
-									<h3>1.200.000 đ</h3>
-								</td>
-							</tr>
-							<tr>
-								<td style="width: 20%;"><img src="img/product/img3.jpg"></td>
-								<td style="width: 60%;">
-									<h2>Product Title</h2>
-									<p >Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-									<br>
-									<h3>Gia: 1.200.000 đ</h3>
-									<br>
-									<a href="">x</a> Remove
-								</td>
-								<td class="qty" style="width: 15%;">
-									<div class="prev">-</div>
-									<div class="next">+</div>
-									<input type="number" name="cartNumber" class="cartNumber" value="1" min="1" max="10">
-									<br><br>
-									<h3>1.200.000 đ</h3>
-								</td>
-							</tr>						
-						</tbody>	
+						</tbody>
 					</table>
-					<div class="pagination">
-						<ul>
-							<li><a href="#">1</a></li>
-							<li><a href="#">2</a></li>
-							<li><a href="#">3</a></li>
-						</ul>
-					</div>
 				</div>
 				<div class="cart-summary">
 					<div class="checkout-total">
 						<h3>Cart Summary</h3>
 						<ul>
-							<li>Number of Products x 15</li>
-							<li>Number of items x 20</li>
+							<li>Number of Products x 0</li>
+							<li>Number of items x 0</li>
 							<hr>
-							<li>Cart Total <span style="float: right;">1.200.000 đ</span></li>
-							<li><a href="checkout.html">Go to Checkout</a></li>
+							<li>Cart Total <span style="float: right;">0 VND</span></li>
+							<li><a href="shop.html">Continue shopping</a></li>
 						</ul>
 					</div>
 				</div>
-			</div>		
+			</div>
 		</main> <!-- Main Area -->
 	</div>
 
@@ -293,7 +182,7 @@
 								<li><a href="#"><img src="img/icons/twitter.png"></a></li>
 								<li><a href="#"><img src="img/icons/instagram.png"></a></li>
 							</ul>
-						</div>						
+						</div>
 					</div>
 					<div class="widget-heading">
 						<h3>Subscribe for Newsletter</h3>
@@ -306,7 +195,7 @@
 									<img src="img/icons/paper_plane.png">
 								</div>
 							</form>
-						</div>						
+						</div>
 					</div>
 				</div>
 			</div> <!-- Footer Widget -->

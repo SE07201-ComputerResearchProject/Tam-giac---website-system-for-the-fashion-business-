@@ -1,3 +1,9 @@
+const {
+  getPaymentMethodFromStatus,
+  getStatusLabel,
+  paymentLabels
+} = require('./order-payment');
+
 const photoUrl = (id) =>
   `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=900`;
 
@@ -22,13 +28,6 @@ const createOrderReference = (id) => {
   }
 
   return `TG-${text.split('-')[0].toUpperCase()}`;
-};
-
-const paymentLabels = {
-  cod: 'Cash on delivery',
-  momo: 'MoMo',
-  vnpay: 'VNPay',
-  bank: 'Bank transfer'
 };
 
 const slugify = (value) =>
@@ -108,13 +107,15 @@ const serializeOrder = (order) => {
   const items = Array.isArray(source.OrderItems) ? source.OrderItems : [];
   const totalAmount = moneyToNumber(source.totalAmount);
   const itemCount = items.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+  const paymentMethod = getPaymentMethodFromStatus(source.status);
 
   return {
     id: source.id,
     reference: createOrderReference(source.id),
     status: source.status || 'pending',
-    paymentMethod: 'cod',
-    paymentLabel: paymentLabels.cod,
+    statusLabel: getStatusLabel(source.status),
+    paymentMethod,
+    paymentLabel: paymentLabels[paymentMethod] || paymentLabels.cod,
     totalAmount,
     subtotalAmount: totalAmount,
     deliveryFee: 0,

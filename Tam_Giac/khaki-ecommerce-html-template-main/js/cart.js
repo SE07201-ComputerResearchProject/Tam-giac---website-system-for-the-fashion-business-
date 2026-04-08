@@ -28,6 +28,10 @@
     return Number(value || 0).toLocaleString("vi-VN") + " đ";
   }
 
+  formatPrice = function (value) {
+    return Number(value || 0).toLocaleString("vi-VN") + " VND";
+  };
+
   function slugify(value) {
     return String(value || "")
       .toLowerCase()
@@ -249,6 +253,10 @@
         '<li>Cart Total <span style="float: right;">0 đ</span></li>',
         '<li><a href="shop.html">Continue shopping</a></li>'
       ].join("");
+      var zeroTotal = summary.querySelector("li span");
+      if (zeroTotal) {
+        zeroTotal.textContent = formatPrice(0);
+      }
       return;
     }
 
@@ -267,11 +275,12 @@
           '<a href="#" class="cart-remove" data-item-id="' + item.id + '">x</a> Remove',
           "</td>",
           '<td class="qty" style="width: 15%;">',
-          '<div class="prev" data-item-id="' + item.id + '">-</div>',
-          '<div class="next" data-item-id="' + item.id + '">+</div>',
+          '<div class="qty-control">',
+          '<button type="button" class="prev" data-item-id="' + item.id + '" aria-label="Decrease quantity">-</button>',
           '<input type="number" name="cartNumber" class="cartNumber" value="' + item.quantity + '" min="1" max="10" data-item-id="' + item.id + '">',
-          "<br><br>",
-          "<h3>" + formatPrice(amount) + "</h3>",
+          '<button type="button" class="next" data-item-id="' + item.id + '" aria-label="Increase quantity">+</button>',
+          "</div>",
+          '<h3 class="cart-line-total">' + formatPrice(amount) + "</h3>",
           "</td>",
           "</tr>"
         ].join("");
@@ -305,6 +314,7 @@
     lines[0].innerHTML = 'Cart Amount: <span>' + formatPrice(stats.totalAmount) + "</span>";
     lines[1].innerHTML = 'Delivery Charges: <span>' + formatPrice(delivery) + "</span>";
     lines[2].innerHTML = 'Less: Discount @ 10%: <span>0 đ</span>';
+    lines[2].innerHTML = 'Less: Discount @ 10%: <span>' + formatPrice(0) + "</span>";
     lines[3].innerHTML = 'Total Amount: <span>' + formatPrice(total) + "</span>";
   }
 
