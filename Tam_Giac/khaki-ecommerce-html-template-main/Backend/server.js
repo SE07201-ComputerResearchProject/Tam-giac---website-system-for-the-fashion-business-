@@ -39,9 +39,33 @@ if (process.env.NODE_ENV !== 'production') {
 
 const app = express();
 const localOriginPattern = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+const publicTunnelPatterns = [
+  /^https:\/\/[a-z0-9-]+\.trycloudflare\.com$/i,
+  /^https:\/\/[a-z0-9-]+\.ngrok-free\.app$/i,
+  /^https:\/\/[a-z0-9-]+\.ngrok\.app$/i,
+  /^https:\/\/[a-z0-9-]+\.ngrok\.io$/i
+];
+const configuredAllowedOrigins = new Set(
+  String(process.env.ALLOWED_ORIGINS || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean)
+);
 const PORT = Number(process.env.PORT || 3000);
 const DB_OPTIONAL = (process.env.DB_OPTIONAL || 'false').toLowerCase() === 'true';
 const frontendRoot = path.resolve(__dirname, '..');
+
+const isAllowedOrigin = (origin) => {
+  if (!origin || localOriginPattern.test(origin)) {
+    return true;
+  }
+
+  if (configuredAllowedOrigins.has(origin)) {
+    return true;
+  }
+
+  return publicTunnelPatterns.some((pattern) => pattern.test(origin));
+};
 
 app.use(
   helmet({
@@ -65,7 +89,7 @@ app.use(
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || localOriginPattern.test(origin)) {
+      if (isAllowedOrigin(origin)) {
         return callback(null, true);
       }
 

@@ -12,6 +12,10 @@ function padNumber(value) {
   return String(value).padStart(2, '0');
 }
 
+function encodeVnpayValue(value) {
+  return encodeURIComponent(String(value)).replace(/%20/g, '+');
+}
+
 function formatDateGmt7(dateInput) {
   const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
   const utcTime = date.getTime() + (date.getTimezoneOffset() * 60 * 1000);
@@ -33,6 +37,7 @@ class VNPayService {
     this.secretKey = cleanEnvValue(process.env.VNPAY_SECRET);
     this.vnpayUrl = cleanEnvValue(process.env.VNPAY_URL) || DEFAULT_PAYMENT_URL;
     this.returnUrl = cleanEnvValue(process.env.VNPAY_RETURN_URL);
+    this.bankCode = cleanEnvValue(process.env.VNPAY_BANK_CODE);
   }
 
   assertConfigured() {
@@ -98,11 +103,10 @@ class VNPayService {
     const sorted = {};
 
     Object.keys(params || {})
+      .filter((key) => params[key] !== undefined && params[key] !== null && params[key] !== '')
       .sort()
       .forEach((key) => {
-        if (params[key] !== undefined && params[key] !== null && params[key] !== '') {
-          sorted[key] = String(params[key]);
-        }
+        sorted[encodeURIComponent(key)] = encodeVnpayValue(params[key]);
       });
 
     return sorted;
@@ -110,7 +114,7 @@ class VNPayService {
 
   buildQueryString(params) {
     return Object.keys(params)
-      .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+      .map((key) => `${key}=${params[key]}`)
       .join('&');
   }
 
@@ -141,7 +145,7 @@ class VNPayService {
       vnp_ReturnUrl: input.returnUrl,
       vnp_TxnRef: input.orderId,
       vnp_ExpireDate: formatDateGmt7(expiresAt),
-      vnp_BankCode: input.bankCode || 'VNPAYQR'
+      vnp_BankCode: input.bankCode || this.bankCode || ''
     });
 
     const signData = this.buildQueryString(params);

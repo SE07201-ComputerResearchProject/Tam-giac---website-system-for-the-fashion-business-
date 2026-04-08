@@ -11,3 +11,8 @@ info: Server chay tai http://localhost:3002 {"timestamp":"2026-04-07T12:38:56.62
 error: Catalog products failed The "config.server" property is required and must be of type string. {"timestamp":"2026-04-07 19:43:24"}
 error: Register failed SQL pool is not ready {"timestamp":"2026-04-07 19:44:04"}
 error: Register failed SQL pool is not ready {"timestamp":"2026-04-07 19:44:12"}
+Using Google callback URL: http://localhost:3002/api/auth/google/callback
+info: Connected to SQL Server successfully (SQL login) {"timestamp":"2026-04-09 01:50:59"}
+info: Catalog ready {"productCount":25,"seeded":false,"timestamp":"2026-04-08T18:50:59.256Z"}
+info: DB ket noi thanh cong (Redis dang tat) {"timestamp":"2026-04-08T18:50:59.262Z"}
+info: Server chay tai http://localhost:3002 {"timestamp":"2026-04-08T18:50:59.269Z"}

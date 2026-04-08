@@ -178,6 +178,27 @@
     return checked ? checked.value : "cod";
   }
 
+  function shouldForceVnpay() {
+    var params = new URLSearchParams(window.location.search);
+    return params.get("force_vnpay") === "1";
+  }
+
+  function preferVnpayForDemo(form) {
+    if (!form) {
+      return;
+    }
+
+    var codInput = form.querySelector('input[name="payment"][value="cod"]');
+    var vnpayInput = form.querySelector('input[name="payment"][value="vnpay"]');
+    if (codInput) {
+      codInput.checked = false;
+      codInput.disabled = true;
+    }
+    if (vnpayInput && !vnpayInput.disabled) {
+      vnpayInput.checked = true;
+    }
+  }
+
   function updateMethodUI(form) {
     var helpNode = document.getElementById("paymentHelpText");
     var submitButton = document.getElementById("checkoutSubmit");
@@ -192,7 +213,7 @@
     }
 
     if (submitButton) {
-      submitButton.value = method === "vnpay" ? "Pay with VNPay QR" : "Place Order";
+      submitButton.value = "VNPAY TEST 20260409B";
       submitButton.dataset.originalLabel = submitButton.value;
     }
   }
@@ -229,7 +250,7 @@
     }
   }
 
-  async function createOrder(form) {
+  async function createOrder(form, paymentMethod) {
     var cart = readCart();
     var items = cart.map(function (item) {
       return {
@@ -242,7 +263,7 @@
       method: "POST",
       body: JSON.stringify({
         items: items,
-        paymentMethod: getSelectedMethod(form),
+        paymentMethod: paymentMethod || getSelectedMethod(form),
         customerName: (getFieldValue(form, "fname") + " " + getFieldValue(form, "lname")).trim(),
         customerEmail: getFieldValue(form, "email"),
         customerPhone: getFieldValue(form, "mobile") || getFieldValue(form, "tel"),
@@ -323,16 +344,23 @@
 
     form.dataset.checkoutBound = "true";
     restoreCheckoutDraft(form);
+    preferVnpayForDemo(form);
     bindDraftPersistence(form);
     bindPaymentMethodUI(form);
     updateMethodUI(form);
     prefillProfile(form);
     applyReturnContext();
+    window.setTimeout(function () {
+      if (shouldForceVnpay()) {
+        preferVnpayForDemo(form);
+        updateMethodUI(form);
+      }
+    }, 50);
 
     form.addEventListener("submit", async function (event) {
       var submitButton = document.getElementById("checkoutSubmit");
       var cart = readCart();
-      var paymentMethod = getSelectedMethod(form);
+      var paymentMethod = "vnpay";
 
       event.preventDefault();
 
@@ -356,47 +384,18 @@
 
       saveCheckoutDraft(form);
 
-      if (paymentMethod === "vnpay") {
+      try {
         setSubmitState(submitButton, true, "Connecting to VNPay...");
         setStatus("Creating your order and preparing the VNPay QR payment page...", "info");
 
-        try {
-          var paymentOrderResult = await createOrder(form);
-          var paymentOrder = paymentOrderResult.order || {};
-          var paymentGateway = await createVnpayPayment(paymentOrder.id);
+        var paymentOrderResult = await createOrder(form, "vnpay");
+        var paymentOrder = paymentOrderResult.order || {};
+        var paymentGateway = await createVnpayPayment(paymentOrder.id);
 
-          setStatus("Redirecting to VNPay QR...", "info");
-          window.location.href = paymentGateway.paymentUrl;
-        } catch (error) {
-          setStatus(error.message || "Could not start VNPay payment.", "error");
-          setSubmitState(submitButton, false);
-        }
-
-        return;
-      }
-
-      setSubmitState(submitButton, true, "Saving order...");
-      setStatus("Saving your order to the database...", "info");
-
-      try {
-        var result = await createOrder(form);
-        var order = result.order || {};
-
-        clearCartAfterSuccess();
-        removeStorage(window.sessionStorage, CHECKOUT_DRAFT_KEY);
-        form.reset();
-        updateMethodUI(form);
-
-        setStatus("Order placed successfully.", "success");
-        setReturnCard({
-          title: "Order placed successfully",
-          message: "Your order has been saved through the backend and written to SQL Server.",
-          meta: "Order ref: " + (order.reference || order.id || "-") + " | Total: " + formatPrice(order.totalAmount || 0),
-          linkText: "View orders",
-          linkHref: "orders.html"
-        });
+        setStatus("Redirecting to VNPay QR...", "info");
+        window.location.href = paymentGateway.paymentUrl;
       } catch (error) {
-        setStatus(error.message || "Could not save the order.", "error");
+        setStatus(error.message || "Could not start VNPay payment.", "error");
       } finally {
         setSubmitState(submitButton, false);
       }

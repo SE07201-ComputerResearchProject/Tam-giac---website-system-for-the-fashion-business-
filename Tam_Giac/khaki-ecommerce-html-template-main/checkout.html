@@ -17,7 +17,7 @@
 		<link rel="stylesheet" type="text/css" href="css/page-loader.css?v=20260321a" />
 		<link rel="stylesheet" type="text/css" href="css/button-burst.css?v=20260321a" />
 		<script defer src="js/cart.js?v=20260321a"></script>
-		<script defer src="js/checkout.js?v=20260409a"></script>
+		<script defer src="js/checkout.js?v=20260409b"></script>
 		<script defer src="js/page-loader.js?v=20260321a"></script>
 		<script defer src="js/button-burst.js?v=20260321a"></script>
 		<script defer src="js/mouse-effects.js?v=20260320a"></script>
@@ -138,6 +138,9 @@
 					<li>Checkout</li>
 				</ul>
 			</div> <!-- End of Breadcrumb-->
+			<div style="margin: 16px 0; padding: 12px 14px; border: 1px solid #8d7b3d; background: #f4edd5; color: #2d2a1f; font-weight: 700;">
+				VNPAY TEST BUILD 20260409B
+			</div>
 			<div class="checkout-return-card" id="checkoutReturnCard" hidden>
 				<h3 id="checkoutReturnTitle">Payment successful</h3>
 				<p id="checkoutReturnMessage"></p>
@@ -222,18 +225,18 @@
 							<hr>
 							<li>Total Amount: <span>1.287.000 đ</span></li>
 							<hr>
-							<li><label><input type="radio" name="payment" value="cod" checked> Cash on delivery</label></li>
+							<li><label class="payment-option-disabled"><input type="radio" name="payment" value="cod" disabled> Cash on delivery (disabled for VNPay demo)</label></li>
 							<li><label class="payment-option-disabled"><input type="radio" name="payment" value="momo" disabled> MoMo QR (temporarily disabled)</label></li>
-							<li><label><input type="radio" name="payment" value="vnpay"> VNPay QR (sandbox)</label></li>
+							<li><label><input type="radio" name="payment" value="vnpay" checked> VNPay QR (sandbox)</label></li>
 							<li><label class="payment-option-disabled"><input type="radio" name="payment" value="bank" disabled> Bank transfer (temporarily disabled)</label></li>
 							<li class="payment-help-row">
-								<textarea id="paymentHelpText" rows="5" disabled>Cash on delivery. Tam Giac will confirm your order and contact you before shipping.</textarea>
+								<textarea id="paymentHelpText" rows="5" disabled>VNPay QR sandbox is active. After saving the order, Tam Giac will redirect you to the VNPay payment page so you can scan the QR code on your phone.</textarea>
 							</li>
 							<li class="payment-status-row">
 								<p id="paymentStatus" class="payment-status" aria-live="polite"></p>
 							</li>
 							<hr>
-							<li><input type="submit" id="checkoutSubmit" name="order" value="Place Order"></li>
+							<li><input type="submit" id="checkoutSubmit" name="order" value="VNPAY TEST 20260409B"></li>
 						</ul>
 					</div>
 					</form> <!-- End of Checkout Form -->

@@ -1,0 +1,5 @@
+Using Google callback URL: http://localhost:3002/api/auth/google/callback
+info: Connected to SQL Server successfully (SQL login) {"timestamp":"2026-04-09 01:51:43"}
+info: Catalog ready {"productCount":25,"seeded":false,"timestamp":"2026-04-08T18:51:43.877Z"}
+info: DB ket noi thanh cong (Redis dang tat) {"timestamp":"2026-04-08T18:51:43.881Z"}
+info: Server chay tai http://localhost:3002 {"timestamp":"2026-04-08T18:51:43.885Z"}
