@@ -1,7 +1,117 @@
 (function () {
   var overlay = null;
+  var labelNode = null;
+  var kickerNode = null;
+  var subtitleNode = null;
   var visibleSince = 0;
-  var MIN_VISIBLE_MS = 260;
+  var MIN_VISIBLE_MS = 540;
+
+  function getCurrentPath() {
+    return (window.location.pathname.split("/").pop() || "index.html").toLowerCase();
+  }
+
+  function normalizePath(rawValue) {
+    if (!rawValue) {
+      return getCurrentPath();
+    }
+
+    if (typeof rawValue === "string") {
+      try {
+        return new URL(rawValue, window.location.href).pathname.split("/").pop().toLowerCase() || getCurrentPath();
+      } catch (error) {
+        return rawValue.toLowerCase();
+      }
+    }
+
+    return getCurrentPath();
+  }
+
+  function isAuthPath(path) {
+    return path === "login.html" || path === "register.html";
+  }
+
+  function isHomePath(path) {
+    return path === "index.html" || path === "";
+  }
+
+  function deriveContext(rawOptions) {
+    var options = rawOptions && typeof rawOptions === "object"
+      ? rawOptions
+      : { href: rawOptions };
+    var source = normalizePath(options.from || getCurrentPath());
+    var target = normalizePath(options.href || getCurrentPath());
+    var reason = String(options.reason || "").toLowerCase();
+
+    if (reason === "login-success" || (isAuthPath(source) && isHomePath(target))) {
+      return {
+        theme: "home",
+        journey: "auth-to-home",
+        kicker: "Session Verified",
+        subtitle: "Entering Tam Giac homepage",
+        label: "Tam Giac"
+      };
+    }
+
+    if (reason === "logout" || (!isAuthPath(source) && isAuthPath(target))) {
+      return {
+        theme: "auth",
+        journey: "home-to-auth",
+        kicker: "Secure Sign-out",
+        subtitle: target === "register.html" ? "Opening sign up portal" : "Returning to secure login",
+        label: "Tam Giac ID"
+      };
+    }
+
+    if (isAuthPath(target)) {
+      return {
+        theme: "auth",
+        journey: "to-auth",
+        kicker: "Protected Access",
+        subtitle: target === "register.html" ? "Create your account" : "Secure access",
+        label: "Tam Giac ID"
+      };
+    }
+
+    if (isHomePath(target)) {
+      return {
+        theme: "home",
+        journey: "to-home",
+        kicker: "Tam Giac",
+        subtitle: "Loading homepage",
+        label: "Tam Giac"
+      };
+    }
+
+    return {
+      theme: "default",
+      journey: "default",
+      kicker: "Tam Giac",
+      subtitle: "Loading next experience",
+      label: "Tam Giac"
+    };
+  }
+
+  function applyContext(context) {
+    var nextContext = context || deriveContext();
+    if (!overlay) {
+      return;
+    }
+
+    overlay.dataset.theme = nextContext.theme || "default";
+    overlay.dataset.journey = nextContext.journey || "default";
+
+    if (kickerNode) {
+      kickerNode.textContent = nextContext.kicker || "Tam Giac";
+    }
+
+    if (labelNode) {
+      labelNode.textContent = nextContext.label || "Tam Giac";
+    }
+
+    if (subtitleNode) {
+      subtitleNode.textContent = nextContext.subtitle || "Loading next experience";
+    }
+  }
 
   function ensureOverlay() {
     if (!document.body || overlay) {
@@ -12,22 +122,55 @@
     overlay.className = "page-loader-overlay is-visible";
     overlay.setAttribute("aria-hidden", "true");
     overlay.innerHTML = [
-      '<div class="flipping"></div>',
-      '<div class="page-loader-label">Tam Giac</div>'
+      '<div class="page-loader-ambient">',
+      '  <span class="page-loader-orb page-loader-orb-one"></span>',
+      '  <span class="page-loader-orb page-loader-orb-two"></span>',
+      '  <span class="page-loader-grid"></span>',
+      '</div>',
+      '<div class="page-loader-panels">',
+      '  <span class="page-loader-panel page-loader-panel-left"></span>',
+      '  <span class="page-loader-panel page-loader-panel-right"></span>',
+      '</div>',
+      '<div class="page-loader-core">',
+      '  <div class="page-loader-gate">',
+      '    <span class="page-loader-beam"></span>',
+      '    <span class="page-loader-halo page-loader-halo-one"></span>',
+      '    <span class="page-loader-halo page-loader-halo-two"></span>',
+      '    <span class="page-loader-track"></span>',
+      '    <span class="page-loader-triangle page-loader-triangle-outer"></span>',
+      '    <span class="page-loader-triangle page-loader-triangle-middle"></span>',
+      '    <span class="page-loader-triangle page-loader-triangle-inner"></span>',
+      '    <span class="page-loader-flare"></span>',
+      '  </div>',
+      '  <div class="page-loader-copy">',
+      '    <div class="page-loader-kicker">Tam Giac</div>',
+      '    <div class="page-loader-label">Tam Giac</div>',
+      '    <div class="page-loader-subtitle">Loading next experience</div>',
+      '  </div>',
+      '</div>'
     ].join("");
 
     document.body.appendChild(overlay);
+    kickerNode = overlay.querySelector(".page-loader-kicker");
+    labelNode = overlay.querySelector(".page-loader-label");
+    subtitleNode = overlay.querySelector(".page-loader-subtitle");
+    applyContext(deriveContext());
     visibleSince = Date.now();
     return overlay;
   }
 
-  function setVisible(nextVisible) {
+  function setVisible(nextVisible, options) {
     var node = ensureOverlay();
     if (!node) {
       return;
     }
 
+    var context = deriveContext(options);
+
     if (nextVisible) {
+      applyContext(context);
+      node.classList.remove("is-visible");
+      void node.offsetWidth;
       node.classList.add("is-visible");
       visibleSince = Date.now();
       return;
@@ -106,7 +249,10 @@
       return;
     }
 
-    setVisible(true);
+    setVisible(true, {
+      href: anchor.href,
+      from: getCurrentPath()
+    });
   }
 
   function onFormSubmit(event) {
@@ -117,7 +263,10 @@
 
     window.setTimeout(function () {
       if (!event.defaultPrevented) {
-        setVisible(true);
+        setVisible(true, {
+          href: form.action || window.location.href,
+          from: getCurrentPath()
+        });
       }
     }, 0);
   }
@@ -130,24 +279,24 @@
     ensureOverlay();
     document.addEventListener("click", onLinkClick, true);
     document.addEventListener("submit", onFormSubmit, false);
-    // Safety: if window.load never fires (3rd-party scripts hang), hide loader after timeout
+
     window.setTimeout(function () {
       try {
-        if (overlay && overlay.classList && overlay.classList.contains('is-visible')) {
+        if (overlay && overlay.classList && overlay.classList.contains("is-visible")) {
           setVisible(false);
         }
-      } catch (e) {
-        // swallow errors
+      } catch (error) {
+        // no-op
       }
-    }, 3000);
+    }, 3600);
   });
 
   window.addEventListener("load", hideLoader);
   window.addEventListener("pageshow", hideLoader);
 
   window.TamGiacLoader = {
-    show: function () {
-      setVisible(true);
+    show: function (options) {
+      setVisible(true, options || {});
     },
     hide: hideLoader
   };

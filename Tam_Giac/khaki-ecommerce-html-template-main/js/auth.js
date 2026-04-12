@@ -2,7 +2,7 @@ import { apiCall } from './api.js?v=20260403a';
 
 const TOKEN_KEY = 'token';
 
-export const navigateWithLoader = (url, delay = 140) => {
+export const navigateWithLoader = (url, delay = 320, loaderOptions = {}) => {
   if (!url) {
     return;
   }
@@ -12,7 +12,11 @@ export const navigateWithLoader = (url, delay = 140) => {
   };
 
   if (window.TamGiacLoader?.show) {
-    window.TamGiacLoader.show();
+    window.TamGiacLoader.show({
+      href: url,
+      from: window.location.pathname.split('/').pop() || 'index.html',
+      ...loaderOptions
+    });
     window.setTimeout(go, delay);
     return;
   }
@@ -56,7 +60,7 @@ export const register = async (email, password, fullName, recaptchaToken) => {
 
 export const logout = () => {
   localStorage.removeItem(TOKEN_KEY);
-  navigateWithLoader('login.html');
+  navigateWithLoader('login.html', 760, { reason: 'logout' });
 };
 
 export const getToken = () => localStorage.getItem(TOKEN_KEY);

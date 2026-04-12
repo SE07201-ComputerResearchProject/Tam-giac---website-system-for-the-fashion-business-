@@ -17,6 +17,7 @@ const orderRoutes = require('./routes/orders');
 const adminRoutes = require('./routes/admin');
 const paymentRoutes = require('./routes/payments');
 const chatRoutes = require('./routes/chat');
+const aiChatRoutes = require('./routes/ai-chat');
 
 const logger = winston.createLogger({
   level: 'info',
@@ -140,6 +141,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/ai-chat', aiChatRoutes);
 
 app.use('/api/*', (req, res) => {
   logger.warn(`Route not found: ${req.method} ${req.originalUrl}`);
