@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Đăng nhập | Tam Giac</title>
+  <title>Login | Tam Giac</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/auth-modern.css?v=20260412c">
+  <link rel="icon" href="img/icons/tam-giac-logo.svg">
+  <link rel="stylesheet" href="css/auth-modern.css?v=20260413g">
   <link rel="stylesheet" type="text/css" href="css/mouse-effects.css?v=20260320a">
   <link rel="stylesheet" type="text/css" href="css/page-loader.css?v=20260412e">
   <link rel="stylesheet" type="text/css" href="css/experience-enhance.css?v=20260411a">
@@ -18,11 +19,10 @@
   <script defer src="js/button-burst.js?v=20260321a"></script>
   <script defer src="js/mouse-effects.js?v=20260320a"></script>
   <script defer src="js/site-experience.js?v=20260411a"></script>
-  <script defer src="js/auth-motion.js?v=20260412c"></script>
-  <script defer src="js/ai-chatbot.js?v=20260412b"></script>
-  <script type="module" src="js/login.js?v=20260411b" defer></script>
-  <script type="module" src="js/register.js?v=20260411b" defer></script>
-  <script src="js/force-eager.js"></script>
+  <script defer src="js/auth-motion.js?v=20260413g"></script>
+  <script type="module" src="js/login.js?v=20260412c" defer></script>
+  <script type="module" src="js/register.js?v=20260412d" defer></script>
+  <script src="js/force-eager.js?v=20260413a"></script>
   <style>
     :root {
       forced-color-adjust: none;
@@ -64,7 +64,7 @@
         </span>
         <span class="auth-core-copy">
           <strong class="auth-core-title">Tam Giac ID</strong>
-          <span class="auth-core-text" data-auth-trigger-copy>Kích hoạt cổng đăng nhập 3D</span>
+          <span class="auth-core-text" data-auth-trigger-copy>Activate the 3D login portal</span>
         </span>
       </button>
 
@@ -89,7 +89,16 @@
 
         <div class="auth-prism-inner">
           <div class="auth-top">
-            <a class="back-link tm-magnetic-inline" href="index.html">Về trang chủ</a>
+            <div class="auth-brand-group">
+              <a class="auth-brand tm-magnetic-inline" href="index.html" aria-label="Tam Giac home">
+                <img src="img/icons/tam-giac-logo.svg" alt="Tam Giac logo" loading="eager" fetchpriority="high">
+                <span class="auth-brand-copy">
+                  <strong>Tam Giac</strong>
+                  <span>Vietnamese fashion</span>
+                </span>
+              </a>
+              <a class="back-link tm-magnetic-inline" href="index.html">Back to home</a>
+            </div>
             <div class="auth-top-meta">
               <span class="auth-badge">Tam Giac</span>
               <span class="auth-mode-chip" data-auth-mode-badge>Login Mode</span>
@@ -97,15 +106,15 @@
           </div>
 
           <div class="auth-heading">
-            <p class="auth-kicker" data-auth-kicker>Đăng nhập nhanh, thao tác gọn.</p>
-            <h1 class="auth-title" data-auth-title>Chào mừng quay lại</h1>
+            <p class="auth-kicker" data-auth-kicker>Fast sign-in. Minimal steps.</p>
+            <h1 class="auth-title" data-auth-title>Welcome back</h1>
             <p class="auth-hint" data-auth-hint>
-              Bắt đầu từ một lõi tam giác phát sáng rồi mở ra thành bảng điều khiển tài khoản 3D,
-              giữ trải nghiệm gọn nhưng vẫn đủ ấn tượng khi sử dụng.
+              Start from a glowing triangle core that expands into a refined 3D account panel, keeping the
+              experience focused, smooth, and easy to use.
             </p>
           </div>
 
-          <div class="auth-switch" role="tablist" aria-label="Chuyển trạng thái tài khoản">
+          <div class="auth-switch" role="tablist" aria-label="Switch account mode">
             <button
               id="auth-tab-login"
               class="auth-switch-btn is-active"
@@ -116,7 +125,7 @@
               data-auth-toggle="login"
               data-auth-path="login.html"
             >
-              <span>Đăng nhập</span>
+              <span>Login</span>
               <span class="auth-switch-indicator" data-auth-indicator data-flip-id="auth-switch-indicator"></span>
             </button>
             <button
@@ -129,7 +138,7 @@
               data-auth-toggle="register"
               data-auth-path="register.html"
             >
-              <span>Đăng ký</span>
+              <span>Register</span>
             </button>
           </div>
 
@@ -148,44 +157,44 @@
                     <input type="email" id="loginEmail" name="email" autocomplete="email" placeholder="you@example.com" required>
                     <span class="field-glow" aria-hidden="true"></span>
                   </div>
-                  <p class="field-note">Dùng đúng email bạn đã tạo trước đó để đăng nhập nhanh hơn.</p>
+                  <p class="field-note">Use the same email you created earlier for a faster sign-in.</p>
                 </div>
 
                 <div class="field with-button" data-field>
-                  <label for="loginPassword">Mật khẩu</label>
+                  <label for="loginPassword">Password</label>
                   <div class="input-shell">
-                    <input type="password" id="loginPassword" name="password" autocomplete="current-password" placeholder="Nhập mật khẩu của bạn" required>
-                    <button type="button" class="toggle-password" data-target="loginPassword">Hiện</button>
+                    <input type="password" id="loginPassword" name="password" autocomplete="current-password" placeholder="Enter your password" required>
+                    <button type="button" class="toggle-password" data-target="loginPassword">Show</button>
                     <span class="field-glow" aria-hidden="true"></span>
                   </div>
                 </div>
 
                 <div class="auth-inline">
-                  <span>Đăng nhập xong bạn sẽ được chuyển thẳng về trang chủ.</span>
-                  <a href="change-password.html">Đổi mật khẩu</a>
+                  <span>After you sign in, you will be redirected to the home page.</span>
+                  <a href="change-password.html">Change password</a>
                 </div>
 
                 <div id="loginStatus" class="status" aria-live="polite"></div>
 
                 <div class="form-actions">
-                  <button id="loginBtn" type="submit" class="btn-auth">Đăng nhập</button>
-                  <div class="divider"><span>hoặc</span></div>
-                  <a href="/api/auth/google" class="btn-auth btn-google" aria-label="Đăng nhập với Google">
+                  <button id="loginBtn" type="submit" class="btn-auth">Login</button>
+                  <div class="divider"><span>or</span></div>
+                  <a href="/api/auth/google" class="btn-auth btn-google" aria-label="Continue with Google">
                     <svg viewBox="0 0 46 46" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                       <path fill="#4285F4" d="M23 9.5c3.4 0 6.3 1.1 8.5 3.2l6.2-6.2C34.1 2.6 28.9 0 23 0 14.5 0 7.4 4.8 3.1 11.7l7.1 5.5C12.8 12.6 17.5 9.5 23 9.5z"/>
                       <path fill="#34A853" d="M45.8 23.5c0-1.5-.1-2.9-.4-4.3H23v8.1h12.5c-.6 3.4-2.4 6.3-5.1 8.2l7.9 6.2c4.6-4.2 7.3-10.5 7.3-18z"/>
                       <path fill="#FBBC05" d="M10.2 27.2c-.7-2.1-1-4.3-1-6.6s.4-4.5 1-6.6L3.1 8.5C1.1 12.5 0 17 0 23s1.1 10.5 3.1 14.5l7.1-5.5z"/>
                       <path fill="#EA4335" d="M23 45.8c5.9 0 10.9-1.9 14.6-5.1l-7.9-6.2c-2.1 1.4-4.6 2.2-6.7 2.2-5.6 0-10.3-3.1-12-7.7l-7.1 5.5C7.4 41 14.5 45.8 23 45.8z"/>
                     </svg>
-                    Tiếp tục với Google
+                    Continue with Google
                   </a>
                 </div>
               </form>
 
               <div class="auth-footnote">
                 <p>
-                  Chưa có tài khoản?
-                  <button type="button" class="auth-text-link" data-auth-link="register">Tạo tài khoản ngay</button>
+                  Don't have an account?
+                  <button type="button" class="auth-text-link" data-auth-link="register">Create one now</button>
                 </p>
               </div>
             </section>
@@ -202,9 +211,9 @@
               <form id="registerForm" class="auth-form auth-form-register" novalidate>
                 <div class="auth-grid">
                   <div class="field" data-field>
-                    <label for="registerFullName">Họ và tên</label>
+                    <label for="registerFullName">Full name</label>
                     <div class="input-shell">
-                      <input type="text" id="registerFullName" name="fullName" autocomplete="name" placeholder="Nguyen Van A" required>
+                      <input type="text" id="registerFullName" name="fullName" autocomplete="name" placeholder="Alex Nguyen" required>
                       <span class="field-glow" aria-hidden="true"></span>
                     </div>
                   </div>
@@ -218,19 +227,19 @@
                   </div>
 
                   <div class="field with-button" data-field>
-                    <label for="registerPassword">Mật khẩu</label>
+                    <label for="registerPassword">Password</label>
                     <div class="input-shell">
-                      <input type="password" id="registerPassword" name="password" autocomplete="new-password" placeholder="Tạo mật khẩu mạnh" required>
-                      <button type="button" class="toggle-password" data-target="registerPassword">Hiện</button>
+                      <input type="password" id="registerPassword" name="password" autocomplete="new-password" placeholder="Create a strong password" required>
+                      <button type="button" class="toggle-password" data-target="registerPassword">Show</button>
                       <span class="field-glow" aria-hidden="true"></span>
                     </div>
                   </div>
 
                   <div class="field with-button" data-field>
-                    <label for="registerConfirmPassword">Nhập lại mật khẩu</label>
+                    <label for="registerConfirmPassword">Confirm password</label>
                     <div class="input-shell">
-                      <input type="password" id="registerConfirmPassword" name="confirmPassword" autocomplete="new-password" placeholder="Xác nhận mật khẩu" required>
-                      <button type="button" class="toggle-password" data-target="registerConfirmPassword">Hiện</button>
+                      <input type="password" id="registerConfirmPassword" name="confirmPassword" autocomplete="new-password" placeholder="Confirm your password" required>
+                      <button type="button" class="toggle-password" data-target="registerConfirmPassword">Show</button>
                       <span class="field-glow" aria-hidden="true"></span>
                     </div>
                   </div>
@@ -240,20 +249,20 @@
                   <div class="strength-track">
                     <div id="strengthFill" class="strength-fill"></div>
                   </div>
-                  <div id="strengthText" class="strength-text">Mật khẩu nên có ít nhất 8 ký tự.</div>
+                  <div id="strengthText" class="strength-text">Use at least 8 characters.</div>
                 </div>
 
                 <ul class="password-rules">
-                  <li>Tối thiểu 8 ký tự.</li>
-                  <li>Có chữ hoa, chữ thường, số và ký tự đặc biệt như @$!%*?&.</li>
+                  <li>Use at least 8 characters.</li>
+                  <li>Include uppercase, lowercase, a number, and a special character like @$!%*?&.</li>
                 </ul>
 
                 <div id="registerStatus" class="status" aria-live="polite"></div>
 
                 <div class="form-actions">
-                  <button id="registerBtn" type="submit" class="btn-auth">Tạo tài khoản</button>
-                  <div class="divider"><span>hoặc</span></div>
-                  <a href="/api/auth/google" class="btn-auth btn-google" aria-label="Đăng ký với Google">
+                  <button id="registerBtn" type="submit" class="btn-auth">Create account</button>
+                  <div class="divider"><span>or</span></div>
+                  <a href="/api/auth/google" class="btn-auth btn-google" aria-label="Sign up with Google">
                     <svg viewBox="0 0 46 46" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                       <path fill="#4285F4" d="M23 9.5c3.4 0 6.3 1.1 8.5 3.2l6.2-6.2C34.1 2.6 28.9 0 23 0 14.5 0 7.4 4.8 3.1 11.7l7.1 5.5C12.8 12.6 17.5 9.5 23 9.5z"/>
                       <path fill="#34A853" d="M45.8 23.5c0-1.5-.1-2.9-.4-4.3H23v8.1h12.5c-.6 3.4-2.4 6.3-5.1 8.2l7.9 6.2c4.6-4.2 7.3-10.5 7.3-18z"/>
@@ -261,15 +270,15 @@
                       <path fill="#EA4335" d="M23 45.8c5.9 0 10.9-1.9 14.6-5.1l-7.9-6.2c-2.1 1.4-4.6 2.2-6.7 2.2-5.6 0-10.3-3.1-12-7.7l-7.1 5.5C7.4 41 14.5 45.8 23 45.8z"/>
                       <path fill="none" d="M0 0h46v46H0z"/>
                     </svg>
-                    Đăng ký với Google
+                    Sign up with Google
                   </a>
                 </div>
               </form>
 
               <div class="auth-footnote">
                 <p>
-                  Đã có tài khoản?
-                  <button type="button" class="auth-text-link" data-auth-link="login">Đăng nhập</button>
+                  Already have an account?
+                  <button type="button" class="auth-text-link" data-auth-link="login">Login</button>
                 </p>
               </div>
             </section>

@@ -1,22 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 
- 	<head>
- 		<!-- Meta Tags -->
-		<meta charset="UTF-8">
-		<meta name="author" content="Kamran Mubarik">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<!-- Title -->
- 		<title>Tam Giac Admin</title>
-		<!-- Style Sheet -->
-		<link rel="stylesheet" type="text/css" href="css/style.css" />
-		<link rel="stylesheet" type="text/css" href="../css/mouse-effects.css?v=20260320a" />
-		<link rel="stylesheet" type="text/css" href="../css/page-loader.css?v=20260321a" />
-		<script defer src="../js/page-loader.js?v=20260321a"></script>
-		<script defer src="../js/mouse-effects.js?v=20260320a"></script>
- 	</head>
-<body>
+<head>
+	<meta charset="UTF-8">
+	<meta name="author" content="Kamran Mubarik">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Tam Giac Admin Stock</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css?v=20260413c" />
+	<link rel="stylesheet" type="text/css" href="css/admin-enhance.css?v=20260413c" />
+	<link rel="stylesheet" type="text/css" href="../css/mouse-effects.css?v=20260320a" />
+	<link rel="stylesheet" type="text/css" href="../css/page-loader.css?v=20260321a" />
+	<style>
+		@media (forced-colors: active) {
+			* {
+				forced-color-adjust: none !important;
+			}
+		}
+	</style>
+	<script defer src="../js/page-loader.js?v=20260321a"></script>
+	<script defer src="../js/mouse-effects.js?v=20260320a"></script>
+	<script defer src="js/admin-common.js?v=20260413a"></script>
+	<script defer src="js/stock-admin.js?v=20260413a"></script>
+</head>
 
+<body>
 	<header>
 		<div class="container">
 			<div class="brand">
@@ -25,104 +32,94 @@
 						<img src="../img/icons/tam-giac-logo.svg">
 						<div class="logo-text">
 							<p class="big-logo">Tam Giac</p>
-							<p class="small-logo">thoi trang Viet</p>
+							<p class="small-logo">admin panel</p>
 						</div>
 					</a>
-				</div> <!-- logo -->
+				</div>
 				<div class="shop-icon">
 					<div class="dropdown">
-						<img src="../img/icons/account.png">
+						<img src="../img/icons/account.png" alt="Account">
 						<div class="dropdown-menu">
 							<ul>
-								<li><a href="#">My Account</a></li>								
-								<li><a href="#">Settings</a></li>
-								<li><a href="#">Logout</a></li>
+								<li><a href="../account.html">My Account</a></li>
+								<li><a href="../orders.html">My Orders</a></li>
+								<li><a href="#" id="adminLogoutLink">Logout</a></li>
 							</ul>
 						</div>
 					</div>
-				</div> <!-- shop icons -->
-			</div> <!-- brand -->
-		</div> <!-- container -->
-	</header> <!-- header -->
+				</div>
+			</div>
+		</div>
+	</header>
 
 	<main>
-		
 		<div class="main-content">
 			<div class="sidebar">
 				<h3>Menu</h3>
 				<ul>
-					<li><a href="index.html">Home</a></li>
-					<li><a href="product.html">Product</a></li>
-					<li><a href="category.html">Category</a></li>
+					<li><a href="index.html">Dashboard</a></li>
+					<li><a href="product.html">Products</a></li>
+					<li><a href="order.html">Orders</a></li>
+					<li><a href="category.html">Categories</a></li>
 					<li><a class="active" href="stock.html">Stock</a></li>
-					<li><a href="">Users</a></li>
-				</ul>				
+					<li><a href="users.html">Users</a></li>
+				</ul>
 			</div>
 			<div class="content">
 				<h3>Stock</h3>
+				<p id="stockStatus" class="admin-status">Loading stock data...</p>
 				<div class="content-data">
 					<div class="content-form">
-						<form>
+						<form id="stockAdminForm">
 							<h4>Add Stock</h4>
-							<div class="form-inline">
-								<div class="form-group">
-									<label>Product Name</label>
-									<select name="pname">
-										<option>---Select a Product---</option>
-										<option value="men">Men</option>
-										<option value="women">Women</option>
-									</select>
-								</div>
-								<div class="form-group">
-									<label>Quantity</label>
-									<input type="text" name="pqty">
-								</div>
-							</div>										
 							<div class="form-group">
-								<label></label>
-								<input type="submit" name="addStock" value="Add Stock">
+								<label>Product</label>
+								<select id="stockProductId"></select>
+							</div>
+							<div class="form-group">
+								<label>Quantity to add</label>
+								<input type="number" id="stockQuantity" min="1" step="1" value="1" required>
+							</div>
+							<div class="form-group admin-form-actions">
+								<input type="submit" value="Add Stock">
 							</div>
 						</form>
 					</div>
 					<div class="content-detail">
-						<h4>All Stock Detail</h4>
+						<h4>Stock Overview</h4>
+						<div class="admin-table-scroll">
 						<table>
 							<thead>
 								<tr>
 									<th>Product</th>
 									<th>Category</th>
-									<th>Stock in</th>
-									<th>Stock Out</th>
+									<th>Stock In</th>
+									<th>Sold / Reserved</th>
 									<th>Available</th>
 								</tr>
 							</thead>
-							<tbody>
+							<tbody id="adminStockTable">
 								<tr>
-									<td>Blue Jeans</td>
-									<td>Jeans</td>
-									<td>10</td>
-									<td>3</td>
-									<td>7</td>
+									<td colspan="5" class="admin-empty-cell">Loading stock rows...</td>
 								</tr>
 							</tbody>
 						</table>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>		
-
-	</main> <!-- Main Area -->
+		</div>
+	</main>
 
 	<footer>
 		<div class="container">
 			<div class="footer-bar">
 				<div class="copyright-text">
-					<p>Copryright 2020 - All Rights Reserved</p>
+					<p>Copyright 2020 - All Rights Reserved</p>
 				</div>
-			</div> <!-- Footer Bar -->
+			</div>
 		</div>
-	</footer> <!-- Footer Area -->
-
+	</footer>
 </body>
 
 </html>

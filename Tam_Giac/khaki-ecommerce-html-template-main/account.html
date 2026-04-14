@@ -14,14 +14,16 @@
 		<!-- Javascript -->	
 		<script type="text/javascript" src="js/jquery.min.js"></script>
 		<script type="module" src="js/header-auth.js" defer></script>
-		<script type="module" src="js/account.js" defer></script>
+		<script type="module" src="js/account.js?v=20260412a" defer></script>
 		<link rel="stylesheet" type="text/css" href="css/mouse-effects.css?v=20260320a" />
 		<link rel="stylesheet" type="text/css" href="css/page-loader.css?v=20260412e" />
 		<link rel="stylesheet" type="text/css" href="css/button-burst.css?v=20260321a" />
-		<script defer src="js/cart.js?v=20260321a"></script>
+		<link rel="stylesheet" type="text/css" href="css/signature-motion.css?v=20260413c" />
+		<script defer src="js/cart.js?v=20260412a"></script>
 		<script defer src="js/page-loader.js?v=20260412e"></script>
 		<script defer src="js/button-burst.js?v=20260321a"></script>
 		<script defer src="js/mouse-effects.js?v=20260320a"></script>
+		<script defer src="js/signature-motion.js?v=20260413b"></script>
  	</head>
 <body>
 
@@ -140,8 +142,8 @@
 				<div class="profile">
 					<div class="profile-img">
 						<img src="img/product/img5.jpg">
-						<h2>John Doe</h2>
-						<p>john_doe@mail.com</p>
+						<h2>Tam Giac account</h2>
+						<p>Loading profile...</p>
 					</div>
 					<ul>
 						<li><a href="account.html" class="active">Account <span>></span></a></li>
@@ -157,11 +159,11 @@
 							<div class="form-inline">
 								<div class="form-group">
 									<label>First Name</label>
-									<input type="text" id="fname" name="fname" value="John">
+									<input type="text" id="fname" name="fname" value="">
 								</div>
 								<div class="form-group">
 									<label>Last Name</label>
-									<input type="text" id="lname" name="lname" value="Doe">
+									<input type="text" id="lname" name="lname" value="">
 								</div>
 							</div>
 							<div class="form-group">
@@ -172,30 +174,30 @@
 								<div class="form-group">
 									<label>Country</label>
 									<select id="country" name="country">
-										<option selected>---Select a Country---</option>
-										<option value="vietnam">Viet Nam</option>
+										<option value="" selected>---Select a Country---</option>
+										<option value="vietnam">Vietnam</option>
 									</select>
 								</div>
 								<div class="form-group">
 									<label>City</label>
 									<select id="city" name="city">
-										<option selected>---Select a City---</option>
-										<option value="hcm">TP. Ho Chi Minh</option>
+										<option value="" selected>---Select a City---</option>
+										<option value="hcm">Ho Chi Minh City</option>
 									</select>
 								</div>
 							</div>
 							<div class="form-group">
 								<label>Address</label>
-								<textarea style="resize:none" id="address" name="address" rows="3">xyz area, street 24 </textarea>
+								<textarea style="resize:none" id="address" name="address" rows="3"></textarea>
 							</div>
 							<div class="form-inline">					
 								<div class="form-group">
 									<label>Tel</label>
-									<input type="text" id="tel" name="tel" minlength="11" maxlength="11" value="555-XXXXXXX">
+									<input type="text" id="tel" name="tel" minlength="11" maxlength="11" value="" placeholder="555-XXXXXXX">
 								</div>
 								<div class="form-group">
 									<label>Mobile</label>
-									<input type="text" id="mobile" name="mobile" minlength="11" maxlength="11" value="555-XXXXXXX">
+									<input type="text" id="mobile" name="mobile" minlength="11" maxlength="11" value="" placeholder="555-XXXXXXX">
 								</div>
 							</div>
 							<div class="form-group">

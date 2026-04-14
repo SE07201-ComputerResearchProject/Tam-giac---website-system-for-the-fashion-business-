@@ -1,28 +1,24 @@
 (function () {
   var COPY = {
     login: {
-      title: "Chào mừng quay lại",
-      kicker: "Đăng nhập nhanh, thao tác gọn.",
-      hint: "Bắt đầu từ một lõi tam giác phát sáng rồi mở ra thành bảng điều khiển tài khoản 3D, giữ trải nghiệm gọn nhưng vẫn đủ ấn tượng khi sử dụng.",
+      title: "Welcome back",
+      kicker: "Fast sign-in. Minimal steps.",
+      hint: "Start from a glowing triangle core that expands into a refined 3D account panel, keeping the experience focused, smooth, and easy to use.",
       chip: "Login Mode",
-      trigger: "Kích hoạt cổng đăng nhập 3D",
-      documentTitle: "Đăng nhập | Tam Giac",
+      trigger: "Activate the 3D login portal",
+      documentTitle: "Login | Tam Giac",
       switchTilt: -16
     },
     register: {
-      title: "Tạo tài khoản Tam Giac",
-      kicker: "Tạo tài khoản mới, vẫn thật gọn.",
-      hint: "Lõi tam giác sẽ bung thành buồng điều khiển 3D và đưa toàn bộ biểu mẫu vào cùng một không gian hiện đại, mượt và rõ ràng hơn khi thao tác.",
+      title: "Create your Tam Giac account",
+      kicker: "Set up your account in one smooth flow.",
+      hint: "The triangle core opens into a modern 3D control space that gathers every sign-up detail into one clear, polished experience.",
       chip: "Register Mode",
-      trigger: "Kích hoạt khoang đăng ký 3D",
-      documentTitle: "Đăng ký | Tam Giac",
+      trigger: "Activate the 3D register portal",
+      documentTitle: "Register | Tam Giac",
       switchTilt: 16
     }
   };
-
-  var OPEN_CLIP_FALLBACK = "polygon(50% 100%, 100% 2%, 0 2%)";
-  var COLLAPSE_CLIP = "polygon(50% 90%, 87% 18%, 13% 18%)";
-  var CORE_CLIP = "polygon(50% 58%, 58% 44%, 42% 44%)";
 
   function onReady(callback) {
     if (document.readyState === "loading") {
@@ -99,11 +95,11 @@
       gsap.fromTo(target, {
         y: 14,
         autoAlpha: 0,
-        filter: "blur(8px)"
+        scale: 0.985
       }, {
         y: 0,
         autoAlpha: 1,
-        filter: "blur(0px)",
+        scale: 1,
         duration: 0.42,
         ease: "power2.out",
         overwrite: true
@@ -131,7 +127,6 @@
     var prismLayers = Array.prototype.slice.call(card.querySelectorAll(".prism-face, .prism-edge, .prism-glow"));
     var prismScan = card.querySelector(".prism-scan");
     var shine = card.querySelector(".card-shine");
-    var openClipPath = prismDepth ? (window.getComputedStyle(prismDepth).clipPath || OPEN_CLIP_FALLBACK) : OPEN_CLIP_FALLBACK;
     var currentMode = null;
     var isOpen = page.dataset.authOpen === "true";
     var isTransitioning = false;
@@ -263,27 +258,24 @@
         gsap.set(parts, {
           y: 0,
           z: 0,
-          autoAlpha: 1,
-          filter: "blur(0px)"
+          autoAlpha: 1
         });
         return;
       }
 
       gsap.fromTo(parts, {
-        y: 22,
-        z: 26,
-        autoAlpha: 0,
-        filter: "blur(10px)"
+        y: 20,
+        z: 0,
+        autoAlpha: 0
       }, {
         y: 0,
         z: 0,
         autoAlpha: 1,
-        filter: "blur(0px)",
         duration: 0.58,
         ease: "power3.out",
         stagger: 0.045,
         overwrite: true,
-        clearProps: "transform,opacity,filter,visibility"
+        clearProps: "transform,opacity,visibility"
       });
     }
 
@@ -370,38 +362,32 @@
         autoAlpha: 1,
         visibility: "visible",
         pointerEvents: "none",
-        scale: 0.1,
-        y: 52,
-        z: -260,
-        rotationX: 78,
-        rotationY: tilt * 1.4,
-        rotationZ: tilt * 0.85
+        scale: 0.9,
+        y: 30,
+        z: 0,
+        rotationX: 14,
+        rotationY: tilt * 0.3,
+        rotationZ: tilt * 0.18
       });
 
-      if (prismDepth) {
-        gsap.set(prismDepth, {
-          clipPath: CORE_CLIP
-        });
-      }
-
       gsap.set(prismLayers, {
-        autoAlpha: 0.4,
-        scale: 0.88
+        autoAlpha: 0,
+        y: 18,
+        scale: 0.96
       });
 
       if (prismInner) {
         gsap.set(prismInner, {
-          autoAlpha: 0.42,
-          y: 34,
-          scale: 0.92
+          autoAlpha: 0.52,
+          y: 22,
+          scale: 0.985
         });
       }
 
       gsap.set(allRevealParts, {
         autoAlpha: 0,
         y: 26,
-        z: 44,
-        filter: "blur(12px)"
+        z: 0
       });
 
       openTimeline = gsap.timeline({
@@ -410,7 +396,7 @@
         },
         onComplete: function () {
           isTransitioning = false;
-          gsap.set(allRevealParts, { clearProps: "transform,opacity,filter,visibility" });
+          gsap.set(allRevealParts, { clearProps: "transform,opacity,visibility" });
 
           if (focusField) {
             focusFirstField(activeMode, 40);
@@ -421,10 +407,11 @@
       openTimeline
         .to(core, {
           autoAlpha: 0,
-          scale: 1.34,
-          duration: 0.36,
-          rotationZ: tilt * -0.6,
-          ease: "power2.in"
+          y: -18,
+          scale: 0.88,
+          duration: 0.32,
+          rotationZ: tilt * -0.2,
+          ease: "power2.inOut"
         }, 0)
         .to(card, {
           scale: 1,
@@ -433,57 +420,56 @@
           rotationX: 0,
           rotationY: 0,
           rotationZ: 0,
-          duration: 1.18
-        }, 0.06)
-        .to(prismDepth, {
-          clipPath: openClipPath,
-          duration: 1.18
-        }, 0.06)
+          duration: 0.9
+        }, 0.04)
         .to(prismLayers, {
           autoAlpha: 1,
+          y: 0,
           scale: 1,
-          duration: 0.78,
+          duration: 0.58,
           stagger: 0.04,
           ease: "power2.out"
-        }, 0.18)
+        }, 0.12)
         .to(prismInner, {
           autoAlpha: 1,
           y: 0,
           scale: 1,
-          duration: 0.82,
+          duration: 0.62,
           ease: "power3.out"
-        }, 0.28)
+        }, 0.18)
         .fromTo(prismScan, {
-          xPercent: -24
+          xPercent: -18,
+          autoAlpha: 0.14
         }, {
-          xPercent: 250,
-          duration: 1.2,
+          xPercent: 122,
+          autoAlpha: 0.62,
+          duration: 1.02,
+          ease: "power2.inOut"
+        }, 0.14)
+        .fromTo(shine, {
+          xPercent: -8,
+          autoAlpha: 0.08
+        }, {
+          xPercent: 96,
+          autoAlpha: 0.4,
+          duration: 1.08,
           ease: "power2.inOut"
         }, 0.18)
-        .fromTo(shine, {
-          xPercent: 0
-        }, {
-          xPercent: 118,
-          duration: 1.26,
-          ease: "power2.inOut"
-        }, 0.26)
         .to(headerParts, {
           autoAlpha: 1,
           y: 0,
           z: 0,
-          filter: "blur(0px)",
-          duration: 0.56,
+          duration: 0.44,
           stagger: 0.07
-        }, 0.44)
+        }, 0.3)
         .to(viewParts, {
           autoAlpha: 1,
           y: 0,
           z: 0,
-          filter: "blur(0px)",
-          duration: 0.58,
+          duration: 0.46,
           stagger: 0.045,
-          clearProps: "transform,opacity,filter,visibility"
-        }, 0.56);
+          clearProps: "transform,opacity,visibility"
+        }, 0.38);
     }
 
     function setMode(mode, options) {
@@ -541,12 +527,12 @@
       var incomingParts = getAnimatedParts(incomingView);
       var headerParts = getHeaderParts();
       var tilt = (COPY[mode] || COPY.login).switchTilt;
+      var direction = mode === "register" ? 1 : -1;
       var indicatorState = Flip && indicator ? Flip.getState(indicator) : null;
 
       switchTimeline = gsap.timeline({
         onComplete: function () {
           isTransitioning = false;
-          queueViewDetailAnimation(mode, false);
 
           if (focusField) {
             focusFirstField(mode, 180);
@@ -557,62 +543,60 @@
       switchTimeline
         .to(outgoingParts, {
           autoAlpha: 0,
-          y: -18,
-          z: -32,
-          filter: "blur(10px)",
-          duration: 0.24,
+          y: -12,
+          z: 0,
+          duration: 0.22,
           stagger: {
             each: 0.018,
             from: "end"
           },
-          ease: "power1.in"
+          ease: "power1.inOut"
         }, 0)
         .to(headerParts, {
-          autoAlpha: 0,
-          y: -12,
-          filter: "blur(8px)",
+          autoAlpha: 0.18,
+          y: -8,
           duration: 0.18,
           stagger: 0.03,
-          ease: "power1.in"
+          ease: "power1.inOut"
         }, 0)
         .to(card, {
-          scale: 0.93,
-          rotationX: 20,
-          rotationY: tilt,
-          rotationZ: tilt * 0.45,
-          duration: 0.36,
-          ease: "power3.inOut"
-        }, 0)
-        .to(prismDepth, {
-          clipPath: COLLAPSE_CLIP,
-          duration: 0.36,
-          ease: "power3.inOut"
+          x: direction * 12,
+          scale: 0.985,
+          rotationX: 6,
+          rotationY: tilt * 0.22,
+          rotationZ: tilt * 0.08,
+          duration: 0.24,
+          ease: "power2.inOut"
         }, 0)
         .to(prismInner, {
-          y: 12,
-          scale: 0.97,
-          duration: 0.3,
+          y: 10,
+          scale: 0.99,
+          duration: 0.24,
           ease: "power2.inOut"
         }, 0)
         .to(prismLayers, {
-          scale: 0.94,
-          duration: 0.36,
+          y: 8,
+          autoAlpha: 0.74,
+          scale: 0.985,
+          duration: 0.24,
           stagger: 0.03,
           ease: "power2.inOut"
         }, 0)
         .fromTo(prismScan, {
-          xPercent: -20
+          xPercent: -6,
+          autoAlpha: 0.18
         }, {
-          xPercent: 180,
-          duration: 0.54,
+          xPercent: 60,
+          autoAlpha: 0.52,
+          duration: 0.42,
           ease: "power2.inOut"
-        }, 0.02)
+        }, 0)
         .add(function () {
           commitMode(mode, options);
 
           if (indicatorState && Flip) {
             Flip.from(indicatorState, {
-              duration: 0.42,
+              duration: 0.36,
               ease: "power2.out",
               absolute: true,
               simple: true
@@ -621,33 +605,30 @@
 
           gsap.set(incomingParts.concat(headerParts), {
             autoAlpha: 0,
-            y: 18,
-            z: 30,
-            filter: "blur(10px)"
+            y: 16,
+            z: 0
           });
         }, 0.24)
         .to(card, {
+          x: 0,
           scale: 1,
           rotationX: 0,
           rotationY: 0,
           rotationZ: 0,
-          duration: 0.86,
-          ease: "expo.out"
-        }, 0.24)
-        .to(prismDepth, {
-          clipPath: openClipPath,
-          duration: 0.86,
+          duration: 0.68,
           ease: "expo.out"
         }, 0.24)
         .to(prismInner, {
           y: 0,
           scale: 1,
-          duration: 0.58,
+          duration: 0.42,
           ease: "power2.out"
         }, 0.28)
         .to(prismLayers, {
+          y: 0,
+          autoAlpha: 1,
           scale: 1,
-          duration: 0.6,
+          duration: 0.44,
           stagger: 0.03,
           ease: "power2.out"
         }, 0.24)
@@ -655,21 +636,19 @@
           autoAlpha: 1,
           y: 0,
           z: 0,
-          filter: "blur(0px)",
-          duration: 0.46,
+          duration: 0.36,
           stagger: 0.04,
           ease: "power2.out"
-        }, 0.34)
+        }, 0.3)
         .to(incomingParts, {
           autoAlpha: 1,
           y: 0,
           z: 0,
-          filter: "blur(0px)",
-          duration: 0.52,
+          duration: 0.42,
           stagger: 0.04,
-          clearProps: "transform,opacity,filter,visibility",
+          clearProps: "transform,opacity,visibility",
           ease: "power3.out"
-        }, 0.42);
+        }, 0.34);
     }
 
     tabs.forEach(function (tab) {
@@ -715,7 +694,7 @@
     });
 
     if (gsap && !reduceMotion) {
-      enableSceneInteractivity(gsap, scene, core, card, function () {
+      enableSceneInteractivity(gsap, page, scene, core, card, function () {
         return {
           open: isOpen,
           transitioning: isTransitioning
@@ -831,20 +810,27 @@
 
   }
 
-  function enableSceneInteractivity(gsap, scene, core, card, getState) {
+  function enableSceneInteractivity(gsap, page, scene, core, card, getState) {
     if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
       return;
     }
 
     var coreTriangle = core.querySelector(".auth-core-triangle");
+    var coreCopy = core.querySelector(".auth-core-copy");
     var prismDepth = card.querySelector(".auth-prism-depth");
     var prismInner = card.querySelector(".auth-prism-inner");
     var prismGlow = card.querySelector(".prism-glow");
     var prismScan = card.querySelector(".prism-scan");
+    var authTop = card.querySelector(".auth-top");
+    var authHeading = card.querySelector(".auth-heading");
+    var authSwitch = card.querySelector(".auth-switch");
+    var authStage = card.querySelector(".auth-stage");
 
     var coreRX = coreTriangle ? gsap.quickTo(coreTriangle, "rotationX", { duration: 0.5, ease: "power3.out" }) : null;
     var coreRY = coreTriangle ? gsap.quickTo(coreTriangle, "rotationY", { duration: 0.5, ease: "power3.out" }) : null;
     var coreRZ = coreTriangle ? gsap.quickTo(coreTriangle, "rotationZ", { duration: 0.5, ease: "power3.out" }) : null;
+    var coreCopyX = coreCopy ? gsap.quickTo(coreCopy, "x", { duration: 0.45, ease: "power3.out" }) : null;
+    var coreCopyY = coreCopy ? gsap.quickTo(coreCopy, "y", { duration: 0.45, ease: "power3.out" }) : null;
 
     var depthX = prismDepth ? gsap.quickTo(prismDepth, "x", { duration: 0.6, ease: "power2.out" }) : null;
     var depthY = prismDepth ? gsap.quickTo(prismDepth, "y", { duration: 0.6, ease: "power2.out" }) : null;
@@ -855,6 +841,106 @@
     var glowX = prismGlow ? gsap.quickTo(prismGlow, "x", { duration: 0.7, ease: "power2.out" }) : null;
     var glowY = prismGlow ? gsap.quickTo(prismGlow, "y", { duration: 0.7, ease: "power2.out" }) : null;
     var scanX = prismScan ? gsap.quickTo(prismScan, "x", { duration: 0.7, ease: "power2.out" }) : null;
+    var topX = authTop ? gsap.quickTo(authTop, "x", { duration: 0.48, ease: "power2.out" }) : null;
+    var topY = authTop ? gsap.quickTo(authTop, "y", { duration: 0.48, ease: "power2.out" }) : null;
+    var headingX = authHeading ? gsap.quickTo(authHeading, "x", { duration: 0.52, ease: "power2.out" }) : null;
+    var headingY = authHeading ? gsap.quickTo(authHeading, "y", { duration: 0.52, ease: "power2.out" }) : null;
+    var switchX = authSwitch ? gsap.quickTo(authSwitch, "x", { duration: 0.56, ease: "power2.out" }) : null;
+    var switchY = authSwitch ? gsap.quickTo(authSwitch, "y", { duration: 0.56, ease: "power2.out" }) : null;
+    var stageX = authStage ? gsap.quickTo(authStage, "x", { duration: 0.6, ease: "power2.out" }) : null;
+    var stageY = authStage ? gsap.quickTo(authStage, "y", { duration: 0.6, ease: "power2.out" }) : null;
+    var isStageScrolling = false;
+    var stageScrollTimer = 0;
+
+    function resetCoreTransforms() {
+      if (coreRX && coreRY && coreRZ) {
+        coreRX(63);
+        coreRY(-28);
+        coreRZ(-12);
+      }
+
+      if (coreCopyX && coreCopyY) {
+        coreCopyX(0);
+        coreCopyY(0);
+      }
+    }
+
+    function resetOpenTransforms() {
+      if (depthX && depthY) {
+        depthX(0);
+        depthY(0);
+      }
+
+      if (depthRX && depthRY) {
+        depthRX(0);
+        depthRY(0);
+      }
+
+      if (innerX && innerY) {
+        innerX(0);
+        innerY(0);
+      }
+
+      if (glowX && glowY) {
+        glowX(0);
+        glowY(0);
+      }
+
+      if (scanX) {
+        scanX(0);
+      }
+
+      if (topX && topY) {
+        topX(0);
+        topY(0);
+      }
+
+      if (headingX && headingY) {
+        headingX(0);
+        headingY(0);
+      }
+
+      if (switchX && switchY) {
+        switchX(0);
+        switchY(0);
+      }
+
+      if (stageX && stageY) {
+        stageX(0);
+        stageY(0);
+      }
+    }
+
+    function setStageScrollState(active) {
+      if (isStageScrolling === active) {
+        return;
+      }
+
+      isStageScrolling = active;
+
+      if (page) {
+        page.classList.toggle("auth-scroll-active", active);
+      }
+
+      if (active) {
+        resetOpenTransforms();
+      }
+    }
+
+    function pulseStageScrollState() {
+      window.clearTimeout(stageScrollTimer);
+      setStageScrollState(true);
+      stageScrollTimer = window.setTimeout(function () {
+        setStageScrollState(false);
+      }, 180);
+    }
+
+    if (authStage) {
+      authStage.addEventListener("wheel", pulseStageScrollState, { passive: true });
+      authStage.addEventListener("scroll", pulseStageScrollState, { passive: true });
+      authStage.addEventListener("touchmove", pulseStageScrollState, { passive: true });
+      authStage.addEventListener("pointerdown", pulseStageScrollState, { passive: true });
+    }
 
     scene.addEventListener("pointermove", function (event) {
       var state = getState();
@@ -872,6 +958,16 @@
           coreRY(-28 + coreOffsetX * 20);
           coreRZ(-12 + coreOffsetX * -6);
         }
+
+        if (coreCopyX && coreCopyY) {
+          coreCopyX(coreOffsetX * 10);
+          coreCopyY(coreOffsetY * 8);
+        }
+        return;
+      }
+
+      if (isStageScrolling) {
+        resetOpenTransforms();
         return;
       }
 
@@ -902,38 +998,31 @@
       if (scanX) {
         scanX(offsetX * 28);
       }
+
+      if (topX && topY) {
+        topX(offsetX * 6);
+        topY(offsetY * 5);
+      }
+
+      if (headingX && headingY) {
+        headingX(offsetX * 9);
+        headingY(offsetY * 7);
+      }
+
+      if (switchX && switchY) {
+        switchX(offsetX * 7);
+        switchY(offsetY * 5);
+      }
+
+      if (stageX && stageY) {
+        stageX(offsetX * 2.5);
+        stageY(offsetY * 2.5);
+      }
     });
 
     scene.addEventListener("pointerleave", function () {
-      if (coreRX && coreRY && coreRZ) {
-        coreRX(63);
-        coreRY(-28);
-        coreRZ(-12);
-      }
-
-      if (depthX && depthY) {
-        depthX(0);
-        depthY(0);
-      }
-
-      if (depthRX && depthRY) {
-        depthRX(0);
-        depthRY(0);
-      }
-
-      if (innerX && innerY) {
-        innerX(0);
-        innerY(0);
-      }
-
-      if (glowX && glowY) {
-        glowX(0);
-        glowY(0);
-      }
-
-      if (scanX) {
-        scanX(0);
-      }
+      resetCoreTransforms();
+      resetOpenTransforms();
     });
   }
 

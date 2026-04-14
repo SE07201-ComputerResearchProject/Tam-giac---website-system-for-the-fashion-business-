@@ -15,12 +15,48 @@
     return "product.html?id=" + encodeURIComponent(product.id);
   }
 
-  function createProductCard(catalog, product) {
+  function getProductImageAttributes(index, options) {
+    var mode = (options && options.imageMode) || "default";
+
+    if (mode === "home-primary") {
+      if (index < 4) {
+        return 'loading="eager" fetchpriority="high" decoding="async"';
+      }
+      if (index < 8) {
+        return 'loading="eager" fetchpriority="auto" decoding="async"';
+      }
+      return 'loading="lazy" fetchpriority="auto" decoding="async"';
+    }
+
+    if (mode === "home-secondary") {
+      if (index < 4) {
+        return 'loading="eager" fetchpriority="auto" decoding="async"';
+      }
+      return 'loading="lazy" fetchpriority="auto" decoding="async"';
+    }
+
+    if (mode === "shop-grid") {
+      if (index < 8) {
+        return 'loading="eager" fetchpriority="auto" decoding="async"';
+      }
+      return 'loading="lazy" fetchpriority="auto" decoding="async"';
+    }
+
+    if (mode === "related") {
+      return 'loading="eager" fetchpriority="auto" decoding="async"';
+    }
+
+    return 'loading="lazy" fetchpriority="auto" decoding="async"';
+  }
+
+  function createProductCard(catalog, product, index, options) {
+    var imageAttributes = getProductImageAttributes(index, options);
+
     return [
       '<div class="product" data-product-id="' + product.id + '">',
       '<a class="product-media" href="' + getProductLink(product) + '">',
       '<span class="product-badge">' + (product.badge || "Tam Giac") + '</span>',
-      '<img src="' + product.image + '" alt="' + product.name + '" loading="lazy">',
+      '<img src="' + product.image + '" alt="' + product.name + '" ' + imageAttributes + '>',
       '</a>',
       '<div class="product-detail">',
       "<h3>" + (product.category || "Catalog") + "</h3>",
@@ -36,7 +72,46 @@
     ].join("");
   }
 
-  function renderProductList(catalog, container, products) {
+  function prewarmImages(products, limit) {
+    if (!Array.isArray(products) || !products.length) {
+      return;
+    }
+
+    var seen = Object.create(null);
+    var sources = products
+      .map(function (product) {
+        return product && product.image;
+      })
+      .filter(function (src) {
+        if (!src || seen[src]) {
+          return false;
+        }
+        seen[src] = true;
+        return true;
+      })
+      .slice(0, Math.max(0, limit || 0));
+
+    if (!sources.length) {
+      return;
+    }
+
+    function warm() {
+      sources.forEach(function (src) {
+        var img = new Image();
+        img.decoding = "async";
+        img.src = src;
+      });
+    }
+
+    if (typeof window.requestIdleCallback === "function") {
+      window.requestIdleCallback(warm, { timeout: 1200 });
+      return;
+    }
+
+    window.setTimeout(warm, 180);
+  }
+
+  function renderProductList(catalog, container, products, options) {
     if (!container) {
       return;
     }
@@ -46,9 +121,85 @@
       return;
     }
 
-    container.innerHTML = products.map(function (product) {
-      return createProductCard(catalog, product);
+    container.innerHTML = products.map(function (product, index) {
+      return createProductCard(catalog, product, index, options);
     }).join("");
+  }
+
+  function ensureShopPanel(shopSection, content) {
+    var panel = shopSection.querySelector(".shop-catalog-panel");
+
+    if (!panel) {
+      panel = document.createElement("div");
+      panel.className = "shop-catalog-panel";
+      content.parentNode.insertBefore(panel, content);
+      panel.appendChild(content);
+    }
+
+    return panel;
+  }
+
+  function enhanceShopCards(container) {
+    if (!container) {
+      return;
+    }
+
+    var cards = Array.prototype.slice.call(container.querySelectorAll(".product"));
+    if (!cards.length) {
+      return;
+    }
+
+    var supportsHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    var observer = null;
+
+    if (container._shopObserver && typeof container._shopObserver.disconnect === "function") {
+      container._shopObserver.disconnect();
+      container._shopObserver = null;
+    }
+
+    if ("IntersectionObserver" in window) {
+      observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          entry.target.classList.toggle("is-visible", entry.isIntersecting);
+        });
+      }, {
+        threshold: 0.16,
+        rootMargin: "0px 0px -10% 0px"
+      });
+      container._shopObserver = observer;
+    }
+
+    cards.forEach(function (card, index) {
+      card.style.setProperty("--shop-delay", Math.min(index, 8) * 55 + "ms");
+
+      if (observer) {
+        observer.observe(card);
+      } else {
+        card.classList.add("is-visible");
+      }
+
+      if (!supportsHover) {
+        return;
+      }
+
+      card.addEventListener("pointermove", function (event) {
+        var bounds = card.getBoundingClientRect();
+        var offsetX = (event.clientX - bounds.left) / bounds.width - 0.5;
+        var offsetY = (event.clientY - bounds.top) / bounds.height - 0.5;
+
+        card.style.setProperty("--shop-rotate-y", offsetX * 8 + "deg");
+        card.style.setProperty("--shop-rotate-x", offsetY * -7 + "deg");
+        card.style.setProperty("--shop-shift-y", "-10px");
+        card.style.setProperty("--shop-scale", "1.01");
+      }, { passive: true });
+
+      card.addEventListener("pointerleave", function () {
+        card.style.setProperty("--shop-rotate-y", "0deg");
+        card.style.setProperty("--shop-rotate-x", "0deg");
+        card.style.setProperty("--shop-shift-y", "0px");
+        card.style.setProperty("--shop-scale", "1");
+      });
+    });
   }
 
   function renderHomePage(catalog) {
@@ -64,11 +215,12 @@
 
     homeSections[0].querySelector(".product-section-heading h2").innerHTML = 'Fresh from SQL Server <img src="img/icons/increase.png">';
     homeSections[0].querySelector(".product-section-heading h3").textContent = "The homepage is now reading products from the backend catalog.";
-    renderProductList(catalog, homeSections[0].querySelector(".product-content"), trending);
+    renderProductList(catalog, homeSections[0].querySelector(".product-content"), trending, { imageMode: "home-primary" });
 
     homeSections[1].querySelector(".product-section-heading h2").innerHTML = 'Admin-managed picks <img src="img/icons/good_quality.png">';
     homeSections[1].querySelector(".product-section-heading h3").textContent = "Products added in the admin panel appear here automatically.";
-    renderProductList(catalog, homeSections[1].querySelector(".product-content"), recommended);
+    renderProductList(catalog, homeSections[1].querySelector(".product-content"), recommended, { imageMode: "home-secondary" });
+    prewarmImages(trending.concat(recommended), 12);
 
     var slides = document.querySelectorAll(".slider-text");
     if (slides[0]) {
@@ -86,6 +238,7 @@
     }
 
     var content = shopSection.querySelector(".product-content");
+    var panel = ensureShopPanel(shopSection, content);
     var sidebarList = shopSection.querySelector(".sidebar-widget ul");
     var loadMoreButton = document.querySelector(".load-more a");
     var amountInput = document.getElementById("amount");
@@ -114,10 +267,14 @@
     var toolbar = document.createElement("div");
     toolbar.className = "catalog-toolbar";
     toolbar.innerHTML = [
-      '<div class="catalog-summary">Connected catalog / ' + catalog.products.length + ' products</div>',
+      '<div class="catalog-summary">',
+      '<span class="catalog-kicker">Connected catalog</span>',
+      '<strong>Curated pieces, cleaner browsing</strong>',
+      '<p>Filter by collection, search intent, or price range without leaving the page.</p>',
+      "</div>",
       '<div class="catalog-state"></div>'
     ].join("");
-    content.parentNode.insertBefore(toolbar, content);
+    panel.insertBefore(toolbar, content);
 
     if (searchInput) {
       searchInput.placeholder = "Search by product or category...";
@@ -172,11 +329,23 @@
       var filtered = getFilteredProducts();
       var visible = filtered.slice(0, state.visibleCount);
       var stateNode = toolbar.querySelector(".catalog-state");
+      var activeCollection = collections.find(function (collection) {
+        return collection.key === state.collection;
+      });
+      var activeLabel = state.collection === "all"
+        ? "All collections"
+        : (activeCollection ? activeCollection.label : state.collection);
 
-      renderProductList(catalog, content, visible);
+      renderProductList(catalog, content, visible, { imageMode: "shop-grid" });
+      enhanceShopCards(content);
+      prewarmImages(filtered.slice(0, Math.min(filtered.length, state.visibleCount + 8)), state.visibleCount + 8);
 
       if (stateNode) {
-        stateNode.textContent = "Showing " + visible.length + " / " + filtered.length + " products";
+        stateNode.innerHTML = [
+          '<span class="catalog-state-chip">' + activeLabel + "</span>",
+          '<strong>' + visible.length + "</strong>",
+          "<span>/ " + filtered.length + " products</span>"
+        ].join(" ");
       }
 
       if (sidebarList) {
@@ -315,7 +484,7 @@
 
     var relatedSection = document.querySelector("main .new-product-section .product-content");
     if (relatedSection) {
-      renderProductList(catalog, relatedSection, related.length ? related : catalog.products.slice(0, 4));
+      renderProductList(catalog, relatedSection, related.length ? related : catalog.products.slice(0, 4), { imageMode: "related" });
     }
 
     initProductGallery();

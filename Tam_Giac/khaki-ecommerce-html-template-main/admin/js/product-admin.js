@@ -1,78 +1,14 @@
 (function () {
-  var API_BASE = "/api";
-  var TOKEN_KEY = "token";
+  var admin = window.TamGiacAdmin;
+  if (!admin) {
+    return;
+  }
+
   var state = {
     products: [],
     categories: [],
     editingId: ""
   };
-
-  function getToken() {
-    return window.localStorage.getItem(TOKEN_KEY);
-  }
-
-  function setStatus(message, isError) {
-    var node = document.getElementById("adminStatus");
-    if (!node) {
-      return;
-    }
-
-    node.textContent = message || "";
-    node.style.color = isError ? "#b42318" : "#555";
-  }
-
-  async function apiCall(endpoint, options) {
-    var token = getToken();
-    if (!token) {
-      throw { error: "Bạn chưa đăng nhập." };
-    }
-
-    var config = Object.assign(
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token
-        }
-      },
-      options || {}
-    );
-
-    var response;
-    try {
-      response = await fetch(API_BASE + endpoint, config);
-    } catch (error) {
-      throw { error: "Không thể kết nối backend admin." };
-    }
-
-    var payload = await response.json().catch(function () {
-      return { error: "Admin API error" };
-    });
-
-    if (!response.ok) {
-      throw payload;
-    }
-
-    return payload;
-  }
-
-  function formatPrice(value) {
-    return Number(value || 0).toLocaleString("vi-VN") + " d";
-  }
-
-  function renderCategoryOptions() {
-    var select = document.getElementById("categoryId");
-    if (!select) {
-      return;
-    }
-
-    select.innerHTML = ['<option value="">-- Chọn category --</option>']
-      .concat(
-        state.categories.map(function (category) {
-          return '<option value="' + category.id + '">' + category.name + "</option>";
-        })
-      )
-      .join("");
-  }
 
   function setFormMode(editing) {
     var title = document.getElementById("productFormTitle");
@@ -102,6 +38,21 @@
     setFormMode(false);
   }
 
+  function renderCategoryOptions() {
+    var select = document.getElementById("categoryId");
+    if (!select) {
+      return;
+    }
+
+    select.innerHTML = ['<option value="">-- Select category --</option>']
+      .concat(
+        state.categories.map(function (category) {
+          return '<option value="' + admin.escapeHtml(category.id) + '">' + admin.escapeHtml(category.name) + "</option>";
+        })
+      )
+      .join("");
+  }
+
   function fillForm(product) {
     state.editingId = product.id;
     document.getElementById("productId").value = product.id;
@@ -123,18 +74,18 @@
     }
 
     if (!state.products.length) {
-      tbody.innerHTML = '<tr><td colspan="6">Chưa có sản phẩm nào.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="admin-empty-cell">No products found.</td></tr>';
       return;
     }
 
     tbody.innerHTML = state.products
       .map(function (product) {
         return [
-          '<tr data-product-id="' + product.id + '">',
-          "<td>" + product.name + "</td>",
-          "<td>" + formatPrice(product.price) + "</td>",
-          "<td>" + (product.categoryName || "Catalog") + "</td>",
-          "<td>" + (product.isActive ? "Active" : "Hidden") + "</td>",
+          '<tr data-product-id="' + admin.escapeHtml(product.id) + '">',
+          "<td>" + admin.escapeHtml(product.name) + "</td>",
+          "<td>" + admin.escapeHtml(admin.formatPrice(product.price)) + "</td>",
+          "<td>" + admin.escapeHtml(product.categoryName || "Catalog") + "</td>",
+          "<td>" + admin.escapeHtml(product.isActive ? "Active" : "Hidden") + "</td>",
           '<td><button type="button" data-action="edit">Edit</button></td>',
           '<td>' +
             (product.isActive
@@ -148,28 +99,18 @@
   }
 
   async function loadProducts() {
-    state.products = await apiCall("/admin/products?includeInactive=true");
+    state.products = await admin.apiCall("/admin/products?includeInactive=true");
     renderProducts();
   }
 
   async function loadCategories() {
-    state.categories = await apiCall("/admin/categories");
+    state.categories = await admin.apiCall("/admin/categories");
     renderCategoryOptions();
   }
 
   async function bootstrap() {
-    if (!getToken()) {
-      window.location.href = "../login.html";
-      return;
-    }
-
-    try {
-      await apiCall("/admin/health");
-      setStatus("Admin API connected.");
-      await Promise.all([loadCategories(), loadProducts()]);
-    } catch (error) {
-      setStatus(error.error || "Bạn không có quyền admin hoặc backend chưa sẵn sàng.", true);
-    }
+    await Promise.all([loadCategories(), loadProducts()]);
+    admin.setStatus("adminStatus", "Product manager connected.");
   }
 
   function bindForm() {
@@ -179,7 +120,7 @@
     if (cancel) {
       cancel.addEventListener("click", function () {
         resetForm();
-        setStatus("Form đã được reset.");
+        admin.setStatus("adminStatus", "Product form reset.");
       });
     }
 
@@ -190,36 +131,35 @@
     form.addEventListener("submit", async function (event) {
       event.preventDefault();
 
-      var categoryName = document.getElementById("categoryName").value.trim();
       var payload = {
         name: document.getElementById("pname").value.trim(),
         price: Number(document.getElementById("price").value || 0),
         stock: Number(document.getElementById("stock").value || 0),
         categoryId: document.getElementById("categoryId").value || "",
-        categoryName: categoryName,
+        categoryName: document.getElementById("categoryName").value.trim(),
         description: document.getElementById("sdesc").value.trim(),
         imageUrl: document.getElementById("imageUrl").value.trim()
       };
 
       try {
         if (state.editingId) {
-          await apiCall("/admin/products/" + encodeURIComponent(state.editingId), {
+          await admin.apiCall("/admin/products/" + encodeURIComponent(state.editingId), {
             method: "PUT",
             body: JSON.stringify(payload)
           });
-          setStatus("Đã cập nhật sản phẩm.");
+          admin.setStatus("adminStatus", "Product updated successfully.");
         } else {
-          await apiCall("/admin/products", {
+          await admin.apiCall("/admin/products", {
             method: "POST",
             body: JSON.stringify(payload)
           });
-          setStatus("Đã thêm sản phẩm mới.");
+          admin.setStatus("adminStatus", "Product created successfully.");
         }
 
         resetForm();
         await Promise.all([loadCategories(), loadProducts()]);
       } catch (error) {
-        setStatus(error.error || "Không thể lưu sản phẩm.", true);
+        admin.setStatus("adminStatus", error.error || "Unable to save the product.", true);
       }
     });
   }
@@ -254,53 +194,43 @@
 
       if (action === "edit") {
         fillForm(product);
-        setStatus("Đang sửa sản phẩm: " + product.name);
+        admin.setStatus("adminStatus", "Editing product: " + product.name);
         return;
       }
 
       try {
         if (action === "delete") {
-          if (!window.confirm("Ẩn sản phẩm này khỏi storefront?")) {
+          if (!window.confirm("Hide this product from the storefront?")) {
             return;
           }
 
-          await apiCall("/admin/products/" + encodeURIComponent(productId), {
+          await admin.apiCall("/admin/products/" + encodeURIComponent(productId), {
             method: "DELETE"
           });
-          setStatus("Đã ẩn sản phẩm.");
+          admin.setStatus("adminStatus", "Product hidden successfully.");
         }
 
         if (action === "restore") {
-          await apiCall("/admin/products/" + encodeURIComponent(productId) + "/restore", {
+          await admin.apiCall("/admin/products/" + encodeURIComponent(productId) + "/restore", {
             method: "POST"
           });
-          setStatus("Đã khôi phục sản phẩm.");
+          admin.setStatus("adminStatus", "Product restored successfully.");
         }
 
         await loadProducts();
       } catch (error) {
-        setStatus(error.error || "Không thể cập nhật trạng thái sản phẩm.", true);
+        admin.setStatus("adminStatus", error.error || "Unable to update the product status.", true);
       }
-    });
-  }
-
-  function bindLogout() {
-    var link = document.getElementById("adminLogoutLink");
-    if (!link) {
-      return;
-    }
-
-    link.addEventListener("click", function (event) {
-      event.preventDefault();
-      window.localStorage.removeItem(TOKEN_KEY);
-      window.location.href = "../login.html";
     });
   }
 
   document.addEventListener("DOMContentLoaded", function () {
     bindForm();
     bindTableActions();
-    bindLogout();
-    bootstrap();
+
+    admin.initPage({
+      statusId: "adminStatus",
+      onReady: bootstrap
+    });
   });
 })();

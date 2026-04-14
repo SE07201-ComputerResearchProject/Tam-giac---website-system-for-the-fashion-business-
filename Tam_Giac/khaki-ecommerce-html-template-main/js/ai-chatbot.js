@@ -3,11 +3,19 @@
     return;
   }
 
+  try {
+    if (!window.localStorage || !window.localStorage.getItem('token')) {
+      return;
+    }
+  } catch (error) {
+    return;
+  }
+
   window.__TG_AI_CHATBOT_BOOTED__ = true;
 
   const CONFIG = {
     apiUrl: '/api/ai-chat',
-    stylesheetHref: 'css/ai-chatbot.css?v=20260412b',
+    stylesheetHref: 'css/ai-chatbot.css?v=20260413c',
     historyLimit: 10,
     moveDelayMin: 3400,
     moveDelayMax: 6400
@@ -166,19 +174,24 @@
             <div class="tg-ai-avatar">${buildHeaderSvg()}</div>
             <div class="tg-ai-panel-title">
               <span class="tg-ai-panel-kicker">Spider Assistant</span>
-              <strong>Tam Giac AI Tư Vấn</strong>
-              <p>Hỏi về sản phẩm, cách mua hàng, giao hàng, đăng nhập hoặc hướng dẫn trên trang.</p>
+              <strong>Tam Giac AI Assistant</strong>
+              <p>Hỏi về sản phẩm, đơn hàng, tài khoản hoặc cách dùng website.</p>
             </div>
-            <button class="tg-ai-close" type="button" aria-label="Đóng cửa sổ chat">×</button>
+            <button class="tg-ai-close" type="button" aria-label="Close chat">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M7 7L17 17" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path>
+                <path d="M17 7L7 17" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path>
+              </svg>
+            </button>
           </header>
 
           <div class="tg-ai-panel-body">
             <div class="tg-ai-scroll" role="log" aria-live="polite" aria-label="Lịch sử chat">
               <div class="tg-ai-intro">
-                <p>Mình là trợ lý tư vấn ngay trên website. Bạn có thể hỏi rất tự nhiên, mình sẽ hỗ trợ nhanh và gọn.</p>
+                <p>Mình sẵn sàng hỗ trợ nhanh về sản phẩm, mua hàng, đơn hàng và tài khoản.</p>
                 <div class="tg-ai-quick-list">
                   <button class="tg-ai-quick" type="button" data-quick-message="Gợi ý sản phẩm phù hợp cho tôi">Gợi ý sản phẩm</button>
-                  <button class="tg-ai-quick" type="button" data-quick-message="Hướng dẫn tôi cách mua hàng">Cách mua hàng</button>
+                  <button class="tg-ai-quick" type="button" data-quick-message="Hướng dẫn tôi cách mua hàng trên website">Cách mua hàng</button>
                   <button class="tg-ai-quick" type="button" data-quick-message="Tôi cần hỗ trợ đăng nhập hoặc đăng ký">Hỗ trợ tài khoản</button>
                 </div>
               </div>
@@ -553,6 +566,123 @@
     bubble.replaceChildren(document.createTextNode(text));
   }
 
+  function getSafeProductLink(item) {
+    const fallbackId = sanitizeText(item && item.id ? String(item.id) : '', 80);
+    const fallbackLink = fallbackId
+      ? `product.html?id=${encodeURIComponent(fallbackId)}`
+      : 'shop.html';
+    const link = sanitizeText(item && item.link ? String(item.link) : '', 240);
+
+    if (!link) {
+      return fallbackLink;
+    }
+
+    if (
+      link.startsWith('product.html') ||
+      link.startsWith('shop.html') ||
+      link.startsWith('./') ||
+      link.startsWith('/')
+    ) {
+      return link;
+    }
+
+    return fallbackLink;
+  }
+
+  function formatSuggestionPrice(item) {
+    const priceText = sanitizeText(item && item.priceText ? String(item.priceText) : '', 80);
+    if (priceText) {
+      return priceText;
+    }
+
+    const amount = Number(item && item.price);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return '';
+    }
+
+    return `${amount.toLocaleString('vi-VN')} d`;
+  }
+
+  function appendProductSuggestions(products) {
+    if (!state.ui || !Array.isArray(products) || !products.length) {
+      return;
+    }
+
+    const row = document.createElement('div');
+    row.className = 'tg-ai-message-row assistant tg-ai-product-row';
+
+    const list = document.createElement('div');
+    list.className = 'tg-ai-product-list';
+
+    products.slice(0, 3).forEach((item) => {
+      const card = document.createElement('article');
+      card.className = 'tg-ai-product-card';
+
+      const mediaLink = document.createElement('a');
+      mediaLink.className = 'tg-ai-product-media';
+      mediaLink.href = getSafeProductLink(item);
+      mediaLink.setAttribute(
+        'aria-label',
+        sanitizeText(item && item.name ? String(item.name) : 'Product', 160)
+      );
+
+      const image = document.createElement('img');
+      image.className = 'tg-ai-product-image';
+      image.alt = sanitizeText(item && item.name ? String(item.name) : 'Tam Giac product', 160);
+      image.loading = 'lazy';
+      image.src = sanitizeText(item && item.image ? String(item.image) : '', 500) || 'img/product/img1.jpg';
+      mediaLink.appendChild(image);
+
+      const body = document.createElement('div');
+      body.className = 'tg-ai-product-body';
+
+      const category = document.createElement('div');
+      category.className = 'tg-ai-product-category';
+      category.textContent =
+        sanitizeText(item && item.category ? String(item.category) : 'Tam Giac', 120) || 'Tam Giac';
+
+      const nameLink = document.createElement('a');
+      nameLink.className = 'tg-ai-product-name';
+      nameLink.href = getSafeProductLink(item);
+      nameLink.textContent =
+        sanitizeText(item && item.name ? String(item.name) : 'Tam Giac product', 160) || 'Tam Giac product';
+
+      const note = document.createElement('p');
+      note.className = 'tg-ai-product-note';
+      note.textContent =
+        sanitizeText(item && item.note ? String(item.note) : 'Phu hop de xem nhanh trong catalog.', 180) ||
+        'Phu hop de xem nhanh trong catalog.';
+
+      const footer = document.createElement('div');
+      footer.className = 'tg-ai-product-footer';
+
+      const price = document.createElement('span');
+      price.className = 'tg-ai-product-price';
+      price.textContent = formatSuggestionPrice(item) || 'See details';
+
+      const cta = document.createElement('a');
+      cta.className = 'tg-ai-product-cta';
+      cta.href = getSafeProductLink(item);
+      cta.textContent = 'View product';
+
+      footer.appendChild(price);
+      footer.appendChild(cta);
+
+      body.appendChild(category);
+      body.appendChild(nameLink);
+      body.appendChild(note);
+      body.appendChild(footer);
+
+      card.appendChild(mediaLink);
+      card.appendChild(body);
+      list.appendChild(card);
+    });
+
+    row.appendChild(list);
+    state.ui.scroll.appendChild(row);
+    scrollToEnd();
+  }
+
   function getPageContext() {
     const productNode = document.querySelector('[data-product-id]');
     const productNameNode =
@@ -647,6 +777,7 @@
     const decoder = new TextDecoder();
     let buffer = '';
     let fullText = '';
+    let suggestedProducts = [];
 
     while (true) {
       const { value, done } = await reader.read();
@@ -679,6 +810,8 @@
           }
           setBubbleText(bubble, fullText);
           scrollToEnd();
+        } else if (event.type === 'products' && Array.isArray(event.items)) {
+          suggestedProducts = event.items;
         } else if (event.type === 'error') {
           throw new Error(event.error || 'Có lỗi khi lấy phản hồi từ AI.');
         }
@@ -695,6 +828,8 @@
             fullText += lastEvent.text;
           }
           setBubbleText(bubble, fullText);
+        } else if (lastEvent.type === 'products' && Array.isArray(lastEvent.items)) {
+          suggestedProducts = lastEvent.items;
         } else if (lastEvent.type === 'error') {
           throw new Error(lastEvent.error || 'Có lỗi khi lấy phản hồi từ AI.');
         }
@@ -703,6 +838,85 @@
     }
 
     return sanitizeText(fullText) || 'Mình chưa nhận được nội dung phản hồi rõ ràng, bạn thử hỏi lại giúp mình nhé.';
+  }
+
+  async function readNdjsonStreamWithProducts(response, bubble) {
+    if (!response.body) {
+      throw new Error('Trinh duyet khong ho tro stream phan hoi.');
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let fullText = '';
+    let suggestedProducts = [];
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) {
+        break;
+      }
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+
+      for (const rawLine of lines) {
+        const line = rawLine.trim();
+        if (!line) {
+          continue;
+        }
+
+        let event;
+        try {
+          event = JSON.parse(line);
+        } catch (error) {
+          continue;
+        }
+
+        if (event.type === 'chunk' && typeof event.text === 'string') {
+          if (event.text.startsWith(fullText)) {
+            fullText = event.text;
+          } else {
+            fullText += event.text;
+          }
+
+          setBubbleText(bubble, fullText);
+          scrollToEnd();
+        } else if (event.type === 'products' && Array.isArray(event.items)) {
+          suggestedProducts = event.items;
+        } else if (event.type === 'error') {
+          throw new Error(event.error || 'Co loi khi lay phan hoi tu AI.');
+        }
+      }
+    }
+
+    if (buffer.trim()) {
+      try {
+        const lastEvent = JSON.parse(buffer.trim());
+        if (lastEvent.type === 'chunk' && typeof lastEvent.text === 'string') {
+          if (lastEvent.text.startsWith(fullText)) {
+            fullText = lastEvent.text;
+          } else {
+            fullText += lastEvent.text;
+          }
+
+          setBubbleText(bubble, fullText);
+        } else if (lastEvent.type === 'products' && Array.isArray(lastEvent.items)) {
+          suggestedProducts = lastEvent.items;
+        } else if (lastEvent.type === 'error') {
+          throw new Error(lastEvent.error || 'Co loi khi lay phan hoi tu AI.');
+        }
+      } catch (error) {
+      }
+    }
+
+    return {
+      reply:
+        sanitizeText(fullText) ||
+        'Minh chua nhan duoc noi dung phan hoi ro rang, ban thu hoi lai giup minh nhe.',
+      suggestedProducts: Array.isArray(suggestedProducts) ? suggestedProducts : []
+    };
   }
 
   async function sendMessage(quickMessage) {
@@ -759,17 +973,22 @@
       }
 
       let reply = '';
+      let suggestedProducts = [];
 
       if (contentType.includes('application/x-ndjson')) {
-        reply = await readNdjsonStream(response, responseBubble);
+        const streamResult = await readNdjsonStreamWithProducts(response, responseBubble);
+        reply = streamResult.reply;
+        suggestedProducts = streamResult.suggestedProducts;
       } else {
         const data = await response.json().catch(() => ({}));
         reply = sanitizeText(data.reply || data.error || '', 2400);
+        suggestedProducts = Array.isArray(data.products) ? data.products : [];
       }
 
       setBubbleText(responseBubble, reply);
       state.history.push({ role: 'assistant', text: reply });
       trimHistory();
+      appendProductSuggestions(suggestedProducts);
       setStatus('Đã cập nhật phản hồi mới nhất.');
     } catch (error) {
       if (error && error.name === 'AbortError') {

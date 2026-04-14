@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<meta name="author" content="Kamran Mubarik">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Tam Giac Admin Orders</title>
+	<title>Tam Giac Admin Users</title>
 	<link rel="stylesheet" type="text/css" href="css/style.css?v=20260413c" />
 	<link rel="stylesheet" type="text/css" href="css/admin-enhance.css?v=20260413c" />
 	<link rel="stylesheet" type="text/css" href="../css/mouse-effects.css?v=20260320a" />
@@ -20,7 +20,7 @@
 	<script defer src="../js/page-loader.js?v=20260321a"></script>
 	<script defer src="../js/mouse-effects.js?v=20260320a"></script>
 	<script defer src="js/admin-common.js?v=20260413a"></script>
-	<script defer src="js/order-admin.js?v=20260413a"></script>
+	<script defer src="js/users-admin.js?v=20260413a"></script>
 </head>
 
 <body>
@@ -59,59 +59,48 @@
 				<ul>
 					<li><a href="index.html">Dashboard</a></li>
 					<li><a href="product.html">Products</a></li>
-					<li><a class="active" href="order.html">Orders</a></li>
+					<li><a href="order.html">Orders</a></li>
 					<li><a href="category.html">Categories</a></li>
 					<li><a href="stock.html">Stock</a></li>
-					<li><a href="users.html">Users</a></li>
+					<li><a class="active" href="users.html">Users</a></li>
 				</ul>
 			</div>
 			<div class="content">
-				<h3>Orders</h3>
-				<p id="ordersStatus" class="admin-status">Loading live order data...</p>
-				<div class="content-data admin-order-layout">
+				<h3>Users</h3>
+				<p id="usersStatus" class="admin-status">Loading users...</p>
+				<div class="content-data">
 					<div class="content-form">
-						<form>
-							<h4>Order Filters</h4>
-							<div class="form-group">
-								<label>Search</label>
-								<input type="text" id="orderSearch" placeholder="Search by order ref, customer or payment...">
+						<div class="content-detail">
+							<h4>User Overview</h4>
+							<div id="adminUsersSummary" class="admin-stat-grid">
+								<div class="admin-stat-card">
+									<span class="admin-stat-label">Users</span>
+									<strong class="admin-stat-value">...</strong>
+								</div>
 							</div>
-							<div class="form-group">
-								<label>Status</label>
-								<select id="orderStatusFilter">
-									<option value="all">All statuses</option>
-									<option value="pending">Pending confirmation</option>
-									<option value="paid">Paid</option>
-									<option value="pending_vnpay">Awaiting VNPay payment</option>
-									<option value="paid_vnpay">Paid via VNPay</option>
-									<option value="failed_vnpay">VNPay payment failed</option>
-									<option value="cancelled_vnpay">VNPay payment cancelled</option>
-									<option value="expired_vnpay">VNPay payment expired</option>
-								</select>
-							</div>
-						</form>
-						<div class="content-detail" id="adminOrderDetail">
-							<p class="admin-note">Select an order to inspect its items and customer details.</p>
+						</div>
+						<div class="content-detail">
+							<h4>Permission Guide</h4>
+							<p class="admin-note">Use this screen to promote admins, verify accounts or temporarily disable access. Changes only affect admin role, verification and active status, so storefront order history and profile data stay untouched.</p>
 						</div>
 					</div>
-					<div class="content-detail admin-order-table-panel">
+					<div class="content-detail">
 						<div class="admin-table-scroll">
 						<table>
 							<thead>
 								<tr>
-									<th>Date</th>
-									<th>Order Ref</th>
-									<th>Customer</th>
-									<th>Amount</th>
-									<th>Payment</th>
+									<th>Name</th>
+									<th>Email</th>
+									<th>Orders</th>
+									<th>Role</th>
+									<th>Verification</th>
 									<th>Status</th>
-									<th>View</th>
-									<th>Delete</th>
+									<th>Save</th>
 								</tr>
 							</thead>
-							<tbody id="adminOrdersTable">
+							<tbody id="adminUsersTable">
 								<tr>
-									<td colspan="8" class="admin-empty-cell">Loading orders...</td>
+									<td colspan="7" class="admin-empty-cell">Loading users...</td>
 								</tr>
 							</tbody>
 						</table>

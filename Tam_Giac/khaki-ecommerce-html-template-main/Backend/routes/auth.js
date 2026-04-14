@@ -45,11 +45,41 @@ const ensureUsersTable = async () => {
           password_hash NVARCHAR(255) NOT NULL,
           full_name NVARCHAR(255) NULL,
           phone NVARCHAR(50) NULL,
+          tel NVARCHAR(50) NULL,
+          company_name NVARCHAR(255) NULL,
+          country NVARCHAR(100) NULL,
+          city NVARCHAR(100) NULL,
+          address_line NVARCHAR(500) NULL,
           role NVARCHAR(20) NOT NULL DEFAULT 'user',
           is_verified BIT NOT NULL DEFAULT 0,
           is_active BIT NOT NULL DEFAULT 1,
           created_at DATETIME NOT NULL DEFAULT GETDATE()
         );
+      END
+
+      IF COL_LENGTH(N'dbo.Users', N'tel') IS NULL
+      BEGIN
+        ALTER TABLE dbo.Users ADD tel NVARCHAR(50) NULL;
+      END
+
+      IF COL_LENGTH(N'dbo.Users', N'company_name') IS NULL
+      BEGIN
+        ALTER TABLE dbo.Users ADD company_name NVARCHAR(255) NULL;
+      END
+
+      IF COL_LENGTH(N'dbo.Users', N'country') IS NULL
+      BEGIN
+        ALTER TABLE dbo.Users ADD country NVARCHAR(100) NULL;
+      END
+
+      IF COL_LENGTH(N'dbo.Users', N'city') IS NULL
+      BEGIN
+        ALTER TABLE dbo.Users ADD city NVARCHAR(100) NULL;
+      END
+
+      IF COL_LENGTH(N'dbo.Users', N'address_line') IS NULL
+      BEGIN
+        ALTER TABLE dbo.Users ADD address_line NVARCHAR(500) NULL;
       END
     `);
   })();
@@ -359,7 +389,12 @@ router.get('/me', authMiddleware.authenticateToken, async (req, res) => {
           email,
           full_name AS fullName,
           role,
-          phone
+          phone,
+          tel,
+          company_name AS companyName,
+          country,
+          city,
+          address_line AS address
         FROM dbo.Users
         WHERE id = @id
       `);
@@ -381,10 +416,35 @@ router.put(
   authMiddleware.authenticateToken,
   [
     body('fullName')
-      .optional()
+      .optional({ values: 'falsy' })
       .trim()
       .isLength({ min: 2, max: 255 })
       .withMessage('Ho ten khong hop le'),
+    body('companyName')
+      .optional({ values: 'falsy' })
+      .trim()
+      .isLength({ max: 255 })
+      .withMessage('Ten cong ty khong hop le'),
+    body('country')
+      .optional({ values: 'falsy' })
+      .trim()
+      .isLength({ max: 100 })
+      .withMessage('Quoc gia khong hop le'),
+    body('city')
+      .optional({ values: 'falsy' })
+      .trim()
+      .isLength({ max: 100 })
+      .withMessage('Thanh pho khong hop le'),
+    body('address')
+      .optional({ values: 'falsy' })
+      .trim()
+      .isLength({ max: 500 })
+      .withMessage('Dia chi khong hop le'),
+    body('tel')
+      .optional({ values: 'falsy' })
+      .trim()
+      .isLength({ max: 50 })
+      .withMessage('So dien thoai ban khong hop le'),
     body('phone')
       .optional({ values: 'falsy' })
       .trim()
@@ -401,11 +461,21 @@ router.put(
       await ensureUsersTable();
       const pool = getPoolOrThrow();
       const fullName = req.body.fullName ? String(req.body.fullName).trim() : null;
+      const companyName = req.body.companyName ? String(req.body.companyName).trim() : null;
+      const country = req.body.country ? String(req.body.country).trim() : null;
+      const city = req.body.city ? String(req.body.city).trim() : null;
+      const address = req.body.address ? String(req.body.address).trim() : null;
+      const tel = req.body.tel ? String(req.body.tel).trim() : null;
       const phone = req.body.phone ? String(req.body.phone).trim() : null;
 
       const updateRequest = pool.request();
       withUserIdInput(updateRequest, req.user.id);
       updateRequest.input('fullName', sql.NVarChar(255), fullName);
+      updateRequest.input('companyName', sql.NVarChar(255), companyName);
+      updateRequest.input('country', sql.NVarChar(100), country);
+      updateRequest.input('city', sql.NVarChar(100), city);
+      updateRequest.input('address', sql.NVarChar(500), address);
+      updateRequest.input('tel', sql.NVarChar(50), tel);
       updateRequest.input('phone', sql.NVarChar(50), phone);
 
       await updateRequest
@@ -413,7 +483,12 @@ router.put(
           UPDATE dbo.Users
           SET
             full_name = COALESCE(@fullName, full_name),
-            phone = @phone
+            phone = @phone,
+            tel = @tel,
+            company_name = @companyName,
+            country = @country,
+            city = @city,
+            address_line = @address
           WHERE id = @id
         `);
 
@@ -427,7 +502,12 @@ router.put(
             email,
             full_name AS fullName,
             role,
-            phone
+            phone,
+            tel,
+            company_name AS companyName,
+            country,
+            city,
+            address_line AS address
           FROM dbo.Users
           WHERE id = @id
         `);

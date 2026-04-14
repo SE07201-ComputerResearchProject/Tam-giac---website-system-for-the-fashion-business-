@@ -39,14 +39,14 @@ if (form && statusBox && submitBtn && passwordInput && strengthFill && strengthT
   const setLoading = (loading) => {
     submitBtn.disabled = loading;
     submitBtn.classList.toggle("is-loading", loading);
-    submitBtn.textContent = loading ? "Đang xử lý..." : "Tạo tài khoản";
+    submitBtn.textContent = loading ? "Processing..." : "Create account";
   };
 
   const getPasswordStrength = (password) => {
     if (!password) {
       return {
         score: 0,
-        text: "Mật khẩu nên có ít nhất 8 ký tự.",
+        text: "Use at least 8 characters.",
         color: "rgba(120, 155, 182, 0.55)"
       };
     }
@@ -58,26 +58,28 @@ if (form && statusBox && submitBtn && passwordInput && strengthFill && strengthT
     if (/\d/.test(password)) score += 1;
     if (/[@$!%*?&]/.test(password)) score += 1;
 
-    if (score <= 2) return { score, text: "Mật khẩu còn yếu", color: "#d05a5a" };
-    if (score <= 4) return { score, text: "Mật khẩu khá ổn", color: "#d48a2d" };
-    return { score, text: "Mật khẩu mạnh", color: "#1f9466" };
+    if (score <= 2) return { score, text: "Weak password", color: "#d05a5a" };
+    if (score <= 4) return { score, text: "Good password", color: "#d48a2d" };
+    return { score, text: "Strong password", color: "#1f9466" };
   };
 
   const renderPasswordStrength = (password) => {
     const state = getPasswordStrength(password);
-    const width = `${state.score * 20}%`;
+    const scale = state.score / 5;
+
+    strengthFill.style.backgroundColor = state.color;
 
     if (window.gsap) {
       window.gsap.to(strengthFill, {
-        width,
-        backgroundColor: state.color,
+        scaleX: scale,
+        opacity: state.score === 0 ? 0.72 : 1,
         duration: 0.35,
         ease: "power2.out",
         overwrite: true
       });
     } else {
-      strengthFill.style.width = width;
-      strengthFill.style.backgroundColor = state.color;
+      strengthFill.style.transform = `scaleX(${scale})`;
+      strengthFill.style.opacity = state.score === 0 ? "0.72" : "1";
     }
 
     strengthText.textContent = state.text;
@@ -91,7 +93,7 @@ if (form && statusBox && submitBtn && passwordInput && strengthFill && strengthT
 
         const show = target.type === "password";
         target.type = show ? "text" : "password";
-        btn.textContent = show ? "Ẩn" : "Hiện";
+        btn.textContent = show ? "Hide" : "Show";
       });
     });
   };
@@ -110,17 +112,17 @@ if (form && statusBox && submitBtn && passwordInput && strengthFill && strengthT
     const confirmPassword = document.getElementById("registerConfirmPassword").value;
 
     if (!fullName || !email || !password || !confirmPassword) {
-      showStatus("Vui lòng điền đầy đủ các trường bắt buộc.", "error");
+      showStatus("Please complete all required fields.", "error");
       return;
     }
 
     if (password !== confirmPassword) {
-      showStatus("Mật khẩu xác nhận chưa khớp.", "error");
+      showStatus("Password confirmation does not match.", "error");
       return;
     }
 
     if (!PASSWORD_RULE.test(password)) {
-      showStatus("Mật khẩu chưa đáp ứng yêu cầu bảo mật.", "error");
+      showStatus("Your password does not meet the security requirements.", "error");
       return;
     }
 
@@ -131,19 +133,19 @@ if (form && statusBox && submitBtn && passwordInput && strengthFill && strengthT
       const result = await register(email, password, fullName, recaptchaToken);
 
       if (!result.success) {
-        showStatus(result.error || "Đăng ký thất bại. Vui lòng thử lại.", "error");
+        showStatus(result.error || "Registration failed. Please try again.", "error");
         return;
       }
 
       sessionStorage.setItem("auth_notice", "register_success");
-      showStatus("Tạo tài khoản thành công. Đang chuyển sang đăng nhập...", "success");
+      showStatus("Account created successfully. Switching to login...", "success");
       setTimeout(() => {
         window.dispatchEvent(new CustomEvent("auth:request-mode", {
           detail: { mode: "login" }
         }));
       }, 850);
     } catch (error) {
-      showStatus(error?.error || "Không thể kết nối tới máy chủ.", "error");
+      showStatus(error?.error || "Unable to connect to the server.", "error");
     } finally {
       if (window.grecaptcha && grecaptcha.reset) {
         try {

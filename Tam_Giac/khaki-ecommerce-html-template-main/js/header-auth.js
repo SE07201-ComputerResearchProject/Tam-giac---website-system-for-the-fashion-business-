@@ -57,8 +57,8 @@ export const initHeaderAuth = async () => {
 };
 
 document.addEventListener('DOMContentLoaded', initHeaderAuth);
-// Load chatbot widget (non-blocking)
-if (typeof window !== 'undefined') {
+// Load chatbot widget only after the user has signed in.
+if (typeof window !== 'undefined' && isLoggedIn()) {
   document.addEventListener('DOMContentLoaded', function () {
     try {
       import('./chatbot-widget.js');

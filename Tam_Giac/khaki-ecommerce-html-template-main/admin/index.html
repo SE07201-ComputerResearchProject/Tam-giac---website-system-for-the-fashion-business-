@@ -1,22 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 
- 	<head>
- 		<!-- Meta Tags -->
-		<meta charset="UTF-8">
-		<meta name="author" content="Kamran Mubarik">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<!-- Title -->
- 		<title>Tam Giac Admin</title>
-		<!-- Style Sheet -->
-		<link rel="stylesheet" type="text/css" href="css/style.css" />
-		<link rel="stylesheet" type="text/css" href="../css/mouse-effects.css?v=20260320a" />
-		<link rel="stylesheet" type="text/css" href="../css/page-loader.css?v=20260321a" />
-		<script defer src="../js/page-loader.js?v=20260321a"></script>
-		<script defer src="../js/mouse-effects.js?v=20260320a"></script>
- 	</head>
-<body>
+<head>
+	<meta charset="UTF-8">
+	<meta name="author" content="Kamran Mubarik">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Tam Giac Admin</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css?v=20260413c" />
+	<link rel="stylesheet" type="text/css" href="css/admin-enhance.css?v=20260413c" />
+	<link rel="stylesheet" type="text/css" href="../css/mouse-effects.css?v=20260320a" />
+	<link rel="stylesheet" type="text/css" href="../css/page-loader.css?v=20260321a" />
+	<style>
+		@media (forced-colors: active) {
+			* {
+				forced-color-adjust: none !important;
+			}
+		}
+	</style>
+	<script defer src="../js/page-loader.js?v=20260321a"></script>
+	<script defer src="../js/mouse-effects.js?v=20260320a"></script>
+	<script defer src="js/admin-common.js?v=20260413a"></script>
+	<script defer src="js/dashboard-admin.js?v=20260413a"></script>
+</head>
 
+<body>
 	<header>
 		<div class="container">
 			<div class="brand">
@@ -25,126 +32,120 @@
 						<img src="../img/icons/tam-giac-logo.svg">
 						<div class="logo-text">
 							<p class="big-logo">Tam Giac</p>
-							<p class="small-logo">thoi trang Viet</p>
+							<p class="small-logo">admin panel</p>
 						</div>
 					</a>
-				</div> <!-- logo -->
+				</div>
 				<div class="shop-icon">
 					<div class="dropdown">
-						<img src="../img/icons/account.png">
+						<img src="../img/icons/account.png" alt="Account">
 						<div class="dropdown-menu">
 							<ul>
-								<li><a href="#">My Account</a></li>								
-								<li><a href="#">Settings</a></li>
-								<li><a href="#">Logout</a></li>
+								<li><a href="../account.html">My Account</a></li>
+								<li><a href="../orders.html">My Orders</a></li>
+								<li><a href="#" id="adminLogoutLink">Logout</a></li>
 							</ul>
 						</div>
 					</div>
-				</div> <!-- shop icons -->
-			</div> <!-- brand -->
-		</div> <!-- container -->
-	</header> <!-- header -->
+				</div>
+			</div>
+		</div>
+	</header>
 
 	<main>
-		
 		<div class="main-content">
 			<div class="sidebar">
 				<h3>Menu</h3>
 				<ul>
-					<li><a class="active" href="index.html">Home</a></li>
-					<li><a href="order.html">Order</a></li>
-					<li><a href="product.html">Product</a></li>
-					<li><a href="category.html">Category</a></li>
+					<li><a class="active" href="index.html">Dashboard</a></li>
+					<li><a href="product.html">Products</a></li>
+					<li><a href="order.html">Orders</a></li>
+					<li><a href="category.html">Categories</a></li>
 					<li><a href="stock.html">Stock</a></li>
-					<li><a href="">Users</a></li>
-				</ul>				
+					<li><a href="users.html">Users</a></li>
+				</ul>
 			</div>
 			<div class="content dashboard">
 				<h3>Dashboard</h3>
+				<p id="dashboardStatus" class="admin-status">Connecting to the admin backend...</p>
+				<div id="adminDashboardStats" class="admin-stat-grid"></div>
 				<div class="content-data">
 					<div class="content-detail">
 						<h4>Low Stock Report</h4>
+						<div class="admin-table-scroll">
 						<table>
 							<thead>
 								<tr>
 									<th>Product</th>
 									<th>Price</th>
 									<th>Category</th>
-									<th>Qty</th>
+									<th>Available</th>
 								</tr>
 							</thead>
-							<tbody>
+							<tbody id="dashboardLowStockTable">
 								<tr>
-									<td>Blue Jeans</td>
-									<td>1.500.000 đ</td>
-									<td>Pants</td>
-									<td>2</td>
+									<td colspan="4" class="admin-empty-cell">Loading low stock data...</td>
 								</tr>
 							</tbody>
 						</table>
+						</div>
 					</div>
 					<div class="content-detail">
-						<h4>Recent Order</h4>
+						<h4>Recent Orders</h4>
+						<div class="admin-table-scroll">
 						<table>
 							<thead>
 								<tr>
 									<th>Date</th>
-									<th>Order Ref#</th>
-									<th>User</th>
+									<th>Order Ref</th>
+									<th>Customer</th>
 									<th>Amount</th>
-									<th>View</th>									
+									<th>Status</th>
 								</tr>
 							</thead>
-							<tbody>
+							<tbody id="dashboardRecentOrdersTable">
 								<tr>
-									<td>11-05-2020</td>
-									<td>15895452</td>
-									<td>Kamran</td>
-									<td>1.500.000 đ</td>
-									<td>View</td>
+									<td colspan="5" class="admin-empty-cell">Loading recent orders...</td>
 								</tr>
 							</tbody>
 						</table>
+						</div>
 					</div>
 					<div class="content-detail">
-						<h4>Completed Order</h4>
+						<h4>Completed Orders</h4>
+						<div class="admin-table-scroll">
 						<table>
 							<thead>
 								<tr>
 									<th>Date</th>
-									<th>Order Ref#</th>
-									<th>User</th>
+									<th>Order Ref</th>
+									<th>Customer</th>
 									<th>Amount</th>
-									<th>View</th>									
+									<th>Status</th>
 								</tr>
 							</thead>
-							<tbody>
+							<tbody id="dashboardCompletedOrdersTable">
 								<tr>
-									<td>11-05-2020</td>
-									<td>15895452</td>
-									<td>Kamran</td>
-									<td>1.500.000 đ</td>
-									<td>View</td>
+									<td colspan="5" class="admin-empty-cell">Loading completed orders...</td>
 								</tr>
 							</tbody>
 						</table>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>		
-
-	</main> <!-- Main Area -->
+		</div>
+	</main>
 
 	<footer>
 		<div class="container">
 			<div class="footer-bar">
 				<div class="copyright-text">
-					<p>Copryright 2020 - All Rights Reserved</p>
+					<p>Copyright 2020 - All Rights Reserved</p>
 				</div>
-			</div> <!-- Footer Bar -->
+			</div>
 		</div>
-	</footer> <!-- Footer Area -->
-
+	</footer>
 </body>
 
 </html>

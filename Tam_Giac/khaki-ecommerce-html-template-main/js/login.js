@@ -33,7 +33,7 @@ if (form && statusBox && submitBtn) {
   const setLoading = (loading) => {
     submitBtn.disabled = loading;
     submitBtn.classList.toggle("is-loading", loading);
-    submitBtn.textContent = loading ? "Đang xử lý..." : "Đăng nhập";
+    submitBtn.textContent = loading ? "Processing..." : "Login";
   };
 
   const togglePasswordButtons = () => {
@@ -44,7 +44,7 @@ if (form && statusBox && submitBtn) {
 
         const show = target.type === "password";
         target.type = show ? "text" : "password";
-        btn.textContent = show ? "Ẩn" : "Hiện";
+        btn.textContent = show ? "Hide" : "Show";
       });
     });
   };
@@ -53,7 +53,7 @@ if (form && statusBox && submitBtn) {
     const notice = sessionStorage.getItem("auth_notice");
     if (notice !== "register_success") return;
 
-    showStatus("Tạo tài khoản thành công. Bây giờ bạn có thể đăng nhập.", "success");
+    showStatus("Account created successfully. You can sign in now.", "success");
     sessionStorage.removeItem("auth_notice");
   };
 
@@ -65,7 +65,7 @@ if (form && statusBox && submitBtn) {
     const password = document.getElementById("loginPassword").value;
 
     if (!email || !password) {
-      showStatus("Vui lòng nhập đầy đủ email và mật khẩu.", "error");
+      showStatus("Please enter both email and password.", "error");
       return;
     }
 
@@ -76,16 +76,16 @@ if (form && statusBox && submitBtn) {
       const result = await login(email, password, recaptchaToken);
 
       if (!result.success) {
-        showStatus(result.error || "Đăng nhập thất bại. Vui lòng thử lại.", "error");
+        showStatus(result.error || "Login failed. Please try again.", "error");
         return;
       }
 
-      showStatus("Đăng nhập thành công. Đang chuyển về trang chủ...", "success");
+      showStatus("Login successful. Redirecting to the home page...", "success");
       setTimeout(() => {
         navigateWithLoader("index.html", 780, { reason: "login-success" });
       }, 520);
     } catch (error) {
-      showStatus(error?.error || "Không thể kết nối tới máy chủ.", "error");
+      showStatus(error?.error || "Unable to connect to the server.", "error");
     } finally {
       if (window.grecaptcha && grecaptcha.reset) {
         try {

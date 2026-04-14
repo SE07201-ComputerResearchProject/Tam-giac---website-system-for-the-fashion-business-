@@ -5,7 +5,19 @@
 
   window.__TG_AI_CHATBOT_SHIM__ = true;
 
+  function canShowAiChatbot() {
+    try {
+      return Boolean(window.localStorage && window.localStorage.getItem('token'));
+    } catch (error) {
+      return false;
+    }
+  }
+
   function loadAiChatbot() {
+    if (!canShowAiChatbot()) {
+      return;
+    }
+
     if (window.__TG_AI_CHATBOT_BOOTED__ || document.getElementById('tg-ai-chatbot-loader')) {
       return;
     }
@@ -17,7 +29,7 @@
     const script = document.createElement('script');
     script.id = 'tg-ai-chatbot-loader';
     script.defer = true;
-    script.src = 'js/ai-chatbot.js?v=20260412b';
+    script.src = 'js/ai-chatbot.js?v=20260413c';
     document.head.appendChild(script);
   }
 

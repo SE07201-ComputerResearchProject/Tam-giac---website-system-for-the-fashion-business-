@@ -1,7 +1,7 @@
 :root {
   --font-base: "Be Vietnam Pro", sans-serif;
   --font-display: "Fraunces", serif;
-  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-smooth: cubic-bezier(0.25, 1, 0.5, 1);
   --ink-strong: #f5fbff;
   --ink-soft: rgba(214, 236, 255, 0.76);
   --line-soft: rgba(142, 213, 255, 0.2);
@@ -34,10 +34,10 @@ body.auth-page {
   font-family: var(--font-base);
   color: var(--ink-strong);
   background:
-    radial-gradient(circle at 50% 50%, rgba(25, 84, 145, 0.22), transparent 22%),
-    radial-gradient(circle at 10% 20%, rgba(92, 220, 255, 0.14), transparent 30%),
-    radial-gradient(circle at 92% 18%, rgba(74, 129, 255, 0.12), transparent 28%),
-    linear-gradient(140deg, #02050b 0%, #07101d 28%, #071224 62%, #03070d 100%);
+    radial-gradient(circle at 50% 46%, rgba(54, 137, 214, 0.18), transparent 20%),
+    radial-gradient(circle at 16% 18%, rgba(156, 236, 255, 0.12), transparent 30%),
+    radial-gradient(circle at 84% 20%, rgba(102, 162, 255, 0.1), transparent 28%),
+    linear-gradient(160deg, #04070d 0%, #091320 28%, #0b1724 58%, #04080e 100%);
 }
 
 body.auth-page[data-auth-mode="register"] {
@@ -58,18 +58,49 @@ body.auth-page[data-auth-mode="register"] {
   z-index: 0;
 }
 
+.auth-background::before,
+.auth-background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+.auth-background::before {
+  opacity: 0.38;
+  background:
+    linear-gradient(145deg, transparent 0 46%, rgba(113, 221, 255, 0.08) 46% 48%, transparent 48% 100%),
+    linear-gradient(35deg, transparent 0 43%, rgba(108, 198, 255, 0.06) 43% 45%, transparent 45% 100%);
+  background-size: min(36vw, 360px) min(36vw, 360px), min(28vw, 280px) min(28vw, 280px);
+  background-position: 12% 22%, 84% 70%;
+  mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 0.86), transparent 84%);
+  animation: backgroundDrift 18s ease-in-out infinite alternate;
+}
+
+.auth-background::after {
+  opacity: 0.3;
+  background:
+    radial-gradient(circle at 52% 46%, rgba(156, 239, 255, 0.14), transparent 16%),
+    radial-gradient(circle at 52% 46%, rgba(78, 152, 255, 0.08), transparent 30%);
+  animation: haloFloat 14s ease-in-out infinite alternate;
+}
+
 .bg-orb,
 .bg-grid,
 .bg-ring,
 .bg-noise {
   position: absolute;
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
 .bg-orb {
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 255, 255, 0.2), var(--accent-soft) 44%, rgba(255, 255, 255, 0) 76%);
-  filter: blur(10px);
-  opacity: 0.84;
+  filter: blur(22px);
+  opacity: 0.62;
 }
 
 .bg-orb-one {
@@ -178,15 +209,15 @@ body.auth-page[data-auth-mode="register"] {
   cursor: pointer;
   color: var(--ink-strong);
   transform: translate3d(-50%, -50%, 0);
-  transition:
-    opacity 0.45s var(--ease-smooth),
-    filter 0.45s var(--ease-smooth);
+  transition: opacity 0.45s var(--ease-smooth), transform 0.45s var(--ease-smooth);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 body.auth-page[data-auth-open="true"] .auth-core {
   opacity: 0;
   pointer-events: none;
-  filter: blur(10px);
+  transform: translate3d(-50%, -50%, 0) scale(0.92);
 }
 
 .auth-core-aura,
@@ -199,8 +230,10 @@ body.auth-page[data-auth-open="true"] .auth-core {
 .auth-core-aura {
   inset: 8%;
   border-radius: 50%;
-  background: radial-gradient(circle, var(--accent-glow), transparent 70%);
-  filter: blur(26px);
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.26), transparent 18%),
+    radial-gradient(circle, var(--accent-glow), transparent 72%);
+  filter: blur(30px);
   transform: translateZ(-90px) scale(1.24);
   animation: auraPulse 5.4s ease-in-out infinite;
 }
@@ -219,13 +252,13 @@ body.auth-page[data-auth-open="true"] .auth-core {
   inset: 10% 8% 24%;
   clip-path: polygon(50% 100%, 100% 0, 0 0);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 70%),
-    linear-gradient(145deg, rgba(14, 26, 54, 0.85), rgba(7, 18, 38, 0.6));
-  border: 1px solid rgba(255, 255, 255, 0.24);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.04) 58%, rgba(255, 255, 255, 0) 100%),
+    linear-gradient(145deg, rgba(17, 33, 58, 0.72), rgba(8, 18, 34, 0.44));
+  border: 1px solid rgba(255, 255, 255, 0.28);
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.06),
-    0 0 34px var(--accent-glow),
-    0 28px 44px rgba(0, 0, 0, 0.42);
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 0 34px rgba(138, 221, 255, 0.22),
+    0 30px 46px rgba(0, 0, 0, 0.3);
   overflow: hidden;
   transform:
     translateZ(40px)
@@ -304,8 +337,9 @@ body.auth-page[data-auth-open="true"] .auth-core {
     rotateX(76deg)
     rotateY(-34deg)
     rotateZ(-18deg);
-  filter: drop-shadow(0 80px 120px rgba(0, 0, 0, 0.58));
-  will-change: transform, clip-path, opacity;
+  filter: drop-shadow(0 48px 92px rgba(0, 0, 0, 0.34));
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 .auth-prism.is-ready {
@@ -331,33 +365,36 @@ body.auth-page[data-auth-open="true"] .auth-core {
   position: absolute;
   inset: 0;
   clip-path: inherit;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 .prism-face-back {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0)),
-    linear-gradient(160deg, rgba(18, 36, 72, 0.7), rgba(6, 14, 28, 0.82));
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0)),
+    linear-gradient(160deg, rgba(24, 44, 82, 0.28), rgba(10, 16, 28, 0.42));
   transform: translateZ(-90px) scale(0.92) translateY(34px);
-  opacity: 0.7;
+  opacity: 0.46;
 }
 
 .prism-face-mid {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 38%),
-    linear-gradient(160deg, rgba(16, 32, 68, 0.68), rgba(8, 20, 42, 0.84));
-  backdrop-filter: blur(12px);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.04) 44%, rgba(255, 255, 255, 0)),
+    linear-gradient(160deg, rgba(22, 40, 72, 0.26), rgba(10, 20, 42, 0.4));
+  backdrop-filter: blur(18px);
   transform: translateZ(-40px) scale(0.97) translateY(14px);
-  opacity: 0.86;
+  opacity: 0.64;
 }
 
 .prism-face-front {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 26%),
-    linear-gradient(140deg, rgba(17, 30, 58, 0.78), rgba(10, 18, 36, 0.82) 70%, rgba(8, 14, 30, 0.92));
-  border: 1px solid var(--panel-line);
-  backdrop-filter: blur(22px) saturate(1.16);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.04) 30%, rgba(255, 255, 255, 0)),
+    linear-gradient(145deg, rgba(18, 31, 54, 0.2), rgba(9, 16, 30, 0.3) 70%, rgba(8, 14, 28, 0.4));
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(16px) saturate(1.1);
   box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06),
     inset 0 0 120px rgba(255, 255, 255, 0.03);
 }
 
@@ -389,10 +426,10 @@ body.auth-page[data-auth-open="true"] .auth-core {
 .prism-glow {
   inset: 14%;
   background:
-    radial-gradient(circle at 50% 28%, var(--accent-glow), transparent 28%),
-    radial-gradient(circle at 50% 56%, rgba(255, 255, 255, 0.1), transparent 30%);
-  filter: blur(40px);
-  opacity: 0.86;
+    radial-gradient(circle at 50% 24%, rgba(180, 241, 255, 0.34), transparent 26%),
+    radial-gradient(circle at 50% 56%, rgba(255, 255, 255, 0.14), transparent 34%);
+  filter: blur(44px);
+  opacity: 0.72;
   transform: translateZ(-10px);
 }
 
@@ -410,7 +447,7 @@ body.auth-page[data-auth-open="true"] .auth-core {
   height: 80%;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0));
   transform: rotate(14deg) translateZ(50px);
-  opacity: 0.44;
+  opacity: 0.3;
 }
 
 .auth-prism-inner {
@@ -425,17 +462,21 @@ body.auth-page[data-auth-open="true"] .auth-core {
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 32px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.03)),
-    linear-gradient(145deg, rgba(8, 17, 34, 0.78), rgba(8, 15, 30, 0.72));
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05)),
+    linear-gradient(145deg, rgba(11, 19, 33, 0.46), rgba(10, 18, 30, 0.24));
   box-shadow:
-    0 34px 60px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    inset 0 0 80px rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(28px) saturate(1.1);
+    0 28px 60px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.32),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 80px rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(24px) saturate(1.08);
   overflow: hidden;
+  contain: layout paint;
   pointer-events: auto;
   z-index: 2;
   transform: translateX(-50%) translateZ(110px);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 .auth-prism-inner::before,
@@ -447,20 +488,22 @@ body.auth-page[data-auth-open="true"] .auth-core {
 }
 
 .auth-prism-inner::before {
-  inset: -12% -20% auto;
-  height: 52%;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.18), transparent 58%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0));
-  opacity: 0.78;
+  inset: -16% auto auto -28%;
+  width: 58%;
+  height: 160%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0));
+  opacity: 0.42;
+  transform: rotate(14deg) translate3d(0, 0, 0);
+  animation: liquidSheen 9.5s linear infinite;
 }
 
 .auth-prism-inner::after {
   background:
-    linear-gradient(130deg, rgba(255, 255, 255, 0.08), transparent 32%, transparent 68%, rgba(255, 255, 255, 0.04)),
-    radial-gradient(circle at 50% 12%, var(--accent-soft), transparent 34%);
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.18), transparent 26%),
+    radial-gradient(circle at 78% 12%, rgba(149, 227, 255, 0.12), transparent 30%),
+    linear-gradient(140deg, rgba(255, 255, 255, 0.06), transparent 34%, transparent 68%, rgba(255, 255, 255, 0.03));
   mix-blend-mode: screen;
-  opacity: 0.6;
+  opacity: 0.72;
 }
 
 .auth-top,
@@ -477,6 +520,69 @@ body.auth-page[data-auth-open="true"] .auth-core {
   position: relative;
   z-index: 2;
   margin-bottom: 18px;
+  align-items: flex-start;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+.auth-brand-group {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.auth-brand {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink-strong);
+  text-decoration: none;
+  opacity: 0.98;
+  transition: transform 0.24s var(--ease-smooth), opacity 0.24s var(--ease-smooth);
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+.auth-brand:hover {
+  transform: translate3d(0, -1px, 0);
+  opacity: 1;
+}
+
+.auth-brand img {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  filter: drop-shadow(0 10px 18px rgba(71, 195, 255, 0.28));
+}
+
+body.auth-page[data-auth-mode="register"] .auth-brand img {
+  filter: drop-shadow(0 10px 18px rgba(255, 158, 93, 0.26));
+}
+
+.auth-brand-copy {
+  display: grid;
+  gap: 3px;
+  line-height: 1;
+}
+
+.auth-brand-copy strong,
+.auth-brand-copy span {
+  display: block;
+}
+
+.auth-brand-copy strong {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.auth-brand-copy span {
+  color: var(--ink-soft);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
 }
 
 .auth-top-meta {
@@ -509,13 +615,15 @@ body.auth-page[data-auth-open="true"] .auth-core {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    0 12px 24px rgba(0, 0, 0, 0.08);
   color: var(--ink-strong);
   font-size: 0.72rem;
   font-weight: 700;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(14px);
 }
 
 .auth-mode-chip {
@@ -528,6 +636,9 @@ body.auth-page[data-auth-open="true"] .auth-core {
   color: color-mix(in srgb, var(--accent-secondary) 65%, white);
   text-decoration: none;
   font-weight: 700;
+  transition: transform 0.24s var(--ease-smooth), opacity 0.24s var(--ease-smooth);
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
 .back-link {
@@ -535,6 +646,7 @@ body.auth-page[data-auth-open="true"] .auth-core {
   align-items: center;
   gap: 10px;
   font-size: 0.95rem;
+  opacity: 0.92;
 }
 
 .back-link::before {
@@ -546,11 +658,31 @@ body.auth-page[data-auth-open="true"] .auth-core {
   transform: rotate(45deg);
 }
 
+.back-link:hover,
+.auth-inline a:hover,
+.auth-text-link:hover {
+  opacity: 1;
+}
+
+.back-link:hover {
+  transform: translate3d(-2px, 0, 0);
+}
+
+.auth-text-link:hover {
+  transform: translate3d(0, -1px, 0);
+}
+
+.auth-text-link:active {
+  transform: translate3d(0, 0, 0) scale(0.985);
+}
+
 .auth-heading {
   position: relative;
   z-index: 1;
   display: grid;
   gap: 14px;
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
 .auth-kicker {
@@ -592,13 +724,13 @@ body.auth-page[data-auth-open="true"] .auth-core {
   gap: 8px;
   margin-top: 20px;
   padding: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.08);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 18px 28px rgba(0, 0, 0, 0.18);
-  backdrop-filter: blur(12px);
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 20px 34px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(16px);
 }
 
 .auth-switch-btn {
@@ -610,18 +742,76 @@ body.auth-page[data-auth-open="true"] .auth-core {
   border-radius: 999px;
   background: transparent;
   color: var(--ink-soft);
-  font-size: 0.94rem;
-  font-weight: 800;
+  font-size: 0.96rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   cursor: pointer;
+  opacity: 0.86;
+  overflow: hidden;
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  transition: transform 0.24s var(--ease-smooth), opacity 0.24s var(--ease-smooth);
 }
 
-.auth-switch-btn span {
+.auth-switch-btn > span:first-child {
   position: relative;
   z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  transition:
+    transform 0.24s var(--ease-smooth),
+    letter-spacing 0.24s var(--ease-smooth),
+    text-shadow 0.24s var(--ease-smooth);
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+.auth-switch-btn::after {
+  content: "";
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 10px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.88), transparent);
+  opacity: 0;
+  transform: translateZ(0) scaleX(0.45);
+  transform-origin: center;
+  transition: transform 0.24s var(--ease-smooth), opacity 0.24s var(--ease-smooth);
+}
+
+.auth-switch-btn:hover {
+  opacity: 1;
+  transform: translate3d(0, -1px, 0) scale(1.01);
+}
+
+.auth-switch-btn:hover::after {
+  opacity: 0.38;
+  transform: translateZ(0) scaleX(0.86);
+}
+
+.auth-switch-btn:active {
+  transform: translate3d(0, 0, 0) scale(0.985);
 }
 
 .auth-switch-btn.is-active {
   color: #071221;
+  opacity: 1;
+}
+
+.auth-switch-btn.is-active > span:first-child {
+  transform: translate3d(0, -1px, 0) scale(1.03);
+  letter-spacing: 0.18em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+
+.auth-switch-btn.is-active::after {
+  opacity: 0.74;
+  transform: translateZ(0) scaleX(1);
 }
 
 .auth-switch-indicator {
@@ -630,12 +820,14 @@ body.auth-page[data-auth-open="true"] .auth-core {
   z-index: 0;
   border-radius: inherit;
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(202, 241, 255, 0.76)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0));
+    linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(214, 243, 255, 0.68)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.36), rgba(255, 255, 255, 0));
   box-shadow:
-    0 12px 22px rgba(0, 0, 0, 0.24),
-    0 0 0 1px rgba(255, 255, 255, 0.6),
-    0 0 26px rgba(160, 236, 255, 0.3);
+    0 12px 24px rgba(0, 0, 0, 0.14),
+    0 0 0 1px rgba(255, 255, 255, 0.56),
+    0 0 26px rgba(160, 236, 255, 0.2);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 .auth-stage {
@@ -645,7 +837,12 @@ body.auth-page[data-auth-open="true"] .auth-core {
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding-right: 6px;
+  padding-right: 8px;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable both-edges;
+  -webkit-overflow-scrolling: touch;
+  contain: layout paint;
+  will-change: scroll-position;
 }
 
 .auth-stage::-webkit-scrollbar {
@@ -657,11 +854,21 @@ body.auth-page[data-auth-open="true"] .auth-core {
   background: rgba(255, 255, 255, 0.16);
 }
 
+body.auth-page.auth-scroll-active .field-glow,
+body.auth-page.auth-scroll-active .prism-scan,
+body.auth-page.auth-scroll-active .card-shine,
+body.auth-page.auth-scroll-active .tm-spotlight-surface::after,
+body.auth-page.auth-scroll-active .auth-card::before {
+  opacity: 0 !important;
+}
+
 .auth-view {
   position: relative;
   z-index: 2;
   display: grid;
   gap: 18px;
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
 .auth-view[hidden] {
@@ -684,6 +891,8 @@ body.auth-page[data-auth-open="true"] .auth-core {
 .field {
   display: grid;
   gap: 10px;
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
 .field label {
@@ -703,27 +912,35 @@ body.auth-page[data-auth-open="true"] .auth-core {
   z-index: 2;
 }
 
+.input-shell::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: 17px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 38%);
+  opacity: 0.8;
+  pointer-events: none;
+}
+
 .field input {
   width: 100%;
   min-height: 58px;
   padding: 0 18px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 18px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
-    rgba(6, 14, 30, 0.52);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03)),
+    rgba(8, 17, 32, 0.34);
   color: var(--ink-strong);
   font-size: 0.98rem;
   font-family: inherit;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 14px 24px rgba(0, 0, 0, 0.18);
-  transition:
-    border-color 0.24s var(--ease-smooth),
-    box-shadow 0.24s var(--ease-smooth),
-    transform 0.24s var(--ease-smooth),
-    background 0.24s var(--ease-smooth);
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 14px 24px rgba(0, 0, 0, 0.12);
+  transition: transform 0.24s var(--ease-smooth);
   pointer-events: auto;
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
 .field input::placeholder {
@@ -734,12 +951,12 @@ body.auth-page[data-auth-open="true"] .auth-core {
   outline: none;
   border-color: var(--line-strong);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)),
-    rgba(9, 17, 37, 0.68);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04)),
+    rgba(10, 20, 37, 0.42);
   box-shadow:
-    0 0 0 4px var(--accent-soft),
-    0 16px 32px rgba(0, 0, 0, 0.24);
-  transform: translateY(-2px);
+    0 0 0 4px rgba(145, 223, 255, 0.14),
+    0 18px 30px rgba(0, 0, 0, 0.14);
+  transform: translate3d(0, -2px, 0);
 }
 
 .field-glow {
@@ -750,7 +967,7 @@ body.auth-page[data-auth-open="true"] .auth-core {
   height: 14px;
   border-radius: 999px;
   background: var(--accent-glow);
-  filter: blur(18px);
+  filter: blur(20px);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.24s var(--ease-smooth);
@@ -771,25 +988,28 @@ body.auth-page[data-auth-open="true"] .auth-core {
   min-width: 60px;
   min-height: 40px;
   padding: 0 12px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--ink-strong);
   font-size: 0.8rem;
   font-weight: 800;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
   cursor: pointer;
-  transition:
-    background 0.22s var(--ease-smooth),
-    border-color 0.22s var(--ease-smooth),
-    transform 0.22s var(--ease-smooth);
+  transition: transform 0.22s var(--ease-smooth), opacity 0.22s var(--ease-smooth);
   z-index: 3;
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
 .toggle-password:hover {
   background: rgba(255, 255, 255, 0.14);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.24);
+  transform: translate3d(0, -1px, 0) scale(1.01);
+}
+
+.toggle-password:active {
+  transform: translate3d(0, 0, 0) scale(0.98);
 }
 
 .field-note,
@@ -821,11 +1041,15 @@ body.auth-page[data-auth-open="true"] .auth-core {
 }
 
 .strength-fill {
-  width: 0;
+  width: 100%;
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
   box-shadow: 0 0 16px var(--accent-glow);
+  transform-origin: left center;
+  transform: scaleX(0);
+  opacity: 0.72;
+  will-change: transform, opacity;
 }
 
 .password-rules {
@@ -834,10 +1058,10 @@ body.auth-page[data-auth-open="true"] .auth-core {
   margin: 0;
   padding: 16px 18px 16px 20px;
   list-style: none;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 22px;
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
 }
 
 .password-rules li {
@@ -862,10 +1086,12 @@ body.auth-page[data-auth-open="true"] .auth-core {
   padding: 14px 16px;
   border: 1px solid transparent;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
   font-size: 0.92rem;
   line-height: 1.6;
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
 .status.error {
@@ -894,6 +1120,8 @@ body.auth-page[data-auth-open="true"] .auth-core {
   z-index: 2;
   display: grid;
   gap: 12px;
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
 .divider {
@@ -928,7 +1156,9 @@ body.auth-page[data-auth-open="true"] .auth-core {
   padding: 0 18px;
   border: none;
   border-radius: 18px;
-  background: linear-gradient(135deg, var(--accent-tertiary), var(--accent-primary) 52%, var(--accent-secondary));
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 28%),
+    linear-gradient(135deg, var(--accent-tertiary), var(--accent-primary) 52%, var(--accent-secondary));
   color: #fdfefe;
   font-size: 0.98rem;
   font-weight: 800;
@@ -938,13 +1168,12 @@ body.auth-page[data-auth-open="true"] .auth-core {
   box-shadow:
     0 16px 30px rgba(0, 0, 0, 0.22),
     0 0 30px rgba(120, 214, 255, 0.2);
-  transition:
-    transform 0.24s var(--ease-smooth),
-    box-shadow 0.24s var(--ease-smooth),
-    opacity 0.24s var(--ease-smooth),
-    filter 0.24s var(--ease-smooth);
+  transition: transform 0.24s var(--ease-smooth), opacity 0.24s var(--ease-smooth);
   pointer-events: auto;
   z-index: 2;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .btn-auth::before {
@@ -958,17 +1187,20 @@ body.auth-page[data-auth-open="true"] .auth-core {
 }
 
 .btn-auth:hover {
-  transform: translateY(-2px);
+  transform: translate3d(0, -2px, 0) scale(1.01);
   box-shadow:
     0 20px 34px rgba(0, 0, 0, 0.28),
     0 0 36px rgba(120, 214, 255, 0.26);
-  filter: saturate(1.08);
+}
+
+.btn-auth:active {
+  transform: translate3d(0, 0, 0) scale(0.985);
 }
 
 .btn-auth:disabled {
   cursor: wait;
   opacity: 0.82;
-  transform: none;
+  transform: translateZ(0);
   box-shadow: none;
 }
 
@@ -978,11 +1210,12 @@ body.auth-page[data-auth-open="true"] .auth-core {
 
 .btn-google {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06)),
-    rgba(9, 17, 33, 0.74);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06)),
+    rgba(12, 20, 33, 0.34);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   color: var(--ink-strong);
   box-shadow: none;
+  backdrop-filter: blur(16px);
 }
 
 .btn-google svg {
@@ -1026,6 +1259,40 @@ body.auth-page[data-auth-open="true"] .auth-core {
 
   100% {
     transform: translateX(420%) skewX(-24deg);
+  }
+}
+
+@keyframes liquidSheen {
+  0% {
+    transform: rotate(14deg) translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: rotate(14deg) translate3d(180%, 0, 0);
+  }
+}
+
+@keyframes backgroundDrift {
+  0% {
+    transform: translate3d(-1.2%, -1%, 0) scale(1);
+    opacity: 0.26;
+  }
+
+  100% {
+    transform: translate3d(1.8%, 1.4%, 0) scale(1.04);
+    opacity: 0.42;
+  }
+}
+
+@keyframes haloFloat {
+  0% {
+    transform: translate3d(-2%, -1%, 0) scale(0.96);
+    opacity: 0.22;
+  }
+
+  100% {
+    transform: translate3d(2%, 2%, 0) scale(1.06);
+    opacity: 0.34;
   }
 }
 
@@ -1159,5 +1426,19 @@ body.auth-page[data-auth-open="true"] .auth-core {
 
   .auth-core-copy {
     max-width: 90vw;
+  }
+
+  .auth-brand img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .auth-brand-copy strong {
+    font-size: 0.92rem;
+  }
+
+  .auth-brand-copy span {
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
   }
 }

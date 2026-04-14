@@ -25,6 +25,17 @@ const User = sequelize.define(
       field: 'full_name'
     },
     phone: DataTypes.STRING,
+    tel: DataTypes.STRING,
+    companyName: {
+      type: DataTypes.STRING,
+      field: 'company_name'
+    },
+    country: DataTypes.STRING,
+    city: DataTypes.STRING,
+    address: {
+      type: DataTypes.STRING,
+      field: 'address_line'
+    },
     role: {
       type: DataTypes.STRING,
       defaultValue: 'user'

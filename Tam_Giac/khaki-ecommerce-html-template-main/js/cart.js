@@ -1,5 +1,6 @@
 (function () {
   var STORAGE_KEY = "tamgiac_cart";
+  var WISHLIST_STORAGE_KEY = "tamgiac_wishlist";
   var DELIVERY_FEE = 30000;
 
   function readCart() {
@@ -14,6 +15,20 @@
 
   function saveCart(items) {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  }
+
+  function readWishlist() {
+    try {
+      var raw = window.localStorage.getItem(WISHLIST_STORAGE_KEY);
+      var parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function saveWishlist(items) {
+    window.localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(items));
   }
 
   function getSafeQuantity(quantity) {
@@ -50,13 +65,16 @@
     var category = card.querySelector("h3");
     var price = card.querySelector("p");
     var image = card.querySelector("img");
+    var id = card.dataset.productId || slugify(title ? title.textContent : "product");
+    var link = card.querySelector('a[href*="product.html"]');
 
     return {
-      id: card.dataset.productId || slugify(title ? title.textContent : "product"),
+      id: id,
       name: title ? title.textContent.trim() : "Tam Giac product",
       category: category ? category.textContent.trim() : "Tam Giac",
       price: parsePrice(price ? price.textContent : 0),
-      image: image ? image.getAttribute("src") : "img/product/img1.jpg"
+      image: image ? image.getAttribute("src") : "img/product/img1.jpg",
+      link: link ? link.getAttribute("href") : "product.html?id=" + encodeURIComponent(id)
     };
   }
 
@@ -70,13 +88,15 @@
     var price = wrapper.querySelector(".product-price h3");
     var image = wrapper.querySelector(".larg-img img");
     var category = wrapper.querySelector(".product-meta p");
+    var id = wrapper.dataset.productId || slugify(title ? title.textContent : "product");
 
     return {
-      id: wrapper.dataset.productId || slugify(title ? title.textContent : "product"),
+      id: id,
       name: title ? title.textContent.trim() : "Tam Giac product",
       category: category ? category.textContent.replace("Category:", "").trim() : "Tam Giac",
       price: parsePrice(price ? price.textContent : 0),
-      image: image ? image.getAttribute("src") : "img/product/img1.jpg"
+      image: image ? image.getAttribute("src") : "img/product/img1.jpg",
+      link: "product.html?id=" + encodeURIComponent(id)
     };
   }
 
@@ -133,6 +153,135 @@
   function clearCart() {
     saveCart([]);
     syncCartUI();
+  }
+
+  function isWishlisted(itemId) {
+    return readWishlist().some(function (item) {
+      return item.id === itemId;
+    });
+  }
+
+  function upsertWishlistItem(item) {
+    if (!item || !item.id) {
+      return;
+    }
+
+    var wishlist = readWishlist();
+    var existing = wishlist.find(function (wishlistItem) {
+      return wishlistItem.id === item.id;
+    });
+    var nextItem = {
+      id: item.id,
+      name: item.name,
+      category: item.category,
+      price: item.price,
+      image: item.image,
+      link: item.link || ("product.html?id=" + encodeURIComponent(item.id))
+    };
+
+    if (existing) {
+      Object.assign(existing, nextItem);
+    } else {
+      wishlist.push(nextItem);
+    }
+
+    saveWishlist(wishlist);
+    syncWishlistUI();
+  }
+
+  function removeWishlistItem(itemId) {
+    var wishlist = readWishlist().filter(function (item) {
+      return item.id !== itemId;
+    });
+
+    saveWishlist(wishlist);
+    syncWishlistUI();
+  }
+
+  function toggleWishlistItem(item, shouldAdd) {
+    if (!item || !item.id) {
+      return;
+    }
+
+    var nextState = typeof shouldAdd === "boolean" ? shouldAdd : !isWishlisted(item.id);
+    if (nextState) {
+      upsertWishlistItem(item);
+      return;
+    }
+
+    removeWishlistItem(item.id);
+  }
+
+  function updateWishlistBadge() {
+    var wishlistIcon = document.querySelectorAll(".shop-icon > .dropdown")[1];
+    if (!wishlistIcon) {
+      return;
+    }
+
+    var badge = wishlistIcon.querySelector(".wishlist-badge");
+    var count = readWishlist().length;
+
+    if (!count) {
+      if (badge) {
+        badge.remove();
+      }
+      return;
+    }
+
+    if (!badge) {
+      badge = document.createElement("span");
+      badge.className = "wishlist-badge";
+      wishlistIcon.appendChild(badge);
+    }
+
+    badge.textContent = count;
+  }
+
+  function renderMiniWishlist() {
+    var menus = document.querySelectorAll(".dropdown-menu.wishlist-item");
+    if (!menus.length) {
+      return;
+    }
+
+    var wishlist = readWishlist();
+
+    menus.forEach(function (menu) {
+      if (!wishlist.length) {
+        menu.innerHTML = [
+          '<div class="mini-wishlist-empty">Your wishlist is empty.</div>',
+          '<div class="mini-wishlist-actions"><a href="shop.html">Explore products</a></div>'
+        ].join("");
+        return;
+      }
+
+      var rows = wishlist.map(function (item) {
+        return [
+          "<tr>",
+          '<td><a href="' + item.link + '"><img src="' + item.image + '" alt="' + item.name + '"></a></td>',
+          "<td>",
+          '<a class="wishlist-product-link" href="' + item.link + '">' + item.name + "</a>",
+          '<div class="wishlist-meta">' + (item.category || "Tam Giac") + "</div>",
+          '<a href="#" class="wishlist-remove" data-item-id="' + item.id + '">Remove</a>',
+          "</td>",
+          "</tr>"
+        ].join("");
+      }).join("");
+
+      menu.innerHTML = [
+        '<table border="1">',
+        "<thead>",
+        "<tr>",
+        "<th>Image</th>",
+        "<th>Product Name</th>",
+        "</tr>",
+        "</thead>",
+        "<tbody>",
+        rows,
+        "</tbody>",
+        "</table>",
+        '<div class="mini-wishlist-actions"><a href="shop.html">Discover more</a></div>'
+      ].join("");
+    });
   }
 
   function getCartStats() {
@@ -397,6 +546,64 @@
     }
   }
 
+  function syncWishlistForm() {
+    var form = document.querySelector("#wishlist-form");
+    if (!form) {
+      return;
+    }
+
+    var checkbox = form.querySelector(".wishlist");
+    var item = findDetailData(form);
+    if (!checkbox || !item) {
+      return;
+    }
+
+    checkbox.checked = isWishlisted(item.id);
+  }
+
+  function bindWishlistForm() {
+    var form = document.querySelector("#wishlist-form");
+    if (!form || form.dataset.wishlistBound === "true") {
+      return;
+    }
+
+    form.dataset.wishlistBound = "true";
+    var checkbox = form.querySelector(".wishlist");
+    if (!checkbox) {
+      return;
+    }
+
+    syncWishlistForm();
+
+    checkbox.addEventListener("change", function () {
+      var item = findDetailData(form);
+      if (!item) {
+        checkbox.checked = false;
+        return;
+      }
+
+      toggleWishlistItem(item, checkbox.checked);
+    });
+  }
+
+  function bindWishlistMenu() {
+    if (!document.body || document.body.dataset.wishlistMenuBound === "true") {
+      return;
+    }
+
+    document.body.dataset.wishlistMenuBound = "true";
+
+    document.addEventListener("click", function (event) {
+      var removeButton = event.target.closest(".wishlist-remove");
+      if (!removeButton) {
+        return;
+      }
+
+      event.preventDefault();
+      removeWishlistItem(removeButton.dataset.itemId);
+    });
+  }
+
   function bindCartPageEvents() {
     var cartPage = document.querySelector(".cart-page");
     if (!cartPage || cartPage.dataset.cartBound === "true") {
@@ -449,19 +656,39 @@
     renderCheckoutSummary();
   }
 
+  function syncWishlistUI() {
+    renderMiniWishlist();
+    updateWishlistBadge();
+    syncWishlistForm();
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     bindListingButtons();
     bindProductForm();
+    bindWishlistForm();
+    bindWishlistMenu();
     bindCartPageEvents();
     syncCartUI();
+    syncWishlistUI();
   });
 
-  window.addEventListener("storage", syncCartUI);
+  window.addEventListener("storage", function () {
+    syncCartUI();
+    syncWishlistUI();
+  });
   window.TamGiacCart = {
     readCart: readCart,
     clearCart: clearCart,
     getCartStats: getCartStats,
     syncCartUI: syncCartUI,
     upsertCartItem: upsertCartItem
+  };
+  window.TamGiacWishlist = {
+    readWishlist: readWishlist,
+    isWishlisted: isWishlisted,
+    upsertWishlistItem: upsertWishlistItem,
+    removeWishlistItem: removeWishlistItem,
+    toggleWishlistItem: toggleWishlistItem,
+    syncWishlistUI: syncWishlistUI
   };
 })();
