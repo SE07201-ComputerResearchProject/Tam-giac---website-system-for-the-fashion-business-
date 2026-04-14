@@ -856,6 +856,202 @@
   color: rgba(34, 78, 126, 0.68);
 }
 
+@media (forced-colors: active), (-ms-high-contrast: active) {
+  :host,
+  .tg-ai-root,
+  .tg-ai-root *,
+  .tg-ai-root *::before,
+  .tg-ai-root *::after {
+    forced-color-adjust: none;
+  }
+
+  .tg-ai-mascot,
+  .tg-ai-mascot *,
+  .tg-ai-mascot *::before,
+  .tg-ai-mascot *::after,
+  .tg-ai-rope,
+  .tg-ai-rope::before,
+  .tg-ai-rope::after,
+  .tg-ai-webburst,
+  .tg-ai-webburst i {
+    forced-color-adjust: none;
+  }
+
+  .tg-ai-mascot {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    color: inherit;
+  }
+
+  .tg-ai-mascot:focus-visible {
+    outline: 2px solid rgba(122, 201, 255, 0.9);
+  }
+
+  .tg-ai-panel {
+    background: #dcefff;
+    border: 1px solid var(--tg-ai-border);
+    box-shadow: 0 16px 30px rgba(45, 104, 168, 0.12);
+  }
+
+  .tg-ai-panel-header {
+    background: #cfe7fb;
+    border-bottom: 1px solid rgba(94, 164, 223, 0.28);
+  }
+
+  .tg-ai-panel-footer {
+    background: #d7eeff;
+    border-top: 1px solid rgba(102, 171, 225, 0.22);
+  }
+
+  .tg-ai-avatar {
+    background: linear-gradient(145deg, #6fc2ff, #2f83e4);
+    border: 1px solid rgba(255, 255, 255, 0.48);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.32),
+      0 10px 18px rgba(52, 119, 190, 0.22);
+  }
+
+  .tg-ai-panel-kicker {
+    color: rgba(42, 112, 182, 0.9);
+  }
+
+  .tg-ai-panel-title strong {
+    color: #16365f;
+  }
+
+  .tg-ai-panel-title p {
+    color: rgba(28, 63, 102, 0.84);
+  }
+
+  .tg-ai-close {
+    background: #ffffff;
+    color: #1a4f8f;
+    border: 1px solid rgba(109, 171, 227, 0.28);
+  }
+
+  .tg-ai-close:hover,
+  .tg-ai-close:focus-visible {
+    background: #eef7ff;
+    border-color: rgba(77, 145, 205, 0.38);
+  }
+
+  .tg-ai-intro {
+    background: #edf7ff;
+    border: 1px solid rgba(101, 171, 227, 0.22);
+  }
+
+  .tg-ai-intro p {
+    color: #23466f;
+  }
+
+  .tg-ai-quick {
+    background: #f8fcff;
+    color: #1f5d9f;
+    border: 1px solid rgba(106, 173, 229, 0.28);
+  }
+
+  .tg-ai-quick:hover,
+  .tg-ai-quick:focus-visible {
+    background: #e7f4ff;
+    border-color: rgba(70, 145, 208, 0.42);
+  }
+
+  .tg-ai-message-row.user .tg-ai-message {
+    background: #4fa6f7;
+    border: 1px solid rgba(68, 142, 206, 0.24);
+    color: #ffffff;
+  }
+
+  .tg-ai-message-row.assistant .tg-ai-message {
+    background: #ffffff;
+    border: 1px solid rgba(112, 178, 228, 0.2);
+    color: #1f3f67;
+  }
+
+  .tg-ai-message-row.system .tg-ai-message {
+    background: #ffe8ee;
+    border: 1px solid rgba(255, 131, 153, 0.22);
+    color: #8d3a4c;
+  }
+
+  .tg-ai-product-card {
+    background: #f7fbff;
+    border: 1px solid rgba(107, 176, 230, 0.24);
+  }
+
+  .tg-ai-product-media {
+    background: #d9ecfb;
+  }
+
+  .tg-ai-product-category {
+    color: rgba(42, 103, 162, 0.78);
+  }
+
+  .tg-ai-product-name {
+    color: #17365d;
+  }
+
+  .tg-ai-product-note {
+    color: rgba(23, 54, 93, 0.72);
+  }
+
+  .tg-ai-product-price {
+    color: #1a5ea4;
+  }
+
+  .tg-ai-product-cta {
+    background: #2f86eb;
+    color: #ffffff;
+  }
+
+  .tg-ai-typing span {
+    background: rgba(73, 140, 206, 0.9);
+  }
+
+  .tg-ai-status {
+    color: rgba(33, 76, 125, 0.72);
+  }
+
+  .tg-ai-input-wrap {
+    background: #ffffff;
+    border: 1px solid rgba(112, 179, 228, 0.28);
+  }
+
+  .tg-ai-textarea {
+    background: transparent;
+    color: #17365d;
+    caret-color: #17365d;
+  }
+
+  .tg-ai-textarea::placeholder {
+    color: rgba(63, 103, 145, 0.6);
+    opacity: 1;
+  }
+
+  .tg-ai-textarea:focus {
+    border-color: rgba(90, 160, 220, 0.28);
+    box-shadow: 0 0 0 4px rgba(106, 188, 255, 0.14);
+    transform: translateY(-1px);
+  }
+
+  .tg-ai-send {
+    background: #2f86eb;
+    color: #ffffff;
+    border: 0;
+  }
+
+  .tg-ai-send:hover:not(:disabled),
+  .tg-ai-send:focus-visible {
+    background: #2f86eb;
+    color: #ffffff;
+  }
+
+  .tg-ai-hint {
+    color: rgba(34, 78, 126, 0.68);
+  }
+}
+
 @keyframes tg-ai-bob {
   0%,
   100% {

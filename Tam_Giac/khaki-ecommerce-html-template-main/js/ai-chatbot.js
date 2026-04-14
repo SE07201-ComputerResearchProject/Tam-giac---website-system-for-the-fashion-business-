@@ -15,7 +15,7 @@
 
   const CONFIG = {
     apiUrl: '/api/ai-chat',
-    stylesheetHref: 'css/ai-chatbot.css?v=20260413c',
+    stylesheetHref: 'css/ai-chatbot.css?v=20260415b',
     historyLimit: 10,
     moveDelayMin: 3400,
     moveDelayMax: 6400

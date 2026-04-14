@@ -29,7 +29,7 @@
     const script = document.createElement('script');
     script.id = 'tg-ai-chatbot-loader';
     script.defer = true;
-    script.src = 'js/ai-chatbot.js?v=20260413c';
+    script.src = 'js/ai-chatbot.js?v=20260415b';
     document.head.appendChild(script);
   }
 
