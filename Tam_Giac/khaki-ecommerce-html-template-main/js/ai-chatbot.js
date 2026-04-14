@@ -24,6 +24,7 @@
   const state = {
     isOpen: false,
     isReady: false,
+    isVisible: false,
     isBusy: false,
     history: [],
     position: { x: 24, y: 120 },
@@ -230,6 +231,8 @@
     host.style.inset = '0';
     host.style.zIndex = '2147483000';
     host.style.pointerEvents = 'none';
+    host.style.visibility = 'hidden';
+    host.style.opacity = '0';
     document.body.appendChild(host);
 
     const shadowRoot = host.attachShadow({ mode: 'open' });
@@ -253,6 +256,8 @@
     const status = shadowRoot.querySelector('.tg-ai-status');
     const quickButtons = Array.from(shadowRoot.querySelectorAll('[data-quick-message]'));
     const backdrop = shadowRoot.querySelector('.tg-ai-backdrop');
+    panel.style.display = 'none';
+    panel.style.visibility = 'hidden';
 
     return {
       host,
@@ -269,6 +274,52 @@
       quickButtons,
       backdrop
     };
+  }
+
+  function revealHost() {
+    if (!state.ui || state.isVisible) {
+      return;
+    }
+
+    state.isVisible = true;
+    state.ui.host.style.visibility = 'visible';
+    state.ui.host.style.opacity = '1';
+    state.ui.host.style.transition = 'opacity 0.18s ease';
+  }
+
+  function waitForStylesheet(ui) {
+    return new Promise((resolve) => {
+      if (!ui || !ui.shadowRoot) {
+        resolve();
+        return;
+      }
+
+      const link = ui.shadowRoot.querySelector('link[rel="stylesheet"]');
+      if (!link) {
+        resolve();
+        return;
+      }
+
+      if (link.sheet) {
+        resolve();
+        return;
+      }
+
+      let settled = false;
+
+      const finish = () => {
+        if (settled) {
+          return;
+        }
+
+        settled = true;
+        resolve();
+      };
+
+      link.addEventListener('load', finish, { once: true });
+      link.addEventListener('error', finish, { once: true });
+      window.setTimeout(finish, 900);
+    });
   }
 
   function getViewportBounds() {
@@ -722,6 +773,8 @@
     state.isOpen = true;
     clearTimeout(state.roamTimer);
 
+    state.ui.panel.style.display = 'grid';
+    state.ui.panel.style.visibility = 'visible';
     state.ui.root.classList.add('is-open');
     state.ui.panel.setAttribute('aria-hidden', 'false');
     state.ui.mascot.setAttribute('aria-expanded', 'true');
@@ -747,6 +800,12 @@
     state.ui.root.classList.remove('is-open');
     state.ui.panel.setAttribute('aria-hidden', 'true');
     state.ui.mascot.setAttribute('aria-expanded', 'false');
+    window.setTimeout(() => {
+      if (!state.isOpen && state.ui) {
+        state.ui.panel.style.display = 'none';
+        state.ui.panel.style.visibility = 'hidden';
+      }
+    }, 320);
 
     if (state.requestController) {
       state.requestController.abort();
@@ -1059,12 +1118,13 @@
     });
   }
 
-  function initWidget() {
+  async function initWidget() {
     if (state.isReady || !document.body) {
       return;
     }
 
     state.ui = createHost();
+    await waitForStylesheet(state.ui);
     bindEvents();
 
     const startAnchor = chooseNextAnchor();
@@ -1073,6 +1133,7 @@
     setMascotMode('sit');
     setStatus('Spider Assistant đã sẵn sàng.');
 
+    revealHost();
     state.isReady = true;
     scheduleRoam(1100);
   }
